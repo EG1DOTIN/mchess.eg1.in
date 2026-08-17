@@ -1,0 +1,49 @@
+# ─── Internal Utility / Scratch Scripts /Old/unused files ──────────────────
+useful-python-scripts/
+unused-old-files/
+test.html
+test-blog-debug.html
+support.html
+blog/test1.htm
+blog/test.htm
+blog/html_blog_fix.py
+
+# ─── Internal Documentation ──────────────────────────────
+docs/
+
+# ─── Backend & Firestore ─────────────────────────────────
+Firestore/
+
+# ─── Firebase CLI Artifacts ──────────────────────────────
+.firebase/
+firebase-debug.log*
+firestore-debug.log*
+ui-debug.log*
+
+# ─── Environment & Secrets ───────────────────────────────
+.env
+.env.*
+*.env
+*.pem
+*serviceAccount*.json
+*service_account*.json
+firebase_credentials*.json
+
+# ─── IDE & Editor Configurations ─────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ─── OS Specific Files ───────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ─── Node & Python Cache ─────────────────────────────────
+node_modules/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/

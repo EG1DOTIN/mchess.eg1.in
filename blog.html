@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2, user-scalable=no" />
+    <title>Chess Articles, Blogs & Tactics | Marwadi Chess</title>
+    <meta name="title" content="Chess Articles, Blogs & Tactics | Marwadi Chess" />
+    <meta name="description" content="Explore chess articles, tactical puzzle blogs, grandmaster game insights, checkmate problems, and chess quotes on Marwadi Chess." />
+    <meta name="keywords" content="chess articles, chess blog, chess puzzles blog, chess tactics, mate in 2, mate in 3, mate in 4, chess quotes, grandmaster analysis, marwadi chess blog" />
+    <meta name="author" content="Marwadi Chess" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://mchess.eg1.in/blog.html" />
+    <link rel="shortcut icon" href="img/mchesslogo.png" type="image/png" />
+
+    <!-- X / Twitter Card Data -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@ChessMarwadi" />
+    <meta name="twitter:creator" content="@ChessMarwadi" />
+    <meta name="twitter:title" content="Chess Articles, Blogs & Tactics | Marwadi Chess" />
+    <meta name="twitter:description" content="Explore chess articles, tactical puzzle blogs, grandmaster game insights, checkmate problems, and chess quotes on Marwadi Chess." />
+    <meta name="twitter:image" content="https://mchess.eg1.in/img/mchesshome.webp" />
+    <meta name="twitter:image:alt" content="Chess Articles, Blogs & Tactics | Marwadi Chess" />
+
+    <!-- Open Graph Data (Facebook, WhatsApp, LinkedIn, Discord) -->
+    <meta property="og:site_name" content="Marwadi Chess" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Chess Articles, Blogs & Tactics | Marwadi Chess" />
+    <meta property="og:description" content="Explore chess articles, tactical puzzle blogs, grandmaster game insights, checkmate problems, and chess quotes on Marwadi Chess." />
+    <meta property="og:url" content="https://mchess.eg1.in/blog.html" />
+    <meta property="og:image" content="https://mchess.eg1.in/img/mchesshome.webp" />
+    <meta property="og:image:alt" content="Chess Articles, Blogs & Tactics | Marwadi Chess" />
+
+    <!-- Schema.org JSON-LD Structured Data for Google Search -->
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Chess Articles, Blogs & Tactics | Marwadi Chess",
+    "description": "Explore chess articles, tactical puzzle blogs, grandmaster game insights, checkmate problems, and chess quotes on Marwadi Chess.",
+    "url": "https://mchess.eg1.in/blog.html",
+    "image": "https://mchess.eg1.in/img/mchesshome.webp",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Marwadi Chess",
+        "url": "https://mchess.eg1.in",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://mchess.eg1.in/img/mchesslogo.png"
+        }
+    }
+}
+    </script>
+
+<link href="css/main.css" rel="stylesheet" type="text/css" />
+    <link href="css/responsive.css" rel="stylesheet" type="text/css" />
+    <link href="css/font-awesome.css" rel="stylesheet" type="text/css" />
+    <link href="css/fonts.css" rel="stylesheet" type="text/css" />
+    <link href="css/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link href="css/common.css" rel="stylesheet" type="text/css" />
+    <link href="css/menuCss.css" rel="stylesheet" type="text/css" />
+    <link href="css/scrollbar.css" rel="stylesheet" type="text/css" />
+    <link href="css/socialbuttons.css" rel="stylesheet" type="text/css" />
+    <link href="js/slick.css" rel="stylesheet" type="text/css" />
+    <link href="js/slick-theme.css" rel="stylesheet" type="text/css" />
+    
+
+    <script src="js/mootools.js" type="text/javascript"></script>
+    <script src="js/jquery-2.1.1.min.js" type="text/javascript"></script>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="js/firebase-config.js"></script>
+
+    <style type="text/css">
+        .f-nav {
+            z-index: 9999;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <center>
+        <div>
+            <div id="header-placeholder"></div>
+            <div id="menu-placeholder"></div>
+            <div class="box-100 bg-E3 main-master">
+                <div class="row mainContentHeader">
+                    <div id="scrlbar" class="box-90 overflow">
+                        <div id="Content3Header" class="col-md-12">
+                            <h1 id="blog-page-heading">Blogs</h1>
+                        </div>
+                    </div>
+                </div>
+                <div class="row body">
+                    <div class="box-90 content">
+                        <div class="row">
+                            <div class="row">
+                                <div class="col-md-8" id="blogs-container">
+                                    <div class="text-center" id="loading-indicator">
+                                        <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="row">
+                                        <div class="col-md-12 margin-bottom">
+                                            <div class="input-group input-group-lg">
+                                                <input type="text" id="txtSearch" class="form-control"
+                                                    placeholder="search blog here" />
+                                                <span class="input-group-btn">
+                                                    <button id="btnSearch" class="btn btn-default bg-f2">Search</button>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="box box-solid box-black">
+                                                <div class="box-header">Category</div>
+                                                <ul class="mrgin-top10 abc row" id="category-list">
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="box box-solid box-black">
+                                                <div class="box-header">Related Topics List</div>
+                                                <div class="box-body product-list">
+                                                    <div id="related-topics-list">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div style="text-align: center;">
+                                                <iframe
+                                                    src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fm1chess%2F&tabs=timeline&width=336&height=400&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId"
+                                                    width="336" height="400" style="border: none; overflow: hidden; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);"
+                                                    scrolling="no" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+                                            </div>
+                                            <p> </p>
+
+                                            <div style="text-align: center; margin-top: 10px;">
+                                                <a href="https://twitter.com/ChessMarwadi?ref_src=twsrc%5Etfw"
+                                                    class="twitter-follow-button" data-size="large"
+                                                    data-show-count="false">Follow @Marwadi Chess</a>
+                                            </div>
+                                            <script async src="https://platform.twitter.com/widgets.js"
+                                                charset="utf-8"></script>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="footer-placeholder"></div>
+        </div>
+    </center>
+
+    <script src="js/slick.min.js" type="text/javascript"></script>
+    <script src="js/include-components.js" type="text/javascript"></script>
+    <script src="js/data-cache.js" type="text/javascript"></script>
+    <script src="js/blog.js" type="text/javascript"></script>
+</body>
+
+</html>

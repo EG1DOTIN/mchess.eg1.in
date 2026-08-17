@@ -1,0 +1,44 @@
+/* fbresp.css - Responsive styles for MchessBlogs blog post iframes */
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.facebook-responsive {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.facebook-responsive iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    overflow: hidden;
+}
+
+/* Mobile adjustments for blog post iframes */
+@media (max-width: 767px) {
+    .facebook-responsive {
+        height: 100vh;
+        min-height: 500px;
+    }
+    .facebook-responsive iframe {
+        width: 100%;
+        height: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .facebook-responsive {
+        min-height: 400px;
+    }
+}
