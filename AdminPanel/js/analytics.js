@@ -73,7 +73,7 @@ async function updateTotalVisitors() { return updateVisitorStats(); }
 
 /**
  * Load analytics data from the batched page documents.
- * 1 UI page = 1 Document read (containing up to 25–50 logs).
+ * 1 UI page = 1 Document read (containing up to 50 logs).
  */
 async function loadAnalyticsData() {
     const tableBody = document.getElementById('analyticsTableBody');
@@ -156,7 +156,9 @@ function renderAnalyticsTable(logs, maxPage) {
             const haystack = [
                 entry.ip || '',
                 entry.city || '',
+                entry.region || '',
                 entry.country || '',
+                entry.postal || '',
                 entry.org || '',
                 entry.os || '',
                 entry.browser || '',
@@ -188,6 +190,7 @@ function renderAnalyticsTable(logs, maxPage) {
 
         const locParts = [];
         if (entry.city && entry.city !== 'Unknown' && entry.city !== 'N/A') locParts.push(entry.city);
+        if (entry.region && entry.region !== 'Unknown' && entry.region !== 'N/A') locParts.push(entry.region);
         if (entry.country && entry.country !== 'Unknown' && entry.country !== 'N/A') locParts.push(entry.country);
         const locationStr = locParts.length > 0 ? locParts.join(', ') : 'Unknown';
 
@@ -281,4 +284,4 @@ window.updateVisitorStats = updateVisitorStats;
 window.updateTodayVisitors = updateTodayVisitors;
 window.updateTotalVisitors = updateTotalVisitors;
 
-console.log('Visitor Analytics module loaded (Bucket pattern v2 with 1-read optimization)');
+console.log('Visitor Analytics module loaded (Bucket pattern v2 with 1-read optimization & full telemetry search)');
