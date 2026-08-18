@@ -471,11 +471,18 @@ function showSection(sectionId) {
     const navLinks = document.querySelectorAll('.nav-link');
     navLinks.forEach(link => link.classList.remove('active'));
 
-    document.getElementById(sectionId).classList.add('active');
-    event.target.closest('.nav-link').classList.add('active');
+    const targetSec = document.getElementById(sectionId);
+    if (targetSec) targetSec.classList.add('active');
+
+    const activeNav = document.getElementById('nav-' + sectionId);
+    if (activeNav) activeNav.classList.add('active');
 
     // Trigger module data load based on selected active tab
     if (sectionId === 'dashboard') loadDashboardStats();
+    if (sectionId === 'analytics') {
+        if (typeof loadAnalyticsData === 'function') loadAnalyticsData();
+        if (typeof updateVisitorStats === 'function') updateVisitorStats();
+    }
     if (sectionId === 'blogs') { loadBlogsList(); loadCategoryDropdown(); }
     if (sectionId === 'blogCategories') loadCategoriesList();
     if (sectionId === 'messages') loadMessagesList();

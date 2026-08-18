@@ -30,6 +30,21 @@ function initializeComponents() {
         $('#footer-placeholder').html(data);
         setTimeout(initializeBackToTop, 100);
     });
+
+    // Initialize visitor analytics tracking
+    initializeVisitorTracker();
+}
+
+/**
+ * Dynamically loads visitor analytics tracker
+ */
+function initializeVisitorTracker() {
+    if (!document.querySelector('script[src*="visitor-tracker.js"]')) {
+        var script = document.createElement('script');
+        script.src = 'js/visitor-tracker.js';
+        script.async = true;
+        document.body.appendChild(script);
+    }
 }
 
 /**

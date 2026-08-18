@@ -49,14 +49,20 @@ async function handleImageUpload(blobInfo, success, failure) {
 // ── Dashboard ────────────────────────────────────────────────────────────────
 function loadDashboardStats() {
     fetchAllBlogsFlat().then(function(blogs) {
-        document.getElementById('totalBlogs').innerText = blogs.length;
+        var el = document.getElementById('totalBlogs');
+        if (el) el.innerText = blogs.length;
     });
     db.collection('mchess_blog').get().then(function(snap) {
-        document.getElementById('totalCategories').innerText = snap.size;
+        var el = document.getElementById('totalCategories');
+        if (el) el.innerText = snap.size;
     });
     db.collection('messages').get().then(function(snap) {
-        document.getElementById('totalMessages').innerText = snap.size;
+        var el = document.getElementById('totalMessages');
+        if (el) el.innerText = snap.size;
     });
+    if (typeof updateVisitorStats === 'function') {
+        updateVisitorStats();
+    }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -606,6 +612,10 @@ document.addEventListener('click', function (e) {
     if (table === 'messages') {
         if (dir === 'next') { messagesPage++;                            loadMessagesList(); }
         if (dir === 'prev') { messagesPage = Math.max(1, messagesPage - 1); loadMessagesList(); }
+    }
+    if (table === 'analytics') {
+        if (dir === 'next') { analyticsPage++; loadAnalyticsData(); }
+        if (dir === 'prev') { analyticsPage = Math.max(1, analyticsPage - 1); loadAnalyticsData(); }
     }
 });
 
