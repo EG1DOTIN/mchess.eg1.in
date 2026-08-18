@@ -1388,8 +1388,79 @@ p
         font-size: 12px;
         padding: 6px 12px;
     }
+
+    .footer-grid {
+        justify-content: center;
+    }
     
     .footer-col {
         margin-bottom: 20px;
     }
+
+    /* Col 1: Brand & Bio */
+    .footer-brand {
+        text-align: center;
+    }
+
+    .footer-logo {
+        margin: 0 auto 10px auto;
+        display: block;
+    }
+
+    .footer-about-text {
+        text-align: center;
+        max-width: 480px;
+        margin: 8px auto;
+    }
+
+    .footer-readmore {
+        display: inline-block;
+        margin: 0 auto;
+    }
+
+    /* Col 2 & Col 3: Side-by-side with centered titles and list items */
+    .footer-col:nth-child(2),
+    .footer-col:nth-child(3) {
+        flex: 0 0 50%;
+        max-width: 50%;
+        text-align: center;
+    }
+
+    .footer-col-title {
+        text-align: center;
+    }
+
+    .footer-links-list {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .footer-links-list li {
+        width: 100%;
+        text-align: center;
+    }
+
+    .footer-links-list a {
+        justify-content: center;
+    }
+
+    /* Col 4: Connect Platforms & Contact Chip */
+    .footer-col:nth-child(4) {
+        flex: 0 0 100%;
+        max-width: 100%;
+        text-align: center;
+    }
+
+    .social-icon-grid {
+        justify-content: center;
+    }
+
+    .footer-email-chip {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        text-align: center;
+    }
 }
+
