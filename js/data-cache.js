@@ -85,8 +85,13 @@ var DataCache = {
                     if (key.startsWith('page') && value && typeof value === 'object') {
                         for (var [blogId, blogData] of Object.entries(value)) {
                             if (blogData && typeof blogData === 'object') {
-                                if (blogData.release_date && blogData.release_date.toDate) {
+                                if (blogData.release_date && typeof blogData.release_date.toDate === 'function') {
                                     blogData.release_date_ms = blogData.release_date.toDate().getTime();
+                                } else if (blogData.release_date) {
+                                    var parsedDateMs = new Date(blogData.release_date).getTime();
+                                    if (!isNaN(parsedDateMs)) {
+                                        blogData.release_date_ms = parsedDateMs;
+                                    }
                                 }
                                 this.blogs.push({ id: blogId, category: catName, ...blogData });
                             }
