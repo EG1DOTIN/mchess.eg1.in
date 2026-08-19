@@ -14,21 +14,18 @@ function initializeComponents() {
         $('#header-placeholder').html(data);
     });
     
-    // Load menu template & initialize navigation handlers after insertion
+    // Load menu template & initialize navigation handlers directly after insertion
     $.get('components/menu.html', function(data) {
         $('#menu-placeholder').html(data);
-        
-        setTimeout(function() {
-            initializeResponsiveMenu();
-            initializeNavigation();
-            initializeFixedNav();
-        }, 100);
+        initializeResponsiveMenu();
+        initializeNavigation();
+        initializeFixedNav();
     });
 
     // Load footer template
     $.get('components/footer.html', function(data) {
         $('#footer-placeholder').html(data);
-        setTimeout(initializeBackToTop, 100);
+        initializeBackToTop();
     });
 
     // Initialize visitor analytics tracking
@@ -57,13 +54,13 @@ function initializeResponsiveMenu() {
             $(this).addClass("parent");
         }
     });
-    $(".toggleMenu").click(function(e) {
+    $(".toggleMenu").off('click').on('click', function(e) {
         e.preventDefault();
         $(this).toggleClass("active");
         $(".nav").toggle();
     });
     adjustMenu();
-    $(window).bind('resize orientationchange', function() {
+    $(window).off('resize.mchessMenu orientationchange.mchessMenu').on('resize.mchessMenu orientationchange.mchessMenu', function() {
         ww = document.body.clientWidth;
         adjustMenu();
     });
@@ -80,8 +77,8 @@ function initializeResponsiveMenu() {
             } else {
                 $(".nav").show();
             }
-            $(".nav li").unbind('mouseenter mouseleave');
-            $(".nav li a.parent").unbind('click').bind('click', function(e) {
+            $(".nav li").off('mouseenter mouseleave');
+            $(".nav li a.parent").off('click').on('click', function(e) {
                 e.preventDefault();
                 $(this).parent("li").toggleClass("hover");
             });
@@ -90,8 +87,8 @@ function initializeResponsiveMenu() {
             $(".toggleMenu").css("display", "none");
             $(".nav").show();
             $(".nav li").removeClass("hover");
-            $(".nav li a").unbind('click');
-            $(".nav li").unbind('mouseenter mouseleave').bind('mouseenter mouseleave', function() {
+            $(".nav li a").off('click');
+            $(".nav li").off('mouseenter mouseleave').on('mouseenter mouseleave', function() {
                 $(this).toggleClass('hover');
             });
         }
@@ -102,18 +99,21 @@ function initializeResponsiveMenu() {
  * Automatically detects current HTML filename and highlights the corresponding nav item.
  */
 function initializeNavigation() {
-    $(".nav li a").click(function () {
+    $(".nav li a").off('click.navActive').on('click.navActive', function () {
         $(this).parent().addClass("active");
         $(this).parent().siblings().removeClass("active");
     });
-    var url = window.location.href;
-    var filename = url.substring(url.lastIndexOf('/')+1);
-    if(filename === '') filename = 'index.html';
+
+    var rawFilename = window.location.pathname.split('/').pop() || 'index.html';
+    if (!rawFilename || rawFilename === '') rawFilename = 'index.html';
 
     $(".nav a").each(function () {
         var href = $(this).attr('href');
-        if (href && href === filename) {
-            $(this).closest("li").addClass("active");
+        if (href) {
+            var hrefClean = href.split('?')[0].split('#')[0];
+            if (hrefClean === rawFilename) {
+                $(this).closest("li").addClass("active");
+            }
         }
     });
 }

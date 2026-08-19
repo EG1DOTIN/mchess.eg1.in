@@ -1,8 +1,12 @@
-csoPlayVsComputer({
-    boardStyle: "default",
-    pieceStyle: "alpha",
-    showCoordinates: true,
-    width: 580,
+$(document).ready(function() {
+    if (typeof csoPlayVsComputer === 'function') {
+        csoPlayVsComputer({
+            boardStyle: "default",
+            pieceStyle: "alpha",
+            showCoordinates: true,
+            width: 580,
+        });
+    }
 });
 
 function disableScroll() {

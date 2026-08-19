@@ -4,14 +4,18 @@
 	/*
 	 * Customly Styled Select input field
 	 */
-	[].slice.call( document.querySelectorAll( 'select.cs-select' ) ).forEach( function(el) {	
-		new SelectFx(el);
-	} );
+	if (typeof SelectFx === 'function') {
+		[].slice.call( document.querySelectorAll( 'select.cs-select' ) ).forEach( function(el) {	
+			new SelectFx(el);
+		} );
+	}
 
 	/*
 	 * On Parallax for .parallax class
 	 */
-	$('.parallax').parallax("50%", 0.2);
+	if ($.fn.parallax) {
+		$('.parallax').parallax("50%", 0.2);
+	}
 
 	/*
 	 * Custom Data Fixed
@@ -150,48 +154,50 @@
 	/*
 	 * Owl Carousel for Testimonials
 	 */
-	$("#mg-testimonial-slider").owlCarousel({
-		navigation : true,
-		singleItem : true,
-		pagination: false,
-		navigationText: ['<i class="fa fa-angle-left"></i>', '<i class="fa fa-angle-right"></i>'],
-		transitionStyle : "backSlide"
+	if ($.fn.owlCarousel) {
+		$("#mg-testimonial-slider").owlCarousel({
+			navigation : true,
+			singleItem : true,
+			pagination: false,
+			navigationText: ['<i class="fa fa-angle-left"></i>', '<i class="fa fa-angle-right"></i>'],
+			transitionStyle : "backSlide"
 
-	});
+		});
 
-	/*
-	 * Owl Carousel for Client Logo (Small 3 items Only)
-	 */
-	$("#mg-part-logos").owlCarousel({
-		items : 3,
-		itemsDesktop: [1199,3],
-		navigation : true,
-		pagination: false,
-		navigationText: ['<i class="fa fa-angle-left"></i>', '<i class="fa fa-angle-right"></i>'],
+		/*
+		 * Owl Carousel for Client Logo (Small 3 items Only)
+		 */
+		$("#mg-part-logos").owlCarousel({
+			items : 3,
+			itemsDesktop: [1199,3],
+			navigation : true,
+			pagination: false,
+			navigationText: ['<i class="fa fa-angle-left"></i>', '<i class="fa fa-angle-right"></i>'],
 
-	});
+		});
 
-	/*
-	 * Owl Carousel for Client Logo (Full 5 items Only)
-	 */
-	$("#mg-part-logos-full").owlCarousel({
-		items : 5,
-		navigation : true,
-		pagination: false,
-		navigationText: ['<i class="fa fa-angle-left"></i>', '<i class="fa fa-angle-right"></i>'],
+		/*
+		 * Owl Carousel for Client Logo (Full 5 items Only)
+		 */
+		$("#mg-part-logos-full").owlCarousel({
+			items : 5,
+			navigation : true,
+			pagination: false,
+			navigationText: ['<i class="fa fa-angle-left"></i>', '<i class="fa fa-angle-right"></i>'],
 
-	});
+		});
 
-	/*
-	 * Owl Carousel for Blog post
-	 */
-	$(".mg-post-images-slider").owlCarousel({
-		singleItem : true,
-		navigation : true,
-		pagination: false,
-		navigationText: ['<i class="fa fa-angle-left"></i>', '<i class="fa fa-angle-right"></i>'],
+		/*
+		 * Owl Carousel for Blog post
+		 */
+		$(".mg-post-images-slider").owlCarousel({
+			singleItem : true,
+			navigation : true,
+			pagination: false,
+			navigationText: ['<i class="fa fa-angle-left"></i>', '<i class="fa fa-angle-right"></i>'],
 
-	});
+		});
+	}
 
 	/*
 	 * Owl Carousel for Gallery
@@ -385,12 +391,14 @@
 	/*
 	 * Nivo Lightbox for gallery
 	 */
-	$('.mg-gallery-item a').nivoLightbox({ effect: 'fadeScale' });
+	if ($.fn.nivoLightbox) {
+		$('.mg-gallery-item a').nivoLightbox({ effect: 'fadeScale' });
+	}
 
 	/*
 	 * Google map for contact form
 	 */
-	if ($('#mg-map').length) {
+	if ($('#mg-map').length && typeof GMaps !== 'undefined') {
 
 	    var map = new GMaps({
 			el: '#mg-map',
@@ -419,24 +427,26 @@ $(window).load(function () {
 		$sizer = $grid.find('.shuffle__sizer'),
 		$filterType = $('#mg-filter input[name="filter"]');
 
-	$grid.shuffle({
-		itemSelector: '.mg-gallery-item',
-		sizer: $sizer
-	});
+	if ($.fn.shuffle && $grid.length) {
+		$grid.shuffle({
+			itemSelector: '.mg-gallery-item',
+			sizer: $sizer
+		});
 
-	$grid.shuffle('shuffle', $('#mg-filter input[name="filter"]:checked').val());
-
-	$('label.btn-main').removeClass('btn-main');
-	$('input[name="filter"]:checked').parent().addClass('btn-main');
-
-	$filterType.change(function(e) {
-		var group = $('#mg-filter input[name="filter"]:checked').val();
-
-		$grid.shuffle('shuffle', group);
+		$grid.shuffle('shuffle', $('#mg-filter input[name="filter"]:checked').val());
 
 		$('label.btn-main').removeClass('btn-main');
 		$('input[name="filter"]:checked').parent().addClass('btn-main');
-	});
+
+		$filterType.change(function(e) {
+			var group = $('#mg-filter input[name="filter"]:checked').val();
+
+			$grid.shuffle('shuffle', group);
+
+			$('label.btn-main').removeClass('btn-main');
+			$('input[name="filter"]:checked').parent().addClass('btn-main');
+		});
+	}
 });
 
 /*

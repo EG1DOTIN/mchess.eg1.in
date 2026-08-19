@@ -1,44 +1,41 @@
-﻿
+
 function startTime() {
+    var txtEl = document.getElementById('txt');
+    if (!txtEl) return;
     var today = new Date();
-    document.getElementById('txt').innerHTML = today.toLocaleTimeString();
-    var t = setTimeout(function () { startTime() }, 500);
+    txtEl.textContent = today.toLocaleTimeString();
+    setTimeout(startTime, 500);
 }
-//         function noback() {
-//             window.history.forward();
-//         }
-//         noback();
-//         window.onload = noback();
 
-
-function num() {
-    var e;
-    e = window.event.keyCode;
-    if ((e > 47 && e < 58) || (e == 10) || (e == 46) || (e == 13)) {
-        document.getElementById('msg').innerHTML = '';
-    }
-    else {
-        window.event.returnValue = false;
-        document.getElementById('msg').innerHTML = 'You should enter only Numeric value !';
+function num(evt) {
+    var e = evt || window.event;
+    var code = e.keyCode || e.which;
+    var msgEl = document.getElementById('msg');
+    if ((code > 47 && code < 58) || (code === 10) || (code === 46) || (code === 13)) {
+        if (msgEl) msgEl.textContent = '';
+    } else {
+        if (e.preventDefault) e.preventDefault();
+        e.returnValue = false;
+        if (msgEl) msgEl.textContent = 'You should enter only Numeric value !';
     }
 }
 
-function alpha() {
-    var k;
-    k = window.event.keyCode;
-    if ((k > 64 && k < 91) || (k > 96 && k < 122) || (k == 32) || (k == 46) || (k == 13)) {
-        document.getElementById('msg').innerHTML = '';
-    }
-    else {
-        window.event.returnValue = false;
-        document.getElementById('msg').innerHTML = 'You should enter only Alphabats !';
+function alpha(evt) {
+    var e = evt || window.event;
+    var code = e.keyCode || e.which;
+    var msgEl = document.getElementById('msg');
+    if ((code > 64 && code < 91) || (code > 96 && code < 122) || (code === 32) || (code === 46) || (code === 13)) {
+        if (msgEl) msgEl.textContent = '';
+    } else {
+        if (e.preventDefault) e.preventDefault();
+        e.returnValue = false;
+        if (msgEl) msgEl.textContent = 'You should enter only Alphabets !';
     }
 }
-
 
 function PopupWindow(url) {
-    varCustomFeatures = 'titlebar=no, status=no,menubar=no,resizable=yes, scrollbars=no,toolbar=no,location=no,directories=no,left=0,top=0,height=500,width=700';
-    window.open(url, '_blank', varCustomFeatures, true);
+    var varCustomFeatures = 'titlebar=no, status=no,menubar=no,resizable=yes, scrollbars=no,toolbar=no,location=no,directories=no,left=0,top=0,height=500,width=700';
+    window.open(url, '_blank', varCustomFeatures);
 }
 
 function Check_Click(objRef) {
