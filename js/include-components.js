@@ -10,21 +10,24 @@
  */
 function initializeComponents() {
     // Load header template
-    $.get('components/header.html', function(data) {
-        $('#header-placeholder').html(data);
+    $.get('components/header.html', function (data) {
+        var cleanData = typeof data === 'string' ? data.replace(/<script[\s\S]*?<\/script>/gi, '') : data;
+        $('#header-placeholder').html(cleanData);
     });
-    
+
     // Load menu template & initialize navigation handlers directly after insertion
-    $.get('components/menu.html', function(data) {
-        $('#menu-placeholder').html(data);
+    $.get('components/menu.html', function (data) {
+        var cleanData = typeof data === 'string' ? data.replace(/<script[\s\S]*?<\/script>/gi, '') : data;
+        $('#menu-placeholder').html(cleanData);
         initializeResponsiveMenu();
         initializeNavigation();
         initializeFixedNav();
     });
 
     // Load footer template
-    $.get('components/footer.html', function(data) {
-        $('#footer-placeholder').html(data);
+    $.get('components/footer.html', function (data) {
+        var cleanData = typeof data === 'string' ? data.replace(/<script[\s\S]*?<\/script>/gi, '') : data;
+        $('#footer-placeholder').html(cleanData);
         initializeBackToTop();
     });
 
@@ -49,18 +52,21 @@ function initializeVisitorTracker() {
  */
 function initializeResponsiveMenu() {
     var ww = document.body.clientWidth;
-    $(".nav li a").each(function() {
+    $(".nav li a").each(function () {
         if ($(this).next().length > 0) {
             $(this).addClass("parent");
         }
     });
-    $(".toggleMenu").off('click').on('click', function(e) {
+
+    $(".toggleMenu").off('click').on('click', function (e) {
         e.preventDefault();
         $(this).toggleClass("active");
         $(".nav").toggle();
     });
+
     adjustMenu();
-    $(window).off('resize.mchessMenu orientationchange.mchessMenu').on('resize.mchessMenu orientationchange.mchessMenu', function() {
+
+    $(window).off('resize.mchessMenu orientationchange.mchessMenu').on('resize.mchessMenu orientationchange.mchessMenu', function () {
         ww = document.body.clientWidth;
         adjustMenu();
     });
@@ -78,17 +84,17 @@ function initializeResponsiveMenu() {
                 $(".nav").show();
             }
             $(".nav li").off('mouseenter mouseleave');
-            $(".nav li a.parent").off('click').on('click', function(e) {
+            $(".nav li a.parent").off('click').on('click', function (e) {
                 e.preventDefault();
                 $(this).parent("li").toggleClass("hover");
             });
-        } 
+        }
         else if (ww >= 920) {
             $(".toggleMenu").css("display", "none");
             $(".nav").show();
             $(".nav li").removeClass("hover");
             $(".nav li a").off('click');
-            $(".nav li").off('mouseenter mouseleave').on('mouseenter mouseleave', function() {
+            $(".nav li").off('mouseenter mouseleave').on('mouseenter mouseleave', function () {
                 $(this).toggleClass('hover');
             });
         }
@@ -156,7 +162,6 @@ function initializeBackToTop() {
 }
 
 // Trigger component initialization on DOM ready
-$(document).ready(function() {
+$(document).ready(function () {
     initializeComponents();
 });
-
