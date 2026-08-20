@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes" />
+    <title>PGN Games Demo (Responsive + Interactive Analysis) | Marwadi Chess</title>
+    <meta name="title" content="PGN Games Demo (Responsive + Interactive Analysis) | Marwadi Chess" />
+    <meta name="description"
+        content="Interactive and responsive open-source PGN chess viewer with live analysis mode powered by Chessboard.js and chess.js." />
+    <meta name="author" content="Marwadi Chess" />
+    <meta name="robots" content="noindex, follow" />
+    <link rel="icon" type="image/svg+xml" href="img/favicon.svg" />
+
+    <!-- Core Site Styles -->
+    <link href="css/main.css" rel="stylesheet" type="text/css" />
+    <link href="css/responsive.css" rel="stylesheet" type="text/css" />
+    <link href="css/font-awesome.css" rel="stylesheet" type="text/css" />
+    <link href="css/fonts.css" rel="stylesheet" type="text/css" />
+    <link href="css/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link href="css/common.css" rel="stylesheet" type="text/css" />
+    <link href="css/menuCss.css" rel="stylesheet" type="text/css" />
+    <link href="css/scrollbar.css" rel="stylesheet" type="text/css" />
+    <link href="css/socialbuttons.css" rel="stylesheet" type="text/css" />
+    <link href="js/slick.css" rel="stylesheet" type="text/css" />
+    <link href="js/slick-theme.css" rel="stylesheet" type="text/css" />
+
+    <!-- Chessboard.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css" />
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+
+    <style type="text/css">
+        .f-nav {
+            z-index: 9999;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+        }
+
+        /* Fluid & Responsive Container matching Site Theme */
+        .pgn-demo-container {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            padding: 24px;
+            margin: 20px auto 40px auto;
+            border: 1px solid #e2e8f0;
+            text-align: left;
+            max-width: 1120px;
+            box-sizing: border-box;
+        }
+
+        @media (max-width: 600px) {
+            .pgn-demo-container {
+                padding: 14px;
+                margin: 10px 5px 30px 5px;
+                border-radius: 12px;
+            }
+        }
+
+        .demo-badge-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .demo-title {
+            font-size: clamp(19px, 4vw, 24px);
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: "PT Sans", "Source Sans Pro", sans-serif;
+        }
+
+        .demo-title i {
+            color: #d4af37;
+            padding: 0;
+        }
+
+        .tech-pill {
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            color: #92400e;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid #fde68a;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 4px rgba(217, 119, 6, 0.1);
+        }
+
+        .game-select-wrapper {
+            margin-bottom: 20px;
+        }
+
+        .game-select-wrapper label {
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 8px;
+            display: block;
+            font-size: 14px;
+        }
+
+        .game-select-wrapper label i {
+            color: #d4af37;
+            padding: 0;
+        }
+
+        .game-select {
+            width: 100%;
+            padding: 12px 14px;
+            font-size: 15px;
+            border-radius: 10px;
+            border: 1.5px solid #cbd5e1;
+            background: #f8fafc;
+            color: #0f172a;
+            font-weight: 600;
+            cursor: pointer;
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+        }
+
+        .game-select:focus {
+            outline: none;
+            border-color: #d4af37;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+        }
+
+        /* Layout Grid for Board + Moves */
+        .viewer-grid {
+            display: grid;
+            grid-template-columns: minmax(280px, 480px) 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        @media (max-width: 860px) {
+            .viewer-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+
+        /* Board Column & Custom Marwadi Frame */
+        .board-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .board-wrapper {
+            width: 100%;
+            max-width: 480px;
+            aspect-ratio: 1 / 1;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 4px solid #1e293b;
+            outline: 2px solid #d4af37;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
+            position: relative;
+            background: #e2e8f0;
+        }
+
+        .board-container {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        /* Custom Chessboard Squares: Pure White for Light Squares, Pure Black for Dark Squares */
+        .board-container .white-1e1d7 {
+            background-color: #e6e6e6 !important;
+            /* Pure White */
+            color: #000000 !important;
+        }
+
+        .board-container .black-3c85d {
+            background-color: #616261 !important;
+            /* Pure Black */
+            color: #ffffff !important;
+        }
+
+        /* Piece Styling: Light Gray for White Pieces vs Dark+Medium Gray for Black Pieces */
+        .board-container img[data-piece^="w"] {
+            filter: grayscale(100%) brightness(0.85) contrast(1.1) drop-shadow(0 2px 3px rgba(77, 77, 77, 0.4)) !important;
+        }
+
+        .board-container img[data-piece^="b"] {
+            filter: grayscale(100%) brightness(0.62) contrast(1.15) drop-shadow(0 2px 3px rgba(0, 0, 0, 0.25)) !important;
+        }
+
+        .board-container .highlight1-32417,
+        .board-container .highlight2-9c5d2 {
+            box-shadow: inset 0 0 3px 3px rgba(212, 175, 55, 0.9) !important;
+            background-color: rgba(251, 191, 36, 0.45) !important;
+        }
+
+        /* Controls Bar matching site button theme */
+        .controls-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 16px;
+            width: 100%;
+            max-width: 480px;
+            flex-wrap: wrap;
+        }
+
+        .btn-ctrl {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: #ffffff;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            min-height: 44px;
+            min-width: 44px;
+            padding: 8px 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            touch-action: manipulation;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+        }
+
+        .btn-ctrl:hover:not(:disabled) {
+            background: linear-gradient(135deg, #2b384e 0%, #1e293b 100%);
+            color: #fbbf24;
+            border-color: #d4af37;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-ctrl:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn-ctrl:disabled {
+            background: #e2e8f0;
+            color: #94a3b8;
+            border-color: #cbd5e1;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-ctrl i {
+            padding: 0;
+        }
+
+        .speed-select {
+            min-height: 44px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1.5px solid #cbd5e1;
+            font-size: 13px;
+            background: #f8fafc;
+            color: #0f172a;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .speed-select:focus {
+            outline: none;
+            border-color: #d4af37;
+        }
+
+        /* Meta & Move History Column */
+        .info-column {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            width: 100%;
+        }
+
+        .game-meta-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        }
+
+        .players-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .player-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: clamp(15px, 3.5vw, 17px);
+            color: #0f172a;
+        }
+
+        .player-badge {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: inline-block;
+            border: 2px solid #cbd5e1;
+            flex-shrink: 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .player-badge.white {
+            background: #ffffff;
+            border-color: #d4af37;
+        }
+
+        .player-badge.black {
+            background: #1e293b;
+            border-color: #0f172a;
+        }
+
+        .result-badge {
+            background: linear-gradient(135deg, #fbbf24 0%, #d4af37 50%, #b45309 100%);
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 800;
+            padding: 4px 14px;
+            border-radius: 16px;
+            box-shadow: 0 2px 6px rgba(180, 83, 9, 0.25);
+            letter-spacing: 0.5px;
+        }
+
+        .meta-details {
+            display: flex;
+            gap: 18px;
+            font-size: 13px;
+            color: #475569;
+            flex-wrap: wrap;
+            font-weight: 600;
+        }
+
+        .meta-details span {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .meta-details i {
+            color: #d4af37;
+            padding: 0;
+        }
+
+        /* Mode Banner & Analysis Status */
+        .mode-banner {
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 14px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+            transition: all 0.2s ease;
+        }
+
+        .mode-banner i {
+            padding: 0;
+        }
+
+        .mode-banner.game-line {
+            background: #f1f5f9;
+            color: #334155;
+            border: 1px solid #cbd5e1;
+        }
+
+        .mode-banner.analysis-mode {
+            background: #fffbeb;
+            color: #92400e;
+            border: 1.5px solid #fde68a;
+            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.12);
+        }
+
+        .btn-reset-analysis {
+            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 14px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 6px rgba(180, 83, 9, 0.3);
+        }
+
+        .btn-reset-analysis:hover {
+            background: linear-gradient(135deg, #b45309 0%, #92400e 100%);
+            transform: translateY(-1px);
+        }
+
+        .btn-reset-analysis i {
+            padding: 0;
+        }
+
+        /* Move History List */
+        .moves-panel {
+            background: #ffffff;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 300px;
+            max-height: 380px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        }
+
+        .moves-panel-header {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            padding: 12px 16px;
+            font-weight: 700;
+            font-size: 14px;
+            color: #1e293b;
+            border-bottom: 1.5px solid #cbd5e1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .moves-panel-header i {
+            color: #d4af37;
+            padding: 0;
+        }
+
+        .moves-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 14px;
+            display: grid;
+            grid-template-columns: 48px 1fr 1fr;
+            align-content: start;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            row-gap: 4px;
+        }
+
+        .move-num {
+            color: #94a3b8;
+            font-weight: 700;
+            padding: 6px 2px;
+        }
+
+        .move-cell {
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            color: #334155;
+            font-weight: 600;
+            transition: all 0.15s ease;
+            user-select: none;
+        }
+
+        .move-cell:hover {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .move-cell.active {
+            background: linear-gradient(135deg, #d4af37 0%, #b45309 100%);
+            color: #ffffff;
+            font-weight: 800;
+            box-shadow: 0 2px 8px rgba(180, 83, 9, 0.35);
+        }
+
+        /* Analysis variation notation box */
+        .analysis-moves-box {
+            background: #fffbeb;
+            border: 1.5px dashed #f59e0b;
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-size: 13.5px;
+            color: #92400e;
+            margin-top: 10px;
+            font-family: monospace;
+            word-break: break-word;
+        }
+
+        .analysis-moves-box i {
+            color: #d97706;
+            padding: 0;
+        }
+
+        .kb-hint {
+            font-size: 12px;
+            color: #64748b;
+            text-align: center;
+            margin-top: 12px;
+            line-height: 1.5;
+            font-weight: 500;
+        }
+
+        .kb-hint i {
+            color: #d4af37;
+            padding: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <center>
+        <div>
+            <div id="header-placeholder"></div>
+            <div id="menu-placeholder"></div>
+            <div class="box-100 bg-E3 main-master">
+                <div class="row mainContentHeader">
+                    <div id="scrlbar" class="box-90 overflow">
+                        <div id="Content3Header" class="col-md-12">
+                            <p style="font-size:25px"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row body">
+                    <div class="box-90 content">
+                        <div class="row">
+                            <div class="col-md-12">
+
+                                <!-- PGN Viewer Demo Container -->
+                                <div class="pgn-demo-container">
+                                    <div class="demo-badge-header">
+                                        <h2 class="demo-title">
+                                            <i class="fas fa-chess-board" style="color:#0284c7;"></i>
+                                            Grandmaster PGN Viewer & Analysis Board
+                                        </h2>
+                                        <span class="tech-pill">
+                                            <i class="fas fa-microscope"></i> Interactive Drag & Move Analysis
+                                        </span>
+                                    </div>
+
+                                    <!-- Game Selection Dropdown -->
+                                    <div class="game-select-wrapper">
+                                        <label for="gameSelect"><i class="fas fa-trophy"></i> Select Game from
+                                            Database:</label>
+                                        <select id="gameSelect" class="game-select">
+                                            <option value="">Loading games from database...</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Grid Layout: Board + Moves -->
+                                    <div class="viewer-grid">
+                                        <!-- Left Column: Board & Controls -->
+                                        <div class="board-column">
+                                            <div class="board-wrapper">
+                                                <div id="board" class="board-container"></div>
+                                            </div>
+
+                                            <div class="controls-bar">
+                                                <button id="btnStart" class="btn-ctrl" title="First Move (Home)">
+                                                    <i class="fas fa-fast-backward"></i>
+                                                </button>
+                                                <button id="btnPrev" class="btn-ctrl"
+                                                    title="Previous Move (Left Arrow)">
+                                                    <i class="fas fa-step-backward"></i>
+                                                </button>
+                                                <button id="btnPlay" class="btn-ctrl" title="Play / Pause (Spacebar)">
+                                                    <i class="fas fa-play" id="playIcon"></i>
+                                                </button>
+                                                <button id="btnNext" class="btn-ctrl" title="Next Move (Right Arrow)">
+                                                    <i class="fas fa-step-forward"></i>
+                                                </button>
+                                                <button id="btnEnd" class="btn-ctrl" title="Last Move (End)">
+                                                    <i class="fas fa-fast-forward"></i>
+                                                </button>
+                                                <button id="btnFlip" class="btn-ctrl" title="Flip Board">
+                                                    <i class="fas fa-sync-alt"></i> Flip
+                                                </button>
+                                                <select id="autoplaySpeed" class="speed-select" title="Autoplay Speed">
+                                                    <option value="2000">2s / move</option>
+                                                    <option value="1000" selected>1s / move</option>
+                                                    <option value="500">0.5s / move</option>
+                                                </select>
+                                            </div>
+                                            <div class="kb-hint">
+                                                <i class="far fa-keyboard"></i> <strong>Drag pieces to analyze custom
+                                                    moves anytime!</strong><br />
+                                                Shortcuts: <strong>&larr; &rarr;</strong> step, <strong>Space</strong>
+                                                play/pause, <strong>Home/End</strong> jump.
+                                            </div>
+                                        </div>
+
+                                        <!-- Right Column: Game Info & Move History -->
+                                        <div class="info-column">
+                                            <div class="game-meta-card">
+                                                <div class="players-header">
+                                                    <div class="player-box">
+                                                        <span class="player-badge white"></span>
+                                                        <span id="whitePlayer">White Player</span>
+                                                    </div>
+                                                    <span class="result-badge" id="gameResult">1-0</span>
+                                                    <div class="player-box">
+                                                        <span class="player-badge black"></span>
+                                                        <span id="blackPlayer">Black Player</span>
+                                                    </div>
+                                                </div>
+                                                <div class="meta-details">
+                                                    <span><i class="far fa-calendar-alt"></i> <strong
+                                                            id="gameDate">1834</strong></span>
+                                                    <span><i class="fas fa-map-marker-alt"></i> <strong
+                                                            id="gameSite">London</strong></span>
+                                                    <span><i class="fas fa-bookmark"></i> ECO: <strong
+                                                            id="gameECO">B32</strong></span>
+                                                </div>
+                                            </div>
+
+                                            <!-- Mode & Analysis Banner -->
+                                            <div id="modeBanner" class="mode-banner game-line">
+                                                <span id="modeText"><i class="fas fa-book-open"></i> Watching Main Game
+                                                    Line</span>
+                                                <button id="btnResetAnalysis" class="btn-reset-analysis"
+                                                    style="display: none;">
+                                                    <i class="fas fa-undo"></i> Back to Game
+                                                </button>
+                                            </div>
+
+                                            <!-- Move History Panel -->
+                                            <div class="moves-panel">
+                                                <div class="moves-panel-header">
+                                                    <span><i class="fas fa-list-ol"></i> Game Move List</span>
+                                                    <span id="moveCountBadge"
+                                                        style="font-weight:normal; font-size:12px; color:#64748b;">0
+                                                        moves</span>
+                                                </div>
+                                                <div id="movesList" class="moves-list">
+                                                    <!-- Dynamic Move Notation filled by JS -->
+                                                </div>
+                                            </div>
+
+                                            <!-- Custom Analysis Moves Box (Shown when analyzing) -->
+                                            <div id="analysisBox" class="analysis-moves-box" style="display: none;">
+                                                <strong><i class="fas fa-vial"></i> Trial Variation:</strong>
+                                                <span id="analysisMovesText"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="footer-placeholder"></div>
+        </div>
+    </center>
+
+    <script src="js/slick.min.js" type="text/javascript"></script>
+    <script src="js/include-components.js" type="text/javascript"></script>
+
+    <!-- Main Application & Analysis Script -->
+    <script>
+        // Application State
+        let pgnGames = [];
+        let currentPgnIndex = 0;
+        let mainChess = new Chess();  // Holds official PGN game state
+        let activeChess = new Chess(); // Holds live board state (handles analysis moves)
+        let mainHistory = [];        // Official moves array
+        let currentMoveIndex = -1;  // Pointer in official game moves (-1 = start)
+        let board = null;
+        let autoplayTimer = null;
+
+        // Analysis State
+        let isAnalysisMode = false;
+        let analysisMoves = []; // Stores moves made during user analysis
+
+        // Helper to parse multi-game PGN file into individual PGN game strings
+        function splitPgnFile(pgnText) {
+            const games = [];
+            const lines = pgnText.split(/\r?\n/);
+            let currentGameLines = [];
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+                if (line.startsWith('[Event ')) {
+                    if (currentGameLines.length > 0) {
+                        games.push(currentGameLines.join('\n').trim());
+                        currentGameLines = [];
+                    }
+                }
+                currentGameLines.push(line);
+            }
+            if (currentGameLines.length > 0) {
+                games.push(currentGameLines.join('\n').trim());
+            }
+            return games.filter(g => g.length > 10);
+        }
+
+        // Initialize Chessboard with Drag & Drop Enabled
+        function initBoard() {
+            board = Chessboard('board', {
+                position: 'start',
+                draggable: true,
+                pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png',
+                onDragStart: onDragStart,
+                onDrop: onDrop,
+                onSnapEnd: onSnapEnd
+            });
+
+            // Automatic fluid resize listener
+            $(window).on('resize orientationchange', function () {
+                if (board) board.resize();
+            });
+        }
+
+        // Drag Handler: Only allow dragging pieces of the player whose turn it is
+        function onDragStart(source, piece, position, orientation) {
+            // Do not allow dragging if game is over
+            if (activeChess.game_over()) return false;
+
+            // Stop autoplay if user starts dragging a piece
+            stopAutoplay();
+
+            // Only pick up pieces for the side to move
+            if ((activeChess.turn() === 'w' && piece.search(/^b/) !== -1) ||
+                (activeChess.turn() === 'b' && piece.search(/^w/) !== -1)) {
+                return false;
+            }
+        }
+
+        // Drop Handler: Validate move in chess.js and trigger Analysis Mode
+        function onDrop(source, target) {
+            // Check if the move is legal
+            const move = activeChess.move({
+                from: source,
+                to: target,
+                promotion: 'q' // Default auto-promote to Queen for simplicity
+            });
+
+            // Illegal move
+            if (move === null) return 'snapback';
+
+            // Legal Move Executed!
+            isAnalysisMode = true;
+            analysisMoves.push(move.san);
+            updateModeBanner();
+            updateAnalysisBox();
+            updateButtonStates();
+        }
+
+        // SnapEnd Handler: Synchronize board visual FEN with activeChess state
+        function onSnapEnd() {
+            board.position(activeChess.fen());
+        }
+
+        // Load specific PGN game by index
+        function loadGame(index) {
+            exitAnalysisMode();
+            currentPgnIndex = index;
+            const pgnString = pgnGames[index];
+            if (!pgnString) return;
+
+            mainChess = new Chess();
+            const success = mainChess.load_pgn(pgnString);
+            if (!success) {
+                console.error("Failed to load PGN at index", index);
+                return;
+            }
+
+            // Update Header Meta
+            const headers = mainChess.header();
+            document.getElementById("whitePlayer").textContent = headers.White || "White";
+            document.getElementById("blackPlayer").textContent = headers.Black || "Black";
+            document.getElementById("gameResult").textContent = headers.Result || "*";
+            document.getElementById("gameDate").textContent = headers.Date || "N/A";
+            document.getElementById("gameSite").textContent = headers.Site || "N/A";
+            document.getElementById("gameECO").textContent = headers.ECO ? headers.ECO : "N/A";
+
+            // Extract Move History & Pre-calculate FEN at each step
+            mainHistory = mainChess.history({ verbose: true });
+            const tempChess = new Chess();
+            mainHistory.forEach(m => {
+                tempChess.move(m);
+                m.fen = tempChess.fen();
+            });
+            document.getElementById("moveCountBadge").textContent = `${mainHistory.length} moves`;
+
+            // Render Move Notation List
+            renderMoveList();
+
+            // Reset to Start Position
+            currentMoveIndex = -1;
+            updatePosition(false);
+        }
+
+        // Render Move History Grid
+        function renderMoveList() {
+            const container = document.getElementById("movesList");
+            container.innerHTML = "";
+
+            for (let i = 0; i < mainHistory.length; i += 2) {
+                const moveNum = Math.floor(i / 2) + 1;
+
+                // Move Number
+                const numDiv = document.createElement("div");
+                numDiv.className = "move-num";
+                numDiv.textContent = `${moveNum}.`;
+                container.appendChild(numDiv);
+
+                // White Move
+                const whiteMove = mainHistory[i];
+                const whiteDiv = document.createElement("div");
+                whiteDiv.className = "move-cell";
+                whiteDiv.id = `move-${i}`;
+                whiteDiv.textContent = whiteMove.san;
+                whiteDiv.addEventListener("click", () => goToMove(i));
+                container.appendChild(whiteDiv);
+
+                // Black Move (if exists)
+                if (i + 1 < mainHistory.length) {
+                    const blackMove = mainHistory[i + 1];
+                    const blackDiv = document.createElement("div");
+                    blackDiv.className = "move-cell";
+                    blackDiv.id = `move-${i + 1}`;
+                    blackDiv.textContent = blackMove.san;
+                    blackDiv.addEventListener("click", () => goToMove(i + 1));
+                    container.appendChild(blackDiv);
+                } else {
+                    const emptyDiv = document.createElement("div");
+                    container.appendChild(emptyDiv);
+                }
+            }
+        }
+
+        // Jump to specific move index in main game
+        function goToMove(targetIndex) {
+            exitAnalysisMode();
+            if (targetIndex < -1) targetIndex = -1;
+            if (targetIndex >= mainHistory.length) targetIndex = mainHistory.length - 1;
+
+            currentMoveIndex = targetIndex;
+            updatePosition(true);
+        }
+
+        // Update Board & Active Move Highlight
+        function updatePosition(animated = true) {
+            let targetFen = 'start';
+            if (currentMoveIndex >= 0 && currentMoveIndex < mainHistory.length) {
+                targetFen = mainHistory[currentMoveIndex].fen;
+            }
+
+            // Sync activeChess with official main game FEN
+            activeChess = new Chess(targetFen === 'start' ? 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1' : targetFen);
+            board.position(targetFen, animated);
+
+            // Update active state in move list
+            document.querySelectorAll(".move-cell").forEach(cell => cell.classList.remove("active"));
+            if (currentMoveIndex >= 0) {
+                const activeCell = document.getElementById(`move-${currentMoveIndex}`);
+                if (activeCell) {
+                    activeCell.classList.add("active");
+                    activeCell.scrollIntoView({ block: "nearest", behavior: "smooth" });
+                }
+            }
+
+            updateButtonStates();
+        }
+
+        // Update button states
+        function updateButtonStates() {
+            if (isAnalysisMode) {
+                document.getElementById("btnStart").disabled = false;
+                document.getElementById("btnPrev").disabled = false;
+                document.getElementById("btnNext").disabled = true;
+                document.getElementById("btnEnd").disabled = true;
+            } else {
+                document.getElementById("btnStart").disabled = (currentMoveIndex === -1);
+                document.getElementById("btnPrev").disabled = (currentMoveIndex === -1);
+                document.getElementById("btnNext").disabled = (currentMoveIndex === mainHistory.length - 1);
+                document.getElementById("btnEnd").disabled = (currentMoveIndex === mainHistory.length - 1);
+            }
+        }
+
+        // Mode Banner UI Updates
+        function updateModeBanner() {
+            const banner = document.getElementById("modeBanner");
+            const modeText = document.getElementById("modeText");
+            const resetBtn = document.getElementById("btnResetAnalysis");
+
+            if (isAnalysisMode) {
+                banner.className = "mode-banner analysis-mode";
+                let statusText = `<i class="fas fa-microscope"></i> Analysis Mode (${analysisMoves.length} custom move${analysisMoves.length > 1 ? 's' : ''})`;
+                if (activeChess.in_checkmate()) {
+                    statusText += " - <strong>Checkmate!</strong>";
+                } else if (activeChess.in_draw()) {
+                    statusText += " - <strong>Draw!</strong>";
+                } else if (activeChess.in_check()) {
+                    statusText += " - <strong>Check!</strong>";
+                }
+                modeText.innerHTML = statusText;
+                resetBtn.style.display = "inline-flex";
+            } else {
+                banner.className = "mode-banner game-line";
+                modeText.innerHTML = `<i class="fas fa-book-open"></i> Watching Main Game Line`;
+                resetBtn.style.display = "none";
+            }
+        }
+
+        // Update Trial Variation Box
+        function updateAnalysisBox() {
+            const box = document.getElementById("analysisBox");
+            const textSpan = document.getElementById("analysisMovesText");
+
+            if (isAnalysisMode && analysisMoves.length > 0) {
+                box.style.display = "block";
+                textSpan.textContent = " " + analysisMoves.join(" ");
+            } else {
+                box.style.display = "none";
+                textSpan.textContent = "";
+            }
+        }
+
+        // Exit Analysis Mode & Return to Official Game
+        function exitAnalysisMode() {
+            stopAutoplay();
+            isAnalysisMode = false;
+            analysisMoves = [];
+            updateModeBanner();
+            updateAnalysisBox();
+            if (board) {
+                let targetFen = 'start';
+                if (currentMoveIndex >= 0 && currentMoveIndex < mainHistory.length) {
+                    targetFen = mainHistory[currentMoveIndex].fen;
+                }
+                activeChess = new Chess(targetFen === 'start' ? 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1' : targetFen);
+                board.position(targetFen, true);
+            }
+            updateButtonStates();
+        }
+
+        // Autoplay Logic
+        function toggleAutoplay() {
+            if (isAnalysisMode) {
+                exitAnalysisMode();
+            }
+            if (autoplayTimer) {
+                stopAutoplay();
+            } else {
+                startAutoplay();
+            }
+        }
+
+        function startAutoplay() {
+            if (currentMoveIndex >= mainHistory.length - 1) {
+                currentMoveIndex = -1;
+            }
+            const speed = parseInt(document.getElementById("autoplaySpeed").value, 10) || 1000;
+            const playIcon = document.getElementById("playIcon");
+            playIcon.className = "fas fa-pause";
+
+            autoplayTimer = setInterval(() => {
+                if (currentMoveIndex < mainHistory.length - 1) {
+                    currentMoveIndex++;
+                    updatePosition(true);
+                } else {
+                    stopAutoplay();
+                }
+            }, speed);
+        }
+
+        function stopAutoplay() {
+            if (autoplayTimer) {
+                clearInterval(autoplayTimer);
+                autoplayTimer = null;
+            }
+            const playIcon = document.getElementById("playIcon");
+            if (playIcon) playIcon.className = "fas fa-play";
+        }
+
+        // Flip Board
+        function flipBoard() {
+            board.flip();
+        }
+
+        // Fetch & Populate PGN Database
+        async function loadPgnFile() {
+            try {
+                const response = await fetch("./pgn/pgn_games.pgn");
+                if (!response.ok) throw new Error("Could not load PGN file");
+                const pgnText = await response.text();
+
+                pgnGames = splitPgnFile(pgnText);
+
+                const select = document.getElementById("gameSelect");
+                select.innerHTML = "";
+
+                pgnGames.forEach((pgn, idx) => {
+                    const tempChess = new Chess();
+                    tempChess.load_pgn(pgn);
+                    const h = tempChess.header();
+                    const title = `${idx + 1}. ${h.White || 'White'} vs ${h.Black || 'Black'} (${h.Event || 'Game'}, ${h.Date || ''}) - ${h.Result || ''}`;
+
+                    const option = document.createElement("option");
+                    option.value = idx;
+                    option.textContent = title;
+                    select.appendChild(option);
+                });
+
+                select.addEventListener("change", (e) => {
+                    loadGame(parseInt(e.target.value, 10));
+                });
+
+                if (pgnGames.length > 0) {
+                    loadGame(0);
+                }
+            } catch (err) {
+                console.error(err);
+                document.getElementById("gameSelect").innerHTML = "<option>Error loading PGN database.</option>";
+            }
+        }
+
+        // Setup Event Listeners
+        document.addEventListener("DOMContentLoaded", () => {
+            initBoard();
+            loadPgnFile();
+
+            document.getElementById("btnStart").addEventListener("click", () => {
+                if (isAnalysisMode) exitAnalysisMode();
+                goToMove(-1);
+            });
+            document.getElementById("btnPrev").addEventListener("click", () => {
+                if (isAnalysisMode) exitAnalysisMode();
+                goToMove(currentMoveIndex - 1);
+            });
+            document.getElementById("btnNext").addEventListener("click", () => {
+                if (isAnalysisMode) exitAnalysisMode();
+                goToMove(currentMoveIndex + 1);
+            });
+            document.getElementById("btnEnd").addEventListener("click", () => {
+                if (isAnalysisMode) exitAnalysisMode();
+                goToMove(mainHistory.length - 1);
+            });
+            document.getElementById("btnPlay").addEventListener("click", toggleAutoplay);
+            document.getElementById("btnFlip").addEventListener("click", flipBoard);
+            document.getElementById("btnResetAnalysis").addEventListener("click", exitAnalysisMode);
+
+            // Keyboard navigation
+            document.addEventListener("keydown", (e) => {
+                // Ignore key events when user is focusing input/select
+                if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+
+                if (e.key === "ArrowLeft") {
+                    e.preventDefault();
+                    if (isAnalysisMode) exitAnalysisMode();
+                    goToMove(currentMoveIndex - 1);
+                } else if (e.key === "ArrowRight") {
+                    e.preventDefault();
+                    if (isAnalysisMode) exitAnalysisMode();
+                    goToMove(currentMoveIndex + 1);
+                } else if (e.key === " ") {
+                    e.preventDefault();
+                    toggleAutoplay();
+                } else if (e.key === "Home") {
+                    e.preventDefault();
+                    if (isAnalysisMode) exitAnalysisMode();
+                    goToMove(-1);
+                } else if (e.key === "End") {
+                    e.preventDefault();
+                    if (isAnalysisMode) exitAnalysisMode();
+                    goToMove(mainHistory.length - 1);
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

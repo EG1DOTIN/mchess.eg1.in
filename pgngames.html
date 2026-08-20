@@ -62,10 +62,10 @@
     <link href="css/scrollbar.css" rel="stylesheet" type="text/css" />
     <link href="css/socialbuttons.css" rel="stylesheet" type="text/css" />
     <link href="js/slick.css" rel="stylesheet" type="text/css" />
-    <link href="js/slick-theme.css" rel="stylesheet" type="text/css" />
-    
+    <!-- Chessboard.js & MCHESS Centralized Board CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css" />
+    <link rel="stylesheet" href="css/mchess-board.css" />
 
-    <script src="js/mootools.js" type="text/javascript"></script>
     <script src="js/jquery-2.1.1.min.js" type="text/javascript"></script>
 
     <style type="text/css">
@@ -88,7 +88,6 @@
                 <div class="row mainContentHeader">
                     <div id="scrlbar" class="box-90 overflow">
                         <div id="Content3Header" class="col-md-12">
-                            <!-- <h1>Learn Chess on Marwadi Chess Website</h1> -->
                             <p style="font-size:25px">
                             </p>
                         </div>
@@ -96,23 +95,14 @@
                 </div>
                 <div class="row body">
                     <div class="box-90 content">
-
                         <div class="row">
-                            <div class="col-md-9">
+                            <div class="col-md-12">
                                 <h3 id="appSoft">
-                                    Checkout great games played by Grand Masters in the below pgn database.</h3>
+                                    Browse, analyze, and replay historic chess games played by Grandmasters.</h3>
                                 <br />
 
-                                <head>
-                                    <link rel="stylesheet" type="text/css"
-                                        href="https://pgn.chessbase.com/CBReplay.css" />
-
-                                    <script src="https://pgn.chessbase.com/jquery-3.0.0.min.js"></script>
-                                    <script src="https://pgn.chessbase.com/cbreplay.js" type="text/javascript"></script>
-
-                                </head>
-
-                                <div class="cbreplay" data-url="./pgn/pgn_games.pgn"></div>
+                                <!-- Centralized MCHESS Board Container -->
+                                <div id="mchessBoardContainer" data-pgn="./pgn/pgn_games.pgn"></div>
 
                             </div>
                         </div>
@@ -125,6 +115,11 @@
 
     <script src="js/slick.min.js" type="text/javascript"></script>
     <script src="js/include-components.js" type="text/javascript"></script>
+
+    <!-- Chess Engines & Centralized MCHESS Board Controller -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+    <script src="js/mchess-board.js" type="text/javascript"></script>
 </body>
 
 </html>

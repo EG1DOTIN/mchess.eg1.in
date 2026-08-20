@@ -33,6 +33,13 @@ function initializeComponents() {
 
     // Initialize visitor analytics tracking
     initializeVisitorTracker();
+
+    // Dynamically load theme engine
+    if (!document.querySelector('script[src*="mchess-theme.js"]')) {
+        var themeScript = document.createElement('script');
+        themeScript.src = 'js/mchess-theme.js';
+        document.body.appendChild(themeScript);
+    }
 }
 
 /**
