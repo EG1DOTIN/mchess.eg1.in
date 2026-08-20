@@ -6,15 +6,26 @@
 
 /* Container & Layout */
 .pgn-viewer-container {
-    background: #ffffff;
+    background: var(--card-bg, #ffffff);
+    color: var(--text-primary, #1e293b);
+    border: 1px solid var(--border-color, #e2e8f0);
     border-radius: 16px;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
     padding: 24px;
     margin: 20px auto 40px auto;
-    border: 1px solid #e2e8f0;
     text-align: left;
     max-width: 1120px;
     box-sizing: border-box;
+}
+
+html[data-theme="dark"] .pgn-viewer-container,
+body[data-theme="dark"] .pgn-viewer-container,
+[data-theme="dark"] .pgn-viewer-container,
+body.dark-theme .pgn-viewer-container {
+    background-color: #151c2c !important;
+    background: #151c2c !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    color: #f8fafc !important;
 }
 
 @media (max-width: 600px) {
@@ -132,7 +143,7 @@
     max-width: 480px;
     aspect-ratio: 1 / 1;
     border-radius: 12px;
-    overflow: hidden;
+    overflow: visible !important;
     border: 4px solid #1e293b;
     outline: 2px solid #d4af37;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
@@ -143,6 +154,12 @@
 .board-container {
     width: 100% !important;
     height: 100% !important;
+    overflow: visible !important;
+    position: relative;
+}
+
+.square-55d63 {
+    overflow: visible !important;
 }
 
 /* Custom Board Square Colors */
@@ -156,13 +173,47 @@
     color: #ffffff !important;
 }
 
-/* Custom Piece Filter Styles */
-.board-container img[data-piece^="w"] {
+/* Custom Piece Filter Styles (Square & Dragged) */
+.board-container img[data-piece^="w"],
+.dragged-piece-4d2e8[src*="/w"],
+img.dragged-piece-4d2e8[src*="/w"],
+[class*="dragged-piece"][src*="/w"] {
     filter: grayscale(100%) brightness(0.85) contrast(1.1) drop-shadow(0 2px 3px rgba(77, 77, 77, 0.4)) !important;
 }
 
-.board-container img[data-piece^="b"] {
+.board-container img[data-piece^="b"],
+.dragged-piece-4d2e8[src*="/b"],
+img.dragged-piece-4d2e8[src*="/b"],
+[class*="dragged-piece"][src*="/b"] {
     filter: grayscale(100%) brightness(0.62) contrast(1.15) drop-shadow(0 2px 3px rgba(0, 0, 0, 0.25)) !important;
+}
+
+/* Disable native browser image drag & selection to ensure Chessboard.js handles 100% of movement */
+.board-container img,
+.square-55d63 img,
+.piece-417db,
+.dragged-piece-4d2e8,
+[class*="piece-"],
+[class*="dragged-piece"] {
+    -webkit-user-drag: none !important;
+    -khtml-user-drag: none !important;
+    -moz-user-drag: none !important;
+    -o-user-drag: none !important;
+    user-drag: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+    touch-action: none !important;
+}
+
+/* Dragged Piece High Z-Index Guarantee */
+.dragged-piece-4d2e8,
+img.dragged-piece-4d2e8,
+[class*="dragged-piece"] {
+    z-index: 999999 !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
 }
 
 /* Move Highlight Squares */
@@ -486,4 +537,136 @@
 .kb-hint i {
     color: #d4af37;
     padding: 0;
+}
+
+/* Dark Mode Overrides for Engine Board Panels & Controls */
+[data-theme="dark"] .pgn-viewer-container,
+body.dark-theme .pgn-viewer-container,
+html[data-theme="dark"] .pgn-viewer-container,
+body[data-theme="dark"] .pgn-viewer-container,
+[data-theme="dark"] .board-side-panel,
+body.dark-theme .board-side-panel,
+[data-theme="dark"] .player-card,
+body.dark-theme .player-card,
+[data-theme="dark"] .engine-status-box,
+body.dark-theme .engine-status-box {
+    background: #151c2c !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4) !important;
+    color: #f8fafc !important;
+}
+
+[data-theme="dark"] .demo-title,
+body.dark-theme .demo-title,
+html[data-theme="dark"] .demo-title,
+[data-theme="dark"] .game-select-wrapper label,
+body.dark-theme .game-select-wrapper label,
+[data-theme="dark"] .player-box,
+body.dark-theme .player-box,
+html[data-theme="dark"] .player-box,
+[data-theme="dark"] .player-name,
+body.dark-theme .player-name,
+[data-theme="dark"] .player-title,
+body.dark-theme .player-title,
+[data-theme="dark"] .engine-eval-text,
+body.dark-theme .engine-eval-text,
+[data-theme="dark"] .side-label,
+body.dark-theme .side-label,
+[data-theme="dark"] .meta-details,
+body.dark-theme .meta-details,
+[data-theme="dark"] .meta-details span,
+body.dark-theme .meta-details span,
+[data-theme="dark"] .mode-banner span,
+body.dark-theme .mode-banner span,
+[data-theme="dark"] #engineStatusText,
+body.dark-theme #engineStatusText {
+    color: #f8fafc !important;
+}
+
+[data-theme="dark"] .player-badge.white,
+body.dark-theme .player-badge.white {
+    background: #ffffff !important;
+    border-color: #f59e0b !important;
+}
+
+[data-theme="dark"] .player-badge.black,
+body.dark-theme .player-badge.black {
+    background: #000000 !important;
+    border-color: #cbd5e1 !important;
+}
+
+[data-theme="dark"] .game-meta-card,
+body.dark-theme .game-meta-card,
+html[data-theme="dark"] .game-meta-card {
+    background: #0f172a !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    box-shadow: none !important;
+}
+
+[data-theme="dark"] .demo-badge-header,
+body.dark-theme .demo-badge-header {
+    border-bottom-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+[data-theme="dark"] .tech-pill,
+body.dark-theme .tech-pill {
+    background: rgba(212, 175, 55, 0.15) !important;
+    color: #f59e0b !important;
+    border-color: rgba(212, 175, 55, 0.3) !important;
+}
+
+[data-theme="dark"] .mode-banner.game-line,
+body.dark-theme .mode-banner.game-line,
+html[data-theme="dark"] .mode-banner.game-line {
+    background: #0f172a !important;
+    color: #f8fafc !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+[data-theme="dark"] .mode-banner.analysis-mode,
+body.dark-theme .mode-banner.analysis-mode {
+    background: #451a03 !important;
+    color: #fef3c7 !important;
+    border-color: #d97706 !important;
+}
+
+[data-theme="dark"] .game-select {
+    background: #0f172a !important;
+    color: #f8fafc !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+[data-theme="dark"] .moves-panel,
+body.dark-theme .moves-panel {
+    background: #0f172a !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+[data-theme="dark"] .moves-panel-header,
+body.dark-theme .moves-panel-header {
+    background: #1e293b !important;
+    color: #f8fafc !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+[data-theme="dark"] .move-cell,
+body.dark-theme .move-cell {
+    color: #cbd5e1 !important;
+}
+
+[data-theme="dark"] .move-cell:hover,
+body.dark-theme .move-cell:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #fbbf24 !important;
+}
+
+[data-theme="dark"] .move-cell.active,
+body.dark-theme .move-cell.active {
+    background: linear-gradient(135deg, #d4af37 0%, #b45309 100%) !important;
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .kb-hint,
+body.dark-theme .kb-hint {
+    color: #94a3b8 !important;
 }

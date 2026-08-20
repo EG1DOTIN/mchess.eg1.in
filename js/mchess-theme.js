@@ -20,14 +20,15 @@
 
     function applyTheme(theme) {
         document.documentElement.setAttribute('data-theme', theme);
-        
-        // Also add body class if needed
-        if (theme === 'dark') {
-            document.body && document.body.classList.add('dark-theme');
-            document.body && document.body.classList.remove('light-theme');
-        } else {
-            document.body && document.body.classList.add('light-theme');
-            document.body && document.body.classList.remove('dark-theme');
+        if (document.body) {
+            document.body.setAttribute('data-theme', theme);
+            if (theme === 'dark') {
+                document.body.classList.add('dark-theme');
+                document.body.classList.remove('light-theme');
+            } else {
+                document.body.classList.add('light-theme');
+                document.body.classList.remove('dark-theme');
+            }
         }
 
         updateButtonUI(theme);
@@ -42,11 +43,9 @@
             if (theme === 'dark') {
                 $icon.attr('class', 'fas fa-sun').css('color', '#f59e0b');
                 $text.text('Light Mode');
-                $btn.css('background', 'linear-gradient(135deg, #d97706 0%, #b45309 100%)');
             } else {
-                $icon.attr('class', 'fas fa-moon').css('color', '#cbd5e1');
+                $icon.attr('class', 'fas fa-moon').css('color', '#64748b');
                 $text.text('Dark Mode');
-                $btn.css('background', 'linear-gradient(135deg, #334155 0%, #1e293b 100%)');
             }
         }
     }

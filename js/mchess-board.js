@@ -511,6 +511,12 @@
 
     // Auto-initialize MChessBoard on DOM ready
     $(document).ready(function () {
+        // Prevent native browser image drag on chess pieces so Chessboard.js JS handles 100% of movement
+        $(document).on('dragstart', '.board-container img, .square-55d63 img, .dragged-piece-4d2e8, [class*="piece-"]', function (e) {
+            e.preventDefault();
+            return false;
+        });
+
         $('#mchessBoardContainer, [data-mchess-board]').each(function () {
             new MChessBoard(this);
         });

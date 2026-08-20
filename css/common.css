@@ -19,23 +19,267 @@
 
 [data-theme="dark"] body,
 [data-theme="dark"] .bg-E3,
-[data-theme="dark"] .main-master {
-    background-color: #0f172a !important;
-    color: #f8fafc !important;
-}
-
+[data-theme="dark"] .main-master,
 [data-theme="dark"] .content,
-[data-theme="dark"] .single_item,
-[data-theme="dark"] .box-90 {
+[data-theme="dark"] #welcome,
+[data-theme="dark"] .box-90,
+[data-theme="dark"] .box-100 {
+    background-color: #0b0f19 !important;
+    color: #cbd5e1;
+}
+
+[data-theme="dark"] #welcome .item_list {
+    background-color: #151c2c !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4) !important;
+    border-radius: 12px;
+    padding: 20px 15px;
+}
+
+[data-theme="dark"] #welcome .item_list h4 {
     color: #f8fafc !important;
 }
 
-[data-theme="dark"] p,
-[data-theme="dark"] h1,
-[data-theme="dark"] h2,
-[data-theme="dark"] h3,
-[data-theme="dark"] h4 {
-    color: #f8fafc;
+[data-theme="dark"] #welcome .item_list p {
+    color: #94a3b8 !important;
+}
+
+[data-theme="dark"] .mainContentHeader {
+    background-image: url('../img/mchesshome.webp') !important;
+    background-color: rgba(15, 23, 42, 0.4) !important;
+    background-blend-mode: multiply;
+}
+
+[data-theme="dark"] .mainContentHeader .box-90,
+[data-theme="dark"] #scrlbar,
+[data-theme="dark"] #Content3Header {
+    background-color: transparent !important;
+    background: transparent !important;
+}
+
+[data-theme="dark"] .menu,
+[data-theme="dark"] .toggleMenu {
+    background: #1e293b !important;
+    box-shadow: inset 0px 5px 10px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-theme="dark"] .nav li a {
+    color: #f8fafc !important;
+}
+
+[data-theme="dark"] .nav li a:hover,
+[data-theme="dark"] .nav li.active a {
+    color: #f59e0b !important;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .nav ul.sub-nav {
+    background: #1e293b !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
+}
+
+[data-theme="dark"] .nav ul.sub-nav li a {
+    color: #cbd5e1 !important;
+}
+
+[data-theme="dark"] .nav ul.sub-nav li a:hover {
+    color: #f59e0b !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Dark Theme Blog & Widget Surface Cards */
+[data-theme="dark"] .our-product,
+body.dark-theme .our-product,
+[data-theme="dark"] .blog-item-container,
+body.dark-theme .blog-item-container,
+[data-theme="dark"] .single_page,
+body.dark-theme .single_page,
+[data-theme="dark"] .product-list,
+body.dark-theme .product-list,
+[data-theme="dark"] .box-solid,
+body.dark-theme .box-solid,
+[data-theme="dark"] .box-body,
+body.dark-theme .box-body,
+[data-theme="dark"] .callout,
+body.dark-theme .callout,
+[data-theme="dark"] #txtSearch,
+body.dark-theme #txtSearch {
+    background-color: #151c2c !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    color: #f8fafc !important;
+}
+
+[data-theme="dark"] .our-product p,
+body.dark-theme .our-product p,
+[data-theme="dark"] .our-product div,
+body.dark-theme .our-product div,
+[data-theme="dark"] .our-product span,
+body.dark-theme .our-product span,
+[data-theme="dark"] .our-product h1,
+body.dark-theme .our-product h1,
+[data-theme="dark"] .our-product h2,
+body.dark-theme .our-product h2,
+[data-theme="dark"] .our-product h3,
+body.dark-theme .our-product h3,
+[data-theme="dark"] .our-product h4,
+body.dark-theme .our-product h4,
+[data-theme="dark"] .our-product h5,
+body.dark-theme .our-product h5,
+[data-theme="dark"] .our-product h6,
+body.dark-theme .our-product h6,
+[data-theme="dark"] .our-product a,
+body.dark-theme .our-product a,
+[data-theme="dark"] .blog-item-container p,
+body.dark-theme .blog-item-container p,
+[data-theme="dark"] .blog-item-container div,
+body.dark-theme .blog-item-container div,
+[data-theme="dark"] .blog-item-container span,
+body.dark-theme .blog-item-container span,
+[data-theme="dark"] .blog-item-container h1,
+body.dark-theme .blog-item-container h1,
+[data-theme="dark"] .blog-item-container h2,
+body.dark-theme .blog-item-container h2,
+[data-theme="dark"] .blog-item-container h3,
+body.dark-theme .blog-item-container h3,
+[data-theme="dark"] .blog-item-container h4,
+body.dark-theme .blog-item-container h4,
+[data-theme="dark"] .blog-item-container h5,
+body.dark-theme .blog-item-container h5,
+[data-theme="dark"] .blog-item-container h6,
+body.dark-theme .blog-item-container h6,
+[data-theme="dark"] .blog-item-container a,
+body.dark-theme .blog-item-container a {
+    color: #f8fafc !important;
+}
+
+[data-theme="dark"] .our-product small,
+body.dark-theme .our-product small,
+[data-theme="dark"] .our-product font,
+body.dark-theme .our-product font,
+[data-theme="dark"] .our-product .shortcontent,
+body.dark-theme .our-product .shortcontent,
+[data-theme="dark"] .blog-item-container small,
+body.dark-theme .blog-item-container small,
+[data-theme="dark"] .blog-item-container .shortcontent,
+body.dark-theme .blog-item-container .shortcontent {
+    color: #cbd5e1 !important;
+}
+
+[data-theme="dark"] .lnkbtnsidebar {
+    border-bottom-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+[data-theme="dark"] .lnkbtnsidebar b,
+[data-theme="dark"] .lnkbtnsidebar h6,
+[data-theme="dark"] #related-topics-list a,
+[data-theme="dark"] #category-list a,
+body.dark-theme #category-list a {
+    color: #f8fafc !important;
+}
+
+[data-theme="dark"] .abc li a:before,
+body.dark-theme .abc li a:before {
+    color: #f59e0b !important;
+}
+
+[data-theme="dark"] .lnkbtnsidebar ul li .release-date,
+body.dark-theme .lnkbtnsidebar ul li .release-date {
+    background-color: rgba(245, 158, 11, 0.2) !important;
+    color: #f59e0b !important;
+    border: 1px solid rgba(245, 158, 11, 0.4) !important;
+    border-radius: 4px;
+    padding: 2px 6px;
+    display: inline-block;
+}
+
+[data-theme="dark"] .lnkbtnsidebar:hover,
+body.dark-theme .lnkbtnsidebar:hover,
+[data-theme="dark"] #related-topics-list a:hover .lnkbtnsidebar,
+body.dark-theme #related-topics-list a:hover .lnkbtnsidebar {
+    background-color: #1e293b !important;
+    color: #f8fafc !important;
+}
+
+[data-theme="dark"] #related-topics-list a:hover .lnkbtnsidebar b,
+body.dark-theme #related-topics-list a:hover .lnkbtnsidebar b,
+[data-theme="dark"] #related-topics-list a:hover .lnkbtnsidebar h6,
+body.dark-theme #related-topics-list a:hover .lnkbtnsidebar h6 {
+    color: #f59e0b !important;
+}
+
+/* Global Dragged Piece Z-Index & Visibility Guarantee for Chessboard.js */
+.board-container img,
+.square-55d63 img,
+.piece-417db,
+.dragged-piece-4d2e8,
+[class*="piece-"],
+[class*="dragged-piece"] {
+    -webkit-user-drag: none !important;
+    -khtml-user-drag: none !important;
+    -moz-user-drag: none !important;
+    -o-user-drag: none !important;
+    user-drag: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+    touch-action: none !important;
+}
+
+.dragged-piece-4d2e8,
+img.dragged-piece-4d2e8,
+[class*="dragged-piece"] {
+    z-index: 999999 !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+}
+
+.game-meta-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .game-meta-card {
+    background: #151c2c !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4) !important;
+}
+
+.arena-tab-btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    background: #f1f5f9;
+    color: #334155;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+[data-theme="dark"] .arena-tab-btn {
+    background: #1e293b;
+    color: #cbd5e1;
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.time-select-btn {
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+    color: #334155;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+[data-theme="dark"] .time-select-btn {
+    background: #0f172a;
+    color: #cbd5e1;
+    border-color: rgba(255, 255, 255, 0.15);
 }
 
 html,
@@ -45,9 +289,10 @@ body {
     height: 100%;
     font-family: "PT Sans", "Open Sans", sans-serif;
     line-height: 1.562857143;
-    color: var(--text-primary, #444);
+    color: #444;
     font-weight: normal;
     font-size: 1em;
+    overflow-x: hidden;
 }
 
 * {
@@ -352,6 +597,12 @@ p {
 
 #welcome .item_list p {
     text-align: center;
+    line-height: 1.45em;
+    min-height: 5.8em;
+    max-height: 5.8em;
+    overflow: hidden;
+    margin: 8px 0 0 0;
+    font-size: 13.5px;
 }
 
 #welcome .item_list:hover .welcome_icon {
@@ -987,8 +1238,14 @@ p {
     width: 100%;
     z-index: 1000;
     background-color: #fff;
-    padding: 12px 0;
+    padding: 14px 20px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
+}
+
+[data-theme="dark"] .topbar {
+    background-color: #0b0f19 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .header-flex-row {
@@ -1023,8 +1280,12 @@ p {
     font-weight: 800;
 }
 
+[data-theme="dark"] .text-marwadi {
+    color: #f8fafc !important;
+}
+
 .text-chess {
-    color: #b2b2b2;
+    color: #d4af37;
     font-weight: 700;
 }
 
@@ -1034,6 +1295,10 @@ p {
     letter-spacing: 0.5px;
     font-weight: 500;
     margin-top: 2px;
+}
+
+[data-theme="dark"] .logo-tagline {
+    color: #94a3b8 !important;
 }
 
 /* Header CTA Buttons */
@@ -1099,6 +1364,32 @@ p {
     color: #1e3a8a !important;
     transform: translateY(-2px);
     box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+}
+
+.cta-theme {
+    background-color: #f1f5f9;
+    color: #334155 !important;
+    border: 1px solid #cbd5e1;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.cta-theme:hover {
+    background-color: #e2e8f0;
+    color: #0f172a !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(51, 65, 85, 0.2);
+}
+
+[data-theme="dark"] .cta-theme {
+    background-color: #334155;
+    color: #f8fafc !important;
+    border: 1px solid #475569;
+}
+
+[data-theme="dark"] .cta-theme:hover {
+    background-color: #475569;
+    color: #ffffff !important;
 }
 
 /* Footer Styling */
@@ -1331,17 +1622,100 @@ p {
 @media (max-width: 768px) {
     .header-flex-row {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: center;
+        text-align: center;
+    }
+
+    .companylogo .logo-link {
+        justify-content: center;
     }
 
     .header-cta-wrapper {
         width: 100%;
-        justify-content: flex-start;
+        justify-content: center;
+        gap: 8px;
     }
 
     .header-cta-btn {
         font-size: 12px;
-        padding: 6px 12px;
+        padding: 0 12px;
+        height: 34px;
+    }
+
+    #welcome .single_item {
+        margin-bottom: 20px;
+    }
+
+    /* Mobile Arena & Tab Buttons Equal Width Alignment */
+    .arena-tab-wrapper {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: 8px !important;
+        margin-bottom: 20px !important;
+    }
+
+    .arena-tab-btn {
+        width: 100% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        text-align: center !important;
+        box-sizing: border-box !important;
+        padding: 12px 16px !important;
+        font-size: 13.5px !important;
+        margin: 0 !important;
+    }
+
+    /* Mobile Time Controls 2x2 Grid Alignment */
+    .time-select-container {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .time-select-btn {
+        width: 100% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        box-sizing: border-box !important;
+        padding: 10px 8px !important;
+        font-size: 12px !important;
+        text-align: center !important;
+    }
+
+    /* Mobile Marwadi Chess Club Cards Alignment */
+    .club-card-link {
+        flex: 1 1 100% !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+        margin: 0 0 16px 0 !important;
+    }
+
+    /* Mobile Board & Controls Overflow Fix */
+    .pgn-viewer-container,
+    .live-board-container,
+    .content,
+    .box-90 {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 12px 6px !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+    }
+
+    #myBoard,
+    .board-container,
+    .cg-wrap {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 auto !important;
+        box-sizing: border-box !important;
     }
 
     .footer-grid {
