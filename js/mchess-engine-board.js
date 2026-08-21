@@ -607,7 +607,21 @@
 
             this.$container.find('.move-cell').removeClass('active');
             if (plyIndex > 0) {
-                this.$container.find(`.move-cell[data-ply="${plyIndex}"]`).addClass('active');
+                const $activeCell = this.$container.find(`.move-cell[data-ply="${plyIndex}"]`);
+                $activeCell.addClass('active');
+                const movesListEl = this.$container.find('#engineMovesList')[0];
+                if (movesListEl && $activeCell.length) {
+                    const cellTop = $activeCell[0].offsetTop;
+                    const cellHeight = $activeCell[0].offsetHeight;
+                    const listScrollTop = movesListEl.scrollTop;
+                    const listHeight = movesListEl.clientHeight;
+
+                    if (cellTop < listScrollTop) {
+                        movesListEl.scrollTop = Math.max(0, cellTop - 6);
+                    } else if (cellTop + cellHeight > listScrollTop + listHeight) {
+                        movesListEl.scrollTop = cellTop + cellHeight - listHeight + 6;
+                    }
+                }
             }
         }
 

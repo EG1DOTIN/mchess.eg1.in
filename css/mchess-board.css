@@ -49,6 +49,34 @@ body.dark-theme .pgn-viewer-container {
         margin: 10px 5px 30px 5px;
         border-radius: 12px;
     }
+
+    .moves-panel {
+        min-height: 160px;
+        max-height: 210px;
+    }
+
+    .moves-panel-header {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+
+    .moves-list {
+        padding: 8px 10px;
+        grid-template-columns: 40px 1fr 1fr;
+        font-size: 13px;
+        row-gap: 3px;
+    }
+
+    .move-num {
+        padding: 5px 2px;
+        font-size: 12px;
+    }
+
+    .move-cell {
+        padding: 5px 8px;
+        font-size: 13px;
+        text-align: center;
+    }
 }
 
 .demo-badge-header {
@@ -142,6 +170,11 @@ body.dark-theme .pgn-viewer-container {
     .viewer-grid {
         grid-template-columns: 1fr;
         gap: 20px;
+    }
+
+    .moves-panel {
+        min-height: 180px;
+        max-height: 240px;
     }
 }
 
@@ -486,7 +519,7 @@ img.dragged-piece-4d2e8,
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    min-height: 300px;
+    min-height: 280px;
     max-height: 380px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
@@ -501,6 +534,7 @@ img.dragged-piece-4d2e8,
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-shrink: 0;
 }
 
 .moves-panel-header i {
@@ -511,6 +545,8 @@ img.dragged-piece-4d2e8,
 .moves-list {
     flex: 1;
     overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
     padding: 10px 14px;
     display: grid;
     grid-template-columns: 48px 1fr 1fr;

@@ -1,5 +1,17 @@
 
 @import url(https://fonts.googleapis.com/css?family=Roboto+Slab:400,700,300,100);
+
+.navbar.f-nav,
+.f-nav {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    z-index: 9999;
+    background: #ffffff;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
 .menu
 {
     background-color:#D7D7D7;
@@ -14,16 +26,16 @@
     display: none;
     background-color:#D7D7D7;
     background: -webkit-linear-gradient(top, #D7D7D7 75%, #898c8f);
-    background: -moz-linear-gradient(top, #D7D7D7 75%, #898c8f);
-    background: -ms-linear-gradient(top, #D7D7D7 75%, #898c8f);
-    background: -o-linear-gradient(top, #D7D7D7 75%, #898c8f);
+    background: linear-gradient(to bottom, #D7D7D7 75%, #898c8f);
     box-shadow: inset 0px 5px 10px #898c8f;
     width: 100%;
+    box-sizing: border-box;
     text-decoration:none;
     color: #fff;
     font-size: 14px;
-    padding: 0px 25px;
-     line-height:40px;
+    padding: 0px 16px;
+    line-height:44px;
+    border-radius: 0;
 }
 .toggleMenu i
 {
@@ -207,6 +219,11 @@
 /***** Media Quries *****/
 @media screen and (max-width: 768px)
 {
+    .menu {
+        display: none;
+        background: transparent;
+        box-shadow: none;
+    }
 
     .toggleMenu
     {

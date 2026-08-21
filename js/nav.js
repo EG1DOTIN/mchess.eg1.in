@@ -11,6 +11,7 @@ $(document).ready(function() {
 	$(".toggleMenu").click(function(e) {
 		e.preventDefault();
 		$(this).toggleClass("active");
+		$(".navbar .menu").toggle();
 		$(".nav").toggle();
 	});
 	adjustMenu();
@@ -23,10 +24,12 @@ $(window).bind('resize orientationchange', function() {
 
 var adjustMenu = function() {
 	if (ww < 920) {
-		$(".toggleMenu").css("display", "inline-block");
+		$(".toggleMenu").css("display", "block");
 		if (!$(".toggleMenu").hasClass("active")) {
+			$(".navbar .menu").hide();
 			$(".nav").hide();
 		} else {
+			$(".navbar .menu").show();
 			$(".nav").show();
 		}
 		$(".nav li").unbind('mouseenter mouseleave');
@@ -36,8 +39,9 @@ var adjustMenu = function() {
 			$(this).parent("li").toggleClass("hover");
 		});
 	} 
-	else if (ww >= 800) {
+	else if (ww >= 920) {
 		$(".toggleMenu").css("display", "none");
+		$(".navbar .menu").show();
 		$(".nav").show();
 		$(".nav li").removeClass("hover");
 		$(".nav li a").unbind('click');

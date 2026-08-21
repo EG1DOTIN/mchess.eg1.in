@@ -57,6 +57,14 @@
     background: transparent !important;
 }
 
+[data-theme="dark"] .navbar.f-nav,
+body.dark-theme .navbar.f-nav,
+[data-theme="dark"] .f-nav {
+    background: #1e293b !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+}
+
 [data-theme="dark"] .menu,
 [data-theme="dark"] .toggleMenu {
     background: #1e293b !important;
@@ -1643,6 +1651,75 @@ p {
 
 /* Mobile Responsiveness Adjustments */
 @media (max-width: 768px) {
+    /* Ensure Navigation is Static & Full Width Edge-to-Edge on Mobile */
+    .navbar.f-nav,
+    .f-nav {
+        position: static !important;
+        box-shadow: none !important;
+        border-bottom: none !important;
+    }
+
+    .navbar,
+    .navbar > div,
+    .navbar .box-90,
+    .navbar .box-100,
+    .navbar .toggleMenu,
+    .navbar .menu,
+    .navbar .menu .box-90 {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Hide the empty second bar on mobile when menu is collapsed */
+    .navbar .menu {
+        display: none;
+        background: transparent !important;
+        box-shadow: none !important;
+    }
+
+    .navbar .toggleMenu {
+        padding: 0 16px !important;
+    }
+
+    .nav-placeholder {
+        display: none !important;
+    }
+
+    /* Mobile Hero Banner: Full-width edge-to-edge with intact piece crowns */
+    .mainContentHeader {
+        width: 100% !important;
+        height: clamp(190px, 52vw, 230px) !important;
+        padding-top: 0 !important;
+        background-size: 100% auto !important;
+        background-repeat: no-repeat !important;
+        background-position: center 38% !important;
+        background-color: #ffffff !important;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08) !important;
+    }
+
+    .mainContentHeader .overflow {
+        height: 100% !important;
+    }
+
+    [data-theme="dark"] .mainContentHeader,
+    body.dark-theme .mainContentHeader {
+        background-color: #151c2c !important;
+    }
+
+    /* Mobile Floating Back to Top Button: Small, unobtrusive */
+    .back-to-top-btn {
+        bottom: 12px !important;
+        right: 12px !important;
+        width: 36px !important;
+        height: 36px !important;
+        font-size: 14px !important;
+        z-index: 100 !important;
+    }
+
     .header-flex-row {
         flex-direction: column;
         align-items: center;
@@ -1720,7 +1797,7 @@ p {
         margin: 0 0 16px 0 !important;
     }
 
-    /* Mobile Board & Controls Overflow Fix */
+    /* Mobile Board & Controls Alignment */
     .pgn-viewer-container,
     .live-board-container,
     .content,
@@ -1729,7 +1806,7 @@ p {
         max-width: 100% !important;
         padding: 12px 6px !important;
         box-sizing: border-box !important;
-        overflow: hidden !important;
+        overflow: visible !important;
     }
 
     #myBoard,

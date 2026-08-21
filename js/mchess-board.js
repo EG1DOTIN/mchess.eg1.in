@@ -345,7 +345,19 @@
                 const $activeCell = this.$container.find(`#move-${this.currentMoveIndex}`);
                 if ($activeCell.length) {
                     $activeCell.addClass("active");
-                    $activeCell[0].scrollIntoView({ block: "nearest", behavior: "smooth" });
+                    const movesListEl = this.$container.find("#movesList")[0];
+                    if (movesListEl) {
+                        const cellTop = $activeCell[0].offsetTop;
+                        const cellHeight = $activeCell[0].offsetHeight;
+                        const listScrollTop = movesListEl.scrollTop;
+                        const listHeight = movesListEl.clientHeight;
+
+                        if (cellTop < listScrollTop) {
+                            movesListEl.scrollTop = Math.max(0, cellTop - 6);
+                        } else if (cellTop + cellHeight > listScrollTop + listHeight) {
+                            movesListEl.scrollTop = cellTop + cellHeight - listHeight + 6;
+                        }
+                    }
                 }
             }
 
