@@ -50,62 +50,61 @@
                     </div>
 
                     <!-- Channel Filter Tabs -->
-                    <div class="channel-filter-bar" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; padding: 12px; background: rgba(30, 41, 59, 0.6); border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);">
-                        <button class="filter-tab active" data-filter="all" style="padding: 8px 16px; border-radius: 6px; border: none; background: #2563eb; color: #fff; font-weight: bold; cursor: pointer;">
-                            <i class="fas fa-th-large"></i> All 6 Channels
+                    <div class="channel-filter-bar">
+                        <button class="filter-tab active" data-filter="all">
+                            <i class="fas fa-th-large" style="margin-right: 6px;"></i> All 6 Channels
                         </button>
                         ${this.channels.map(c => `
-                            <button class="filter-tab" data-filter="${c.id}" style="padding: 8px 16px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.15); background: rgba(15, 23, 42, 0.8); color: #cbd5e1; font-weight: 500; cursor: pointer;">
+                            <button class="filter-tab" data-filter="${c.id}">
                                 <i class="fas ${c.icon}" style="color:${c.color}; margin-right: 6px;"></i> ${c.badge}
                             </button>
                         `).join('')}
                     </div>
 
                     <!-- 2 x 3 Grid for 6 Live TV Channels -->
-                    <div id="liveGridWrapper" class="row" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
+                    <div id="liveGridWrapper" class="live-channels-grid">
                         ${this.channels.map(c => `
-                            <div class="col-lg-4 col-md-6 col-sm-12 live-channel-card" data-channel="${c.id}" style="flex: 1 1 360px; max-width: 480px; display: block; position: relative;">
-                                <div class="game-meta-card" style="margin-bottom: 10px; border-left: 4px solid ${c.color}; background: #1e293b; padding: 10px 14px; cursor: pointer;">
-                                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                                        <span style="font-weight: bold; font-size: 14px; color: #f8fafc;">
-                                            <i class="fas ${c.icon}" style="color:${c.color}; margin-right: 8px;"></i> ${c.name}
+                            <div class="live-channel-card" data-channel="${c.id}">
+                                <div class="live-channel-header" style="border-top-color: ${c.color};">
+                                    <div class="live-channel-title">
+                                        <i class="fas ${c.icon}" style="color:${c.color}; font-size: 14px;"></i>
+                                        <span>${c.name}</span>
+                                    </div>
+                                    <div class="live-channel-actions">
+                                        <button class="btn-expand-live" data-channel="${c.id}" title="Watch Fullscreen">
+                                            <i class="fas fa-expand"></i> Fullscreen
+                                        </button>
+                                        <span class="live-indicator-badge">
+                                            <i class="fas fa-circle" style="font-size: 7px; color: #ef4444;"></i> LIVE
                                         </span>
-                                        <div style="display:flex; gap:6px; align-items:center;">
-                                            <button class="btn-expand-live" data-channel="${c.id}" title="Watch Fullscreen" style="background: rgba(37, 99, 235, 0.3); border: 1px solid #3b82f6; color: #60a5fa; font-size: 11px; padding: 3px 8px; border-radius: 4px; cursor: pointer;">
-                                                <i class="fas fa-expand"></i> Fullscreen
-                                            </button>
-                                            <span class="result-badge" style="background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); padding: 3px 8px; font-size: 11px;">
-                                                <i class="fas fa-circle" style="font-size: 7px; color: #ef4444; margin-right: 4px;"></i> LIVE
-                                            </span>
-                                        </div>
                                     </div>
                                 </div>
 
-                                <div class="live-frame-container" style="width: 100%; height: 460px; border-radius: 12px; overflow: hidden; box-shadow: 0 6px 18px rgba(0,0,0,0.4); background: #161512; border: 1px solid rgba(255,255,255,0.1); position: relative; cursor: pointer;">
-                                    <iframe src="https://lichess.org/tv/${c.id}/frame?theme=metal&bg=dark" allowtransparency="true" frameborder="0" style="width: 100%; height: 100%; border: none; pointer-events: none;"></iframe>
-                                    <div class="live-board-mask" data-channel="${c.id}" title="Click to watch in Fullscreen" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; cursor: pointer; background: rgba(0,0,0,0.01);"></div>
+                                <div class="live-frame-container">
+                                    <iframe src="https://lichess.org/tv/${c.id}/frame?theme=metal&bg=dark" allowtransparency="true" frameborder="0"></iframe>
+                                    <div class="live-board-mask" data-channel="${c.id}" title="Click to watch in Fullscreen"></div>
                                 </div>
                             </div>
                         `).join('')}
                     </div>
 
                     <!-- Fullscreen Overlay Modal -->
-                    <div id="liveFullscreenModal" class="live-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.95); z-index: 99999; justify-content: center; align-items: center; padding: 20px;">
-                        <div class="live-modal-content" style="position: relative; width: 92%; max-width: 960px; height: 88vh; background: #1e293b; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 25px 60px rgba(0,0,0,0.85); border: 1px solid rgba(255,255,255,0.15);">
-                            <div class="live-modal-header" style="padding: 14px 20px; background: #0f172a; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1);">
-                                <div style="display:flex; align-items:center; gap: 12px;">
-                                    <i class="fas fa-broadcast-tower" style="color: #ef4444; font-size: 20px;"></i>
-                                    <h3 id="modalChannelTitle" style="color: #f8fafc; margin: 0; font-size: 18px; font-weight: bold;">Top Grandmaster Broadcast</h3>
-                                    <span class="result-badge" style="background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); padding: 4px 10px; font-size: 12px;">
-                                        <i class="fas fa-circle" style="font-size: 8px; color: #ef4444;"></i> LIVE FULLSCREEN
+                    <div id="liveFullscreenModal" class="live-modal-overlay">
+                        <div class="live-modal-content">
+                            <div class="live-modal-header">
+                                <div class="live-modal-title-wrap">
+                                    <i class="fas fa-broadcast-tower" style="color: #ef4444; font-size: 18px;"></i>
+                                    <h3 id="modalChannelTitle">Top Grandmaster Broadcast</h3>
+                                    <span class="live-indicator-badge modal-badge-live">
+                                        <i class="fas fa-circle" style="font-size: 7px; color: #ef4444;"></i> LIVE
                                     </span>
                                 </div>
-                                <button id="btnCloseModal" style="background: #ef4444; border: none; color: #fff; font-size: 14px; font-weight: bold; padding: 8px 16px; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
-                                    <i class="fas fa-times"></i> Close Fullscreen (Esc)
+                                <button id="btnCloseModal" title="Close Fullscreen (Esc)">
+                                    <i class="fas fa-times"></i> <span class="btn-close-text">Close (Esc)</span>
                                 </button>
                             </div>
-                            <div class="live-modal-body" style="flex: 1; position: relative; background: #161512;">
-                                <iframe id="modalLiveFrame" src="" allowtransparency="true" frameborder="0" style="width: 100%; height: 100%; border: none;"></iframe>
+                            <div class="live-modal-body">
+                                <iframe id="modalLiveFrame" src="" allowtransparency="true" frameborder="0"></iframe>
                             </div>
                         </div>
                     </div>
@@ -136,45 +135,44 @@
         bindEvents() {
             const self = this;
 
-            // Click anywhere on board mask or card header to open Fullscreen
-            this.$container.find('.live-board-mask, .btn-expand-live, .game-meta-card').on('click', function (e) {
-                e.stopPropagation();
-                const channelId = $(this).data('channel') || $(this).closest('.live-channel-card').data('channel');
-                if (channelId) {
-                    self.openFullscreen(channelId);
-                }
-            });
+            // Click anywhere on card, board mask, header or fullscreen button to open Fullscreen
+            this.$container.off('click', '.live-channel-card, .live-board-mask, .btn-expand-live, .live-channel-header')
+                .on('click', '.live-channel-card, .live-board-mask, .btn-expand-live, .live-channel-header', function (e) {
+                    e.stopPropagation();
+                    const channelId = $(this).data('channel') || $(this).closest('.live-channel-card').data('channel');
+                    if (channelId) {
+                        self.openFullscreen(channelId);
+                    }
+                });
 
             // Close button click
-            this.$container.find('#btnCloseModal').on('click', () => self.closeFullscreen());
+            $(document).off('click', '#btnCloseModal').on('click', '#btnCloseModal', function (e) {
+                e.stopPropagation();
+                self.closeFullscreen();
+            });
 
             // Overlay click to close
-            this.$container.find('#liveFullscreenModal').on('click', function (e) {
+            $(document).off('click', '#liveFullscreenModal').on('click', '#liveFullscreenModal', function (e) {
                 if ($(e.target).attr('id') === 'liveFullscreenModal') {
                     self.closeFullscreen();
                 }
             });
 
             // Escape key press to close modal
-            $(document).on('keydown', function (e) {
+            $(document).off('keydown.liveModal').on('keydown.liveModal', function (e) {
                 if (e.key === 'Escape' || e.keyCode === 27) {
                     self.closeFullscreen();
                 }
             });
 
             // Channel filter tabs
-            this.$container.find('.filter-tab').off('click').on('click', function () {
+            this.$container.off('click', '.filter-tab').on('click', '.filter-tab', function (e) {
+                e.stopPropagation();
                 const filter = $(this).data('filter');
                 self.activeFilter = filter;
 
-                self.$container.find('.filter-tab').removeClass('active').css({
-                    'background': 'rgba(15, 23, 42, 0.8)',
-                    'color': '#cbd5e1'
-                });
-                $(this).addClass('active').css({
-                    'background': '#2563eb',
-                    'color': '#fff'
-                });
+                self.$container.find('.filter-tab').removeClass('active');
+                $(this).addClass('active');
 
                 if (filter === 'all') {
                     self.$container.find('.live-channel-card').fadeIn(300);

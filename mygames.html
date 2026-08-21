@@ -55,77 +55,170 @@
             top: 0;
             width: 100%;
         }
+        :root {
+            --mg-bg-card: #ffffff;
+            --mg-text-title: #1e293b;
+            --mg-text-desc: #475569;
+            --mg-text-muted: #64748b;
+            --mg-border: #e2e8f0;
+            --mg-input-bg: #f8fafc;
+            --mg-table-bg: #ffffff;
+            --mg-table-th-bg: #f8fafc;
+            --mg-table-th-text: #475569;
+            --mg-table-border: #f1f5f9;
+            --mg-card-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        [data-theme="dark"], body.dark-theme {
+            --mg-bg-card: rgba(30, 41, 59, 0.7);
+            --mg-text-title: #f8fafc;
+            --mg-text-desc: #94a3b8;
+            --mg-text-muted: #94a3b8;
+            --mg-border: rgba(255, 255, 255, 0.1);
+            --mg-input-bg: #0f172a;
+            --mg-table-bg: #1e293b;
+            --mg-table-th-bg: #0f172a;
+            --mg-table-th-text: #94a3b8;
+            --mg-table-border: rgba(255, 255, 255, 0.08);
+            --mg-card-shadow: none;
+        }
+
+        .mygames-header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--mg-border);
+            padding-bottom: 15px;
+        }
+
+        .mygames-header-title {
+            color: var(--mg-text-title);
+            font-size: 24px;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .mygames-header-desc {
+            color: var(--mg-text-desc);
+            font-size: 13px;
+            margin: 4px 0 0 0;
+        }
+
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
             gap: 15px;
             margin-bottom: 25px;
         }
+
         .stat-card {
-            background: rgba(30, 41, 59, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--mg-bg-card);
+            border: 1px solid var(--mg-border);
             border-radius: 10px;
             padding: 16px;
             text-align: center;
+            box-shadow: var(--mg-card-shadow);
             backdrop-filter: blur(8px);
             transition: transform 0.2s ease, border-color 0.2s ease;
         }
+
         .stat-card:hover {
             transform: translateY(-2px);
             border-color: rgba(59, 130, 246, 0.5);
         }
+
         .stat-value {
             font-size: 24px;
             font-weight: 700;
-            color: #f8fafc;
+            color: var(--mg-text-title);
             margin: 6px 0 2px 0;
             font-family: monospace;
         }
+
         .stat-label {
             font-size: 12px;
-            color: #94a3b8;
+            color: var(--mg-text-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
+
+        .filter-controls-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            background: var(--mg-bg-card);
+            padding: 14px 18px;
+            border-radius: 10px;
+            border: 1px solid var(--mg-border);
+            box-shadow: var(--mg-card-shadow);
+            margin-bottom: 15px;
+        }
+
         .filter-btn {
             padding: 7px 14px;
             border-radius: 6px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            background: #1e293b;
-            color: #cbd5e1;
+            border: 1px solid var(--mg-border);
+            background: var(--mg-input-bg);
+            color: var(--mg-text-desc);
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
         }
+
         .filter-btn.active, .filter-btn:hover {
             background: #2563eb;
             color: #ffffff;
             border-color: #3b82f6;
         }
+
+        .search-games-input {
+            background: var(--mg-input-bg);
+            border: 1px solid var(--mg-border);
+            color: var(--mg-text-title);
+            padding: 7px 12px 7px 30px;
+            border-radius: 6px;
+            font-size: 13px;
+            outline: none;
+            width: 200px;
+        }
+
         .history-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 15px;
-            background: #1e293b;
+            background: var(--mg-table-bg);
+            border: 1px solid var(--mg-border);
             border-radius: 8px;
             overflow: hidden;
-            color: #f8fafc;
+            color: var(--mg-text-title);
+            box-shadow: var(--mg-card-shadow);
         }
+
         .history-table th, .history-table td {
             padding: 12px 16px;
             text-align: left;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            border-bottom: 1px solid var(--mg-table-border);
         }
+
         .history-table th {
-            background: #0f172a;
-            color: #94a3b8;
+            background: var(--mg-table-th-bg);
+            color: var(--mg-table-th-text);
             font-weight: 600;
             font-size: 13px;
         }
+
         .history-table tr:hover {
-            background: rgba(255, 255, 255, 0.04);
+            background: rgba(59, 130, 246, 0.04);
         }
+
         .btn-action {
             border: none;
             padding: 5px 10px;
@@ -136,9 +229,24 @@
             transition: transform 0.15s ease, opacity 0.15s ease;
             margin-right: 4px;
         }
+
         .btn-action:hover {
             opacity: 0.9;
             transform: scale(1.04);
+        }
+
+        #reviewBoardContainer {
+            background: var(--mg-bg-card);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        [data-theme="dark"] #reviewBoardContainer, body.dark-theme #reviewBoardContainer {
+            background: rgba(15, 23, 42, 0.95);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
         }
     </style>
 </head>
@@ -163,12 +271,12 @@
                             <div class="col-md-12">
 
                                 <!-- Page Heading & Intro -->
-                                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">
+                                <div class="mygames-header-bar">
                                     <div>
-                                        <h1 style="color: #f8fafc; font-size: 24px; margin: 0; display:flex; align-items:center; gap:10px;">
+                                        <h1 class="mygames-header-title">
                                             <i class="fas fa-history" style="color: #38bdf8;"></i> My Played Games Archive
                                         </h1>
-                                        <p style="color: #94a3b8; font-size: 13px; margin: 4px 0 0 0;">
+                                        <p class="mygames-header-desc">
                                             Review your match history, replay games move-by-move, analyze tactical variations, and export PGN notation.
                                         </p>
                                     </div>
@@ -201,7 +309,7 @@
                                     </div>
                                     <div class="stat-card">
                                         <i class="fas fa-handshake" style="color:#94a3b8; font-size:18px;"></i>
-                                        <div class="stat-value" id="statDraws" style="color:#cbd5e1;">0</div>
+                                        <div class="stat-value" id="statDraws">0</div>
                                         <div class="stat-label">Draws</div>
                                     </div>
                                     <div class="stat-card">
@@ -212,7 +320,7 @@
                                 </div>
 
                                 <!-- Move Review Board Container (Hidden until user clicks Review) -->
-                                <div id="reviewBoardContainer" style="display: none; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                                <div id="reviewBoardContainer" style="display: none;">
                                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
                                         <h3 style="color: #38bdf8; margin: 0; font-size: 18px; display:flex; align-items:center; gap:8px;">
                                             <i class="fas fa-chess-queen"></i> <span id="reviewGameTitle">Game Move Review</span>
@@ -230,9 +338,9 @@
                                 </div>
 
                                 <!-- Filter & Search Controls Bar -->
-                                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; background: rgba(30, 41, 59, 0.6); padding: 14px 18px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 15px;">
+                                <div class="filter-controls-bar">
                                     <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
-                                        <span style="color:#94a3b8; font-size:13px; font-weight:600; margin-right:4px;">Filter:</span>
+                                        <span style="color:var(--mg-text-muted); font-size:13px; font-weight:600; margin-right:4px;">Filter:</span>
                                         <button class="filter-btn active" data-filter="all">All Games</button>
                                         <button class="filter-btn" data-filter="win">Victories</button>
                                         <button class="filter-btn" data-filter="loss">Defeats</button>
@@ -240,7 +348,7 @@
                                     </div>
                                     <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
                                         <div style="position:relative;">
-                                            <input type="text" id="txtSearchGames" placeholder="Search opponent, date..." style="background:#0f172a; border:1px solid rgba(255,255,255,0.15); color:#f8fafc; padding:7px 12px 7px 30px; border-radius:6px; font-size:13px; outline:none; width:200px;" />
+                                            <input type="text" id="txtSearchGames" class="search-games-input" placeholder="Search opponent, date..." />
                                             <i class="fas fa-search" style="position:absolute; left:10px; top:10px; color:#64748b; font-size:12px;"></i>
                                         </div>
                                         <button id="btnExportAllPgn" class="btn-action" style="background:#2563eb; color:#fff; padding:7px 12px;">
@@ -357,9 +465,9 @@
                 if (filtered.length === 0) {
                     $tbody.append(`
                         <tr>
-                            <td colspan="6" style="text-align: center; color: #94a3b8; padding: 35px 20px;">
-                                <i class="fas fa-info-circle" style="font-size:20px; margin-bottom:8px; display:block; color:#64748b;"></i>
-                                ${total === 0 ? 'No played games saved in LocalStorage yet. Play matches in <a href="playcomp.html" style="color:#38bdf8;">Play vs Computer</a> or <a href="playonline.html" style="color:#38bdf8;">Play Online Arena</a> to record history!' : 'No matches found matching the selected filter.'}
+                            <td colspan="6" style="text-align: center; color: var(--mg-text-muted); padding: 35px 20px;">
+                                <i class="fas fa-info-circle" style="font-size:20px; margin-bottom:8px; display:block; color:#38bdf8;"></i>
+                                ${total === 0 ? 'No played games saved in LocalStorage yet. Play matches in <a href="playcomp.html" style="color:#2563eb; font-weight:600;">Play vs Computer</a> or <a href="playonline.html" style="color:#16a34a; font-weight:600;">Play Online Arena</a> to record history!' : 'No matches found matching the selected filter.'}
                             </td>
                         </tr>
                     `);
@@ -367,16 +475,16 @@
                 }
 
                 filtered.forEach(g => {
-                    let resultBadgeClass = 'background: rgba(100, 116, 139, 0.3); color: #cbd5e1;';
-                    if (g.result.includes('1-0')) resultBadgeClass = 'background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.4);';
-                    else if (g.result.includes('0-1')) resultBadgeClass = 'background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4);';
-                    else if (g.result.includes('1/2')) resultBadgeClass = 'background: rgba(234, 179, 8, 0.2); color: #facc15; border: 1px solid rgba(234, 179, 8, 0.4);';
+                    let resultBadgeClass = 'background: rgba(100, 116, 139, 0.15); color: var(--mg-text-desc); border: 1px solid var(--mg-border);';
+                    if (g.result.includes('1-0')) resultBadgeClass = 'background: rgba(34, 197, 94, 0.15); color: #16a34a; border: 1px solid rgba(34, 197, 94, 0.4);';
+                    else if (g.result.includes('0-1')) resultBadgeClass = 'background: rgba(239, 68, 68, 0.15); color: #dc2626; border: 1px solid rgba(239, 68, 68, 0.4);';
+                    else if (g.result.includes('1/2')) resultBadgeClass = 'background: rgba(234, 179, 8, 0.15); color: #d97706; border: 1px solid rgba(234, 179, 8, 0.4);';
 
                     const row = `
                         <tr>
-                            <td><i class="far fa-clock" style="color:#64748b; margin-right:4px;"></i> ${g.date}</td>
-                            <td><strong>${g.white}</strong> vs <strong>${g.black}</strong></td>
-                            <td><span style="font-size:12px; color:#94a3b8; background:rgba(255,255,255,0.06); padding:2px 6px; border-radius:4px;">${g.mode || 'Game'}</span></td>
+                            <td><i class="far fa-clock" style="color:var(--mg-text-muted); margin-right:4px;"></i> ${g.date}</td>
+                            <td><strong style="color:var(--mg-text-title);">${g.white}</strong> vs <strong style="color:var(--mg-text-title);">${g.black}</strong></td>
+                            <td><span style="font-size:12px; color:var(--mg-text-desc); background:var(--mg-input-bg); border:1px solid var(--mg-border); padding:2px 6px; border-radius:4px;">${g.mode || 'Game'}</span></td>
                             <td><span style="padding: 2px 8px; font-size:11px; border-radius:4px; font-weight:600; ${resultBadgeClass}">${g.result}</span></td>
                             <td>${g.moveCount || 0} moves</td>
                             <td>
@@ -386,7 +494,7 @@
                                 <button class="btn-action btn-download-game" data-id="${g.id}" style="background:#16a34a; color:#fff;" title="Download PGN">
                                     <i class="fas fa-download"></i> PGN
                                 </button>
-                                <button class="btn-action btn-delete-game" data-id="${g.id}" style="background:rgba(239,68,68,0.2); color:#f87171; border:1px solid rgba(239,68,68,0.4);" title="Delete Game">
+                                <button class="btn-action btn-delete-game" data-id="${g.id}" style="background:rgba(239,68,68,0.15); color:#dc2626; border:1px solid rgba(239,68,68,0.3);" title="Delete Game">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </td>

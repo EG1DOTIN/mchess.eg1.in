@@ -74,7 +74,54 @@
             border-radius: 12px;
             padding: 20px;
             backdrop-filter: blur(8px);
-            margin-bottom: 20px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        .lobby-grid-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+            width: 100%;
+        }
+
+        .lobby-input-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .club-links-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .club-chip-btn {
+            background: #0f172a;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: #f8fafc;
+            padding: 9px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+        }
+
+        .club-chip-btn:hover {
+            background: #1e293b;
+            color: #38bdf8;
+            border-color: #38bdf8;
+            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
         }
 
         .lobby-table {
@@ -194,6 +241,65 @@
             pointer-events: none;
             box-shadow: 0 0 8px rgba(34, 197, 94, 0.9);
             z-index: 10;
+        }
+
+        /* Fluid Mobile Responsiveness */
+        @media (max-width: 640px) {
+            .lobby-card {
+                padding: 16px 14px;
+                margin-bottom: 14px;
+            }
+
+            .lobby-grid-row {
+                grid-template-columns: 1fr;
+                gap: 14px;
+                margin-bottom: 14px;
+            }
+
+            .lobby-input-row {
+                flex-direction: column;
+                align-items: stretch !important;
+                gap: 10px;
+            }
+
+            .lobby-input-row .setting-input,
+            .lobby-input-row button,
+            .lobby-input-row .btn-action {
+                width: 100% !important;
+                min-height: 44px;
+                box-sizing: border-box;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+            }
+
+            .club-bar-inner {
+                flex-direction: column;
+                align-items: flex-start !important;
+                gap: 12px !important;
+            }
+
+            .club-links-container {
+                flex-direction: column;
+                align-items: stretch !important;
+                width: 100%;
+                gap: 8px !important;
+            }
+
+            .club-chip-btn {
+                width: 100% !important;
+                min-height: 44px;
+                box-sizing: border-box;
+                justify-content: center;
+                text-align: center;
+            }
+
+            .lobby-table th,
+            .lobby-table td {
+                padding: 10px 8px;
+                font-size: 12px;
+            }
         }
     </style>
 </head>
@@ -317,11 +423,11 @@
                                     </div>
 
                                     <!-- 2-Column Grid: Invite via Link & Local Pass/Play -->
-                                    <div class="row" style="display:flex; flex-wrap:wrap; gap:20px;">
+                                    <div class="lobby-grid-row">
 
-                                        <!-- Column 1: Invite a Friend via Link -->
-                                        <div class="col-md-6" style="flex:1 1 340px;">
-                                            <div class="lobby-card" style="height:100%;">
+                                        <!-- Card 2: Invite a Friend via Link -->
+                                        <div class="lobby-card" style="margin-bottom:0; display:flex; flex-direction:column; justify-content:space-between;">
+                                            <div>
                                                 <h3
                                                     style="color: #f8fafc; font-size: 17px; margin: 0 0 6px 0; display:flex; align-items:center; gap:8px;">
                                                     <i class="fas fa-link" style="color: #38bdf8;"></i> Direct Invite
@@ -331,7 +437,9 @@
                                                     Send a 1-click invitation link to a friend on WhatsApp, Discord, or
                                                     Email.
                                                 </p>
-                                                <div style="display:flex; gap:10px; margin-bottom:12px;">
+                                            </div>
+                                            <div>
+                                                <div class="lobby-input-row" style="margin-bottom:12px;">
                                                     <select id="selInviteLinkTime" class="setting-input"
                                                         style="flex:1;">
                                                         <option value="3">⚡ 3 Min Blitz</option>
@@ -346,7 +454,7 @@
                                                 </div>
                                                 <div id="pnlInviteLinkOutput"
                                                     style="display:none; background:#0f172a; border:1px solid rgba(56,189,248,0.3); border-radius:8px; padding:12px;">
-                                                    <div style="display:flex; gap:8px; margin-bottom:6px;">
+                                                    <div class="lobby-input-row" style="margin-bottom:6px;">
                                                         <input type="text" id="txtGeneratedInviteUrl" readonly
                                                             class="setting-input"
                                                             style="flex:1; font-family:monospace; font-size:12px;" />
@@ -361,9 +469,9 @@
                                             </div>
                                         </div>
 
-                                        <!-- Column 2: Local Pass & Play (Same Screen) -->
-                                        <div class="col-md-6" style="flex:1 1 340px;">
-                                            <div class="lobby-card" style="height:100%;">
+                                        <!-- Card 3: Local Pass & Play (Same Screen) -->
+                                        <div class="lobby-card" style="margin-bottom:0; display:flex; flex-direction:column; justify-content:space-between;">
+                                            <div>
                                                 <h3
                                                     style="color: #f8fafc; font-size: 17px; margin: 0 0 6px 0; display:flex; align-items:center; gap:8px;">
                                                     <i class="fas fa-desktop" style="color: #eab308;"></i> Local Pass &
@@ -373,7 +481,9 @@
                                                     Two players on the same device/screen sharing clocks and the custom
                                                     board.
                                                 </p>
-                                                <div style="display:flex; gap:10px;">
+                                            </div>
+                                            <div>
+                                                <div class="lobby-input-row">
                                                     <select id="selPassAndPlayTime" class="setting-input"
                                                         style="flex:1;">
                                                         <option value="0">Unlimited Time</option>
@@ -391,29 +501,27 @@
 
                                     </div>
 
-                                    <!-- Subtle Affiliated Chess Clubs & Communities Bar -->
-                                    <div class="lobby-card" id="club"
-                                        style="padding: 14px 20px; margin-top: 20px; background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(255, 255, 255, 0.08);">
-                                        <div
+                                    <!-- Card 4: Subtle Affiliated Chess Clubs & Communities Bar -->
+                                    <div class="lobby-card" id="club" style="padding: 16px 20px;">
+                                        <div class="club-bar-inner"
                                             style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
                                             <div style="display: flex; align-items: center; gap: 8px;">
-                                                <i class="fas fa-crown" style="color: #fbbf24; font-size: 14px;"></i>
+                                                <i class="fas fa-crown" style="color: #fbbf24; font-size: 15px;"></i>
                                                 <span
-                                                    style="color: #94a3b8; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Affiliated
+                                                    style="color: #f8fafc; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Affiliated
                                                     Club Hubs:</span>
                                             </div>
-                                            <div
-                                                style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                                            <div class="club-links-container">
                                                 <a href="https://lichess.org/team/marwadi-chess-club" target="_blank"
                                                     rel="noopener noreferrer"
-                                                    style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #cbd5e1; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s ease;">
+                                                    class="club-chip-btn">
                                                     <i class="fas fa-chess-knight" style="color: #38bdf8;"></i> Marwadi
                                                     Chess on Lichess <i class="fas fa-external-link-alt"
                                                         style="font-size: 10px; color: #64748b;"></i>
                                                 </a>
                                                 <a href='https://play.chessbase.com?room=Marwadi Chess Club&roomtext="Welcome to everyone"&pic=https://mchess.eg1.in/img/marwadichesslogo.webp'
                                                     target="_blank" rel="noopener noreferrer"
-                                                    style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #cbd5e1; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s ease;">
+                                                    class="club-chip-btn">
                                                     <i class="fas fa-chess-king" style="color: #fbbf24;"></i> ChessBase:
                                                     Marwadi Chess Club <i class="fas fa-external-link-alt"
                                                         style="font-size: 10px; color: #64748b;"></i>
