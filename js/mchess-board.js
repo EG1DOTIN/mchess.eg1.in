@@ -1,7 +1,7 @@
 /**
  * @file mchess-board.js
  * @description Centralized controller for MCHESS Interactive PGN Viewer & Analysis Board.
- * Automatically injects responsive board UI, parses PGN files, handles move stepping, and enables drag & drop analysis mode.
+ * Automatically injects responsive board UI, parses PGN files and direct PGN strings, handles move stepping, and enables drag & drop analysis mode.
  * @project MCHESS Interactive Chess Portal
  */
 
@@ -9,9 +9,18 @@
     'use strict';
 
     class MChessBoard {
-        constructor(containerEl) {
+        constructor(containerEl, options = {}) {
             this.$container = $(containerEl);
-            this.pgnUrl = this.$container.data('pgn') || './pgn/pgn_games.pgn';
+            this.options = Object.assign({
+                pgn: null,
+                pgnUrl: this.$container.data('pgn') || './pgn/pgn_games.pgn',
+                showSelect: true,
+                autoPlay: false
+            }, options);
+
+            this.uid = Math.random().toString(36).substr(2, 7);
+            this.boardId = 'board_' + this.uid;
+            this.pgnUrl = this.options.pgnUrl;
             
             this.pgnGames = [];
             this.currentPgnIndex = 0;
@@ -23,18 +32,29 @@
             this.autoplayTimer = null;
             this.isAnalysisMode = false;
             this.analysisMoves = [];
+            this.resizeObserver = null;
 
             this.initLayout();
             this.initBoard();
-            this.loadPgnFile();
+
+            if (this.options.pgn) {
+                this.loadDirectPgn(this.options.pgn);
+            } else {
+                this.loadPgnFile();
+            }
+
             this.bindEvents();
         }
 
         /**
-         * Inject the complete PGN Viewer HTML layout into container if empty
+         * Inject the complete PGN Viewer HTML layout into container with unique instance IDs
          */
         initLayout() {
-            if (this.$container.children().length > 0) return;
+            if (this.$container.children().length > 0) {
+                this.$container.empty();
+            }
+
+            const selectDisplay = (this.options.showSelect && !this.options.pgn) ? 'block' : 'none';
 
             const html = `
                 <div class="pgn-viewer-container">
@@ -48,9 +68,9 @@
                         </span>
                     </div>
 
-                    <div class="game-select-wrapper">
-                        <label for="gameSelect"><i class="fas fa-trophy"></i> Select Game from Database:</label>
-                        <select id="gameSelect" class="game-select">
+                    <div class="game-select-wrapper" style="display: ${selectDisplay};">
+                        <label for="gameSelect_${this.uid}"><i class="fas fa-trophy"></i> Select Game from Database:</label>
+                        <select id="gameSelect_${this.uid}" class="game-select">
                             <option value="">Loading games from database...</option>
                         </select>
                     </div>
@@ -58,36 +78,36 @@
                     <div class="viewer-grid">
                         <div class="board-column">
                             <div class="board-wrapper">
-                                <div id="board" class="board-container"></div>
+                                <div id="${this.boardId}" class="board-container"></div>
                             </div>
 
                             <div class="controls-bar">
-                                <button id="btnStart" class="btn-ctrl" title="First Move (Home)">
+                                <button id="btnStart_${this.uid}" class="btn-ctrl" title="First Move (Home)">
                                     <i class="fas fa-fast-backward"></i>
                                 </button>
-                                <button id="btnPrev" class="btn-ctrl" title="Previous Move (Left Arrow)">
+                                <button id="btnPrev_${this.uid}" class="btn-ctrl" title="Previous Move (Left Arrow)">
                                     <i class="fas fa-step-backward"></i>
                                 </button>
-                                <button id="btnPlay" class="btn-ctrl" title="Play / Pause (Spacebar)">
-                                    <i class="fas fa-play" id="playIcon"></i>
+                                <button id="btnPlay_${this.uid}" class="btn-ctrl" title="Play / Pause (Spacebar)">
+                                    <i class="fas fa-play" id="playIcon_${this.uid}"></i>
                                 </button>
-                                <button id="btnNext" class="btn-ctrl" title="Next Move (Right Arrow)">
+                                <button id="btnNext_${this.uid}" class="btn-ctrl" title="Next Move (Right Arrow)">
                                     <i class="fas fa-step-forward"></i>
                                 </button>
-                                <button id="btnEnd" class="btn-ctrl" title="Last Move (End)">
+                                <button id="btnEnd_${this.uid}" class="btn-ctrl" title="Last Move (End)">
                                     <i class="fas fa-fast-forward"></i>
                                 </button>
-                                <button id="btnFlip" class="btn-ctrl" title="Flip Board">
+                                <button id="btnFlip_${this.uid}" class="btn-ctrl" title="Flip Board">
                                     <i class="fas fa-sync-alt"></i> Flip
                                 </button>
-                                <select id="autoplaySpeed" class="speed-select" title="Autoplay Speed">
+                                <select id="autoplaySpeed_${this.uid}" class="speed-select" title="Autoplay Speed">
                                     <option value="2000">2s / move</option>
                                     <option value="1000" selected>1s / move</option>
                                     <option value="500">0.5s / move</option>
                                 </select>
                             </div>
                             <div class="kb-hint">
-                                <i class="far fa-keyboard"></i> <strong>Drag pieces to analyze custom moves anytime!</strong><br />
+                                <i class="far fa-keyboard"></i> <strong>Drag pieces to analyze custom variations anytime!</strong><br />
                                 Shortcuts: <strong>&larr; &rarr;</strong> step, <strong>Space</strong> play/pause, <strong>Home/End</strong> jump.
                             </div>
                         </div>
@@ -97,24 +117,24 @@
                                 <div class="players-header">
                                     <div class="player-box">
                                         <span class="player-badge white"></span>
-                                        <span id="whitePlayer">White Player</span>
+                                        <span id="whitePlayer_${this.uid}">White Player</span>
                                     </div>
-                                    <span class="result-badge" id="gameResult">1-0</span>
+                                    <span class="result-badge" id="gameResult_${this.uid}">1-0</span>
                                     <div class="player-box">
                                         <span class="player-badge black"></span>
-                                        <span id="blackPlayer">Black Player</span>
+                                        <span id="blackPlayer_${this.uid}">Black Player</span>
                                     </div>
                                 </div>
                                 <div class="meta-details">
-                                    <span><i class="far fa-calendar-alt"></i> <strong id="gameDate">N/A</strong></span>
-                                    <span><i class="fas fa-map-marker-alt"></i> <strong id="gameSite">N/A</strong></span>
-                                    <span><i class="fas fa-bookmark"></i> ECO: <strong id="gameECO">N/A</strong></span>
+                                    <span><i class="far fa-calendar-alt"></i> <strong id="gameDate_${this.uid}">N/A</strong></span>
+                                    <span><i class="fas fa-map-marker-alt"></i> <strong id="gameSite_${this.uid}">N/A</strong></span>
+                                    <span><i class="fas fa-bookmark"></i> ECO: <strong id="gameECO_${this.uid}">N/A</strong></span>
                                 </div>
                             </div>
 
-                            <div id="modeBanner" class="mode-banner game-line">
-                                <span id="modeText"><i class="fas fa-book-open"></i> Watching Main Game Line</span>
-                                <button id="btnResetAnalysis" class="btn-reset-analysis" style="display: none;">
+                            <div id="modeBanner_${this.uid}" class="mode-banner game-line">
+                                <span id="modeText_${this.uid}"><i class="fas fa-book-open"></i> Watching Main Game Line</span>
+                                <button id="btnResetAnalysis_${this.uid}" class="btn-reset-analysis" style="display: none;">
                                     <i class="fas fa-undo"></i> Back to Game
                                 </button>
                             </div>
@@ -122,14 +142,14 @@
                             <div class="moves-panel">
                                 <div class="moves-panel-header">
                                     <span><i class="fas fa-list-ol"></i> Game Move List</span>
-                                    <span id="moveCountBadge" style="font-weight:normal; font-size:12px; color:#64748b;">0 moves</span>
+                                    <span id="moveCountBadge_${this.uid}" style="font-weight:normal; font-size:12px; color:#64748b;">0 moves</span>
                                 </div>
-                                <div id="movesList" class="moves-list"></div>
+                                <div id="movesList_${this.uid}" class="moves-list"></div>
                             </div>
 
-                            <div id="analysisBox" class="analysis-moves-box" style="display: none;">
+                            <div id="analysisBox_${this.uid}" class="analysis-moves-box" style="display: none;">
                                 <strong><i class="fas fa-vial"></i> Trial Variation:</strong>
-                                <span id="analysisMovesText"></span>
+                                <span id="analysisMovesText_${this.uid}"></span>
                             </div>
                         </div>
                     </div>
@@ -139,11 +159,11 @@
         }
 
         /**
-         * Initialize Chessboard.js with Drag & Drop handlers
+         * Initialize Chessboard.js with Drag & Drop handlers & ResizeObserver
          */
         initBoard() {
             const self = this;
-            this.board = Chessboard('board', {
+            this.board = Chessboard(this.boardId, {
                 position: 'start',
                 draggable: true,
                 pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png',
@@ -152,8 +172,21 @@
                 onSnapEnd: () => self.onSnapEnd()
             });
 
-            $(window).on('resize orientationchange', () => {
-                if (self.board) self.board.resize();
+            // Dynamic ResizeObserver for responsive resizing
+            if (window.ResizeObserver) {
+                const domEl = document.getElementById(this.boardId);
+                if (domEl) {
+                    this.resizeObserver = new ResizeObserver(() => {
+                        if (self.board) self.board.resize();
+                    });
+                    this.resizeObserver.observe(domEl);
+                }
+            }
+
+            $(window).on(`resize.${this.uid} orientationchange.${this.uid}`, () => {
+                setTimeout(() => {
+                    if (self.board) self.board.resize();
+                }, 100);
             });
         }
 
@@ -211,6 +244,16 @@
         }
 
         /**
+         * Load Direct PGN String (e.g. from My Games Review)
+         */
+        loadDirectPgn(pgnText) {
+            if (!pgnText) return;
+            this.pgnGames = [pgnText.trim()];
+            this.$container.find('.game-select-wrapper').hide();
+            this.loadGame(0);
+        }
+
+        /**
          * Load PGN file specified in data-pgn attribute
          */
         async loadPgnFile() {
@@ -221,7 +264,7 @@
                 const pgnText = await response.text();
 
                 this.pgnGames = this.splitPgnFile(pgnText);
-                const $select = this.$container.find("#gameSelect");
+                const $select = this.$container.find(`#gameSelect_${this.uid}`);
                 $select.empty();
 
                 this.pgnGames.forEach((pgn, idx) => {
@@ -244,8 +287,8 @@
                     this.loadGame(0);
                 }
             } catch (err) {
-                console.error(err);
-                this.$container.find("#gameSelect").html("<option>Error loading PGN database.</option>");
+                console.error("[MChessBoard] PGN file load error:", err);
+                this.$container.find(`#gameSelect_${this.uid}`).html("<option>Error loading PGN database.</option>");
             }
         }
 
@@ -259,19 +302,26 @@
             if (!pgnString) return;
 
             this.mainChess = new Chess();
-            const success = this.mainChess.load_pgn(pgnString);
+            let success = this.mainChess.load_pgn(pgnString);
+
             if (!success) {
-                console.error("Failed to load PGN at index", index);
+                // If direct move text was supplied without headers, try wrapping it
+                const wrappedPgn = `[Event "Match"]\n[White "White"]\n[Black "Black"]\n\n` + pgnString;
+                success = this.mainChess.load_pgn(wrappedPgn);
+            }
+
+            if (!success) {
+                console.error("[MChessBoard] Failed to load PGN at index", index);
                 return;
             }
 
             const headers = this.mainChess.header();
-            this.$container.find("#whitePlayer").text(headers.White || "White");
-            this.$container.find("#blackPlayer").text(headers.Black || "Black");
-            this.$container.find("#gameResult").text(headers.Result || "*");
-            this.$container.find("#gameDate").text(headers.Date || "N/A");
-            this.$container.find("#gameSite").text(headers.Site || "N/A");
-            this.$container.find("#gameECO").text(headers.ECO ? headers.ECO : "N/A");
+            this.$container.find(`#whitePlayer_${this.uid}`).text(headers.White || "White Player");
+            this.$container.find(`#blackPlayer_${this.uid}`).text(headers.Black || "Black Player");
+            this.$container.find(`#gameResult_${this.uid}`).text(headers.Result || "*");
+            this.$container.find(`#gameDate_${this.uid}`).text(headers.Date || "N/A");
+            this.$container.find(`#gameSite_${this.uid}`).text(headers.Site || "mchess.eg1.in");
+            this.$container.find(`#gameECO_${this.uid}`).text(headers.ECO ? headers.ECO : "N/A");
 
             this.mainHistory = this.mainChess.history({ verbose: true });
             const tempChess = new Chess();
@@ -279,7 +329,7 @@
                 tempChess.move(m);
                 m.fen = tempChess.fen();
             });
-            this.$container.find("#moveCountBadge").text(`${this.mainHistory.length} moves`);
+            this.$container.find(`#moveCountBadge_${this.uid}`).text(`${this.mainHistory.length} moves`);
 
             this.renderMoveList();
             this.currentMoveIndex = -1;
@@ -287,7 +337,7 @@
         }
 
         renderMoveList() {
-            const $container = this.$container.find("#movesList");
+            const $container = this.$container.find(`#movesList_${this.uid}`);
             $container.empty();
             const self = this;
 
@@ -302,7 +352,7 @@
                 const whiteMove = this.mainHistory[i];
                 const whiteDiv = document.createElement("div");
                 whiteDiv.className = "move-cell";
-                whiteDiv.id = `move-${i}`;
+                whiteDiv.id = `move_${this.uid}_${i}`;
                 whiteDiv.textContent = whiteMove.san;
                 $(whiteDiv).on("click", () => self.goToMove(i));
                 $container.append(whiteDiv);
@@ -311,7 +361,7 @@
                     const blackMove = this.mainHistory[i + 1];
                     const blackDiv = document.createElement("div");
                     blackDiv.className = "move-cell";
-                    blackDiv.id = `move-${i + 1}`;
+                    blackDiv.id = `move_${this.uid}_${i + 1}`;
                     blackDiv.textContent = blackMove.san;
                     $(blackDiv).on("click", () => self.goToMove(i + 1));
                     $container.append(blackDiv);
@@ -338,14 +388,16 @@
             }
 
             this.activeChess = new Chess(targetFen === 'start' ? 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1' : targetFen);
-            this.board.position(targetFen, animated);
+            if (this.board) {
+                this.board.position(targetFen, animated);
+            }
 
             this.$container.find(".move-cell").removeClass("active");
             if (this.currentMoveIndex >= 0) {
-                const $activeCell = this.$container.find(`#move-${this.currentMoveIndex}`);
+                const $activeCell = this.$container.find(`#move_${this.uid}_${this.currentMoveIndex}`);
                 if ($activeCell.length) {
                     $activeCell.addClass("active");
-                    const movesListEl = this.$container.find("#movesList")[0];
+                    const movesListEl = this.$container.find(`#movesList_${this.uid}`)[0];
                     if (movesListEl) {
                         const cellTop = $activeCell[0].offsetTop;
                         const cellHeight = $activeCell[0].offsetHeight;
@@ -366,22 +418,22 @@
 
         updateButtonStates() {
             if (this.isAnalysisMode) {
-                this.$container.find("#btnStart").prop("disabled", false);
-                this.$container.find("#btnPrev").prop("disabled", false);
-                this.$container.find("#btnNext").prop("disabled", true);
-                this.$container.find("#btnEnd").prop("disabled", true);
+                this.$container.find(`#btnStart_${this.uid}`).prop("disabled", false);
+                this.$container.find(`#btnPrev_${this.uid}`).prop("disabled", false);
+                this.$container.find(`#btnNext_${this.uid}`).prop("disabled", true);
+                this.$container.find(`#btnEnd_${this.uid}`).prop("disabled", true);
             } else {
-                this.$container.find("#btnStart").prop("disabled", this.currentMoveIndex === -1);
-                this.$container.find("#btnPrev").prop("disabled", this.currentMoveIndex === -1);
-                this.$container.find("#btnNext").prop("disabled", this.currentMoveIndex === this.mainHistory.length - 1);
-                this.$container.find("#btnEnd").prop("disabled", this.currentMoveIndex === this.mainHistory.length - 1);
+                this.$container.find(`#btnStart_${this.uid}`).prop("disabled", this.currentMoveIndex === -1);
+                this.$container.find(`#btnPrev_${this.uid}`).prop("disabled", this.currentMoveIndex === -1);
+                this.$container.find(`#btnNext_${this.uid}`).prop("disabled", this.currentMoveIndex === this.mainHistory.length - 1);
+                this.$container.find(`#btnEnd_${this.uid}`).prop("disabled", this.currentMoveIndex === this.mainHistory.length - 1);
             }
         }
 
         updateModeBanner() {
-            const $banner = this.$container.find("#modeBanner");
-            const $modeText = this.$container.find("#modeText");
-            const $resetBtn = this.$container.find("#btnResetAnalysis");
+            const $banner = this.$container.find(`#modeBanner_${this.uid}`);
+            const $modeText = this.$container.find(`#modeText_${this.uid}`);
+            const $resetBtn = this.$container.find(`#btnResetAnalysis_${this.uid}`);
 
             if (this.isAnalysisMode) {
                 $banner.attr("class", "mode-banner analysis-mode");
@@ -403,8 +455,8 @@
         }
 
         updateAnalysisBox() {
-            const $box = this.$container.find("#analysisBox");
-            const $textSpan = this.$container.find("#analysisMovesText");
+            const $box = this.$container.find(`#analysisBox_${this.uid}`);
+            const $textSpan = this.$container.find(`#analysisMovesText_${this.uid}`);
 
             if (this.isAnalysisMode && this.analysisMoves.length > 0) {
                 $box.show();
@@ -445,8 +497,8 @@
             if (this.currentMoveIndex >= this.mainHistory.length - 1) {
                 this.currentMoveIndex = -1;
             }
-            const speed = parseInt(this.$container.find("#autoplaySpeed").val(), 10) || 1000;
-            const $playIcon = this.$container.find("#playIcon");
+            const speed = parseInt(this.$container.find(`#autoplaySpeed_${this.uid}`).val(), 10) || 1000;
+            const $playIcon = this.$container.find(`#playIcon_${this.uid}`);
             $playIcon.attr("class", "fas fa-pause");
 
             this.autoplayTimer = setInterval(() => {
@@ -464,37 +516,37 @@
                 clearInterval(this.autoplayTimer);
                 this.autoplayTimer = null;
             }
-            const $playIcon = this.$container.find("#playIcon");
+            const $playIcon = this.$container.find(`#playIcon_${this.uid}`);
             if ($playIcon.length) $playIcon.attr("class", "fas fa-play");
         }
 
         flipBoard() {
-            this.board.flip();
+            if (this.board) this.board.flip();
         }
 
         bindEvents() {
             const self = this;
-            this.$container.find("#btnStart").on("click", () => {
+            this.$container.find(`#btnStart_${this.uid}`).on("click", () => {
                 if (self.isAnalysisMode) self.exitAnalysisMode();
                 self.goToMove(-1);
             });
-            this.$container.find("#btnPrev").on("click", () => {
+            this.$container.find(`#btnPrev_${this.uid}`).on("click", () => {
                 if (self.isAnalysisMode) self.exitAnalysisMode();
                 self.goToMove(self.currentMoveIndex - 1);
             });
-            this.$container.find("#btnNext").on("click", () => {
+            this.$container.find(`#btnNext_${this.uid}`).on("click", () => {
                 if (self.isAnalysisMode) self.exitAnalysisMode();
                 self.goToMove(self.currentMoveIndex + 1);
             });
-            this.$container.find("#btnEnd").on("click", () => {
+            this.$container.find(`#btnEnd_${this.uid}`).on("click", () => {
                 if (self.isAnalysisMode) self.exitAnalysisMode();
                 self.goToMove(self.mainHistory.length - 1);
             });
-            this.$container.find("#btnPlay").on("click", () => self.toggleAutoplay());
-            this.$container.find("#btnFlip").on("click", () => self.flipBoard());
-            this.$container.find("#btnResetAnalysis").on("click", () => self.exitAnalysisMode());
+            this.$container.find(`#btnPlay_${this.uid}`).on("click", () => self.toggleAutoplay());
+            this.$container.find(`#btnFlip_${this.uid}`).on("click", () => self.flipBoard());
+            this.$container.find(`#btnResetAnalysis_${this.uid}`).on("click", () => self.exitAnalysisMode());
 
-            $(document).on("keydown.mchessBoard", (e) => {
+            $(document).on(`keydown.mchessBoard_${this.uid}`, (e) => {
                 if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
 
                 if (e.key === "ArrowLeft") {
@@ -523,7 +575,6 @@
 
     // Auto-initialize MChessBoard on DOM ready
     $(document).ready(function () {
-        // Guarantee documentElement and body scroll container integrity for Chessboard.js dragged piece coordinates
         if (document.documentElement) {
             document.documentElement.style.overflowX = 'hidden';
             document.documentElement.style.overflowY = 'auto';
@@ -533,7 +584,7 @@
             document.body.style.position = 'static';
         }
 
-        // Prevent native browser image drag on chess pieces so Chessboard.js JS handles 100% of movement
+        // Prevent native browser image drag on chess pieces
         $(document).on('dragstart', '.board-container img, .square-55d63 img, .piece-417db, body > img.piece-417db, body > img[class*="piece-"], .dragged-piece-4d2e8, [class*="piece-"]', function (e) {
             e.preventDefault();
             return false;
@@ -543,5 +594,8 @@
             new MChessBoard(this);
         });
     });
+
+    // Export globally
+    window.MChessBoard = MChessBoard;
 
 })(jQuery);

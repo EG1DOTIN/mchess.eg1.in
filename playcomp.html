@@ -100,10 +100,15 @@
 					<div class="box-90 content">
 
 						<div class="row">
-							<div class="col-md-9">
-								<h2 id="appSoft">
-									Play vs Stockfish Computer Engine</h2>
-								<br />
+							<div class="col-md-12">
+								<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:15px;">
+									<h2 id="appSoft" style="margin:0;">
+										Play vs Stockfish Computer Engine
+									</h2>
+									<a href="mygames.html" style="background:#0f172a; border:1px solid rgba(56,189,248,0.4); color:#38bdf8; text-decoration:none; padding:6px 14px; border-radius:6px; font-size:13px; font-weight:600; display:inline-flex; align-items:center; gap:6px;">
+										<i class="fas fa-history"></i> My Played Games Archive
+									</a>
+								</div>
 								
 								<!-- Open-Source Stockfish Engine Play Board -->
 								<div id="mchessEngineBoardContainer" data-mode="engine"></div>
@@ -123,6 +128,7 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
 	<script src="js/mchess-fen-parser.js" type="text/javascript"></script>
+	<script src="js/mchess-game-history.js" type="text/javascript"></script>
 	<script src="js/mchess-engine-board.js" type="text/javascript"></script>
 </body>
 

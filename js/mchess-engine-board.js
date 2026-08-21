@@ -125,6 +125,9 @@
                                     <i class="fas fa-sync-alt"></i> Flip
                                 </button>
                                 ${!isDailyOrPuzzle ? `
+                                <button id="btnEngineResign" class="btn-ctrl" title="Resign Current Match" style="background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4);">
+                                    <i class="fas fa-flag"></i> Resign
+                                </button>
                                 <select id="userSideSelect" class="speed-select" title="Choose Side to Play">
                                     <option value="white" selected>Play as White ♔</option>
                                     <option value="black">Play as Black ♚</option>
@@ -256,14 +259,15 @@
             const turn = (success && this.chess.turn) ? this.chess.turn() : (normalizedFen.includes(' b ') ? 'b' : 'w');
             const sideText = turn === 'w' ? 'White' : 'Black';
             this.$container.find('#engineSideToMove').text(sideText);
+            this.$container.find('#engineResultBadge').text('Active').css({ background: 'rgba(59, 130, 246, 0.2)', color: '#60a5fa' });
 
             // Update player labels based on chosen user side
             if (this.userSide === 'black') {
-                this.$container.find('#engineWhitePlayer').text('Stockfish Computer');
+                this.$container.find('#engineWhitePlayer').text(`Stockfish Computer (Lv ${this.options.skillLevel})`);
                 this.$container.find('#engineBlackPlayer').text('You (Black)');
             } else {
                 this.$container.find('#engineWhitePlayer').text('You (White)');
-                this.$container.find('#engineBlackPlayer').text('Stockfish Computer');
+                this.$container.find('#engineBlackPlayer').text(`Stockfish Computer (Lv ${this.options.skillLevel})`);
             }
 
             const boardOrientation = orientation || this.userSide || (turn === 'w' ? 'white' : 'black');
@@ -306,6 +310,47 @@
             if (this.options.mode === 'engine' && this.userSide === 'black' && turn === 'w' && this.chess.history().length === 0) {
                 const self = this;
                 setTimeout(() => self.requestEngineMove(), 300);
+            }
+        }
+
+        /**
+         * Set Time Control dynamically (e.g. from outer buttons or dropdown)
+         */
+        setTimeControl(minutes) {
+            const mins = parseInt(minutes, 10);
+            this.timeControlMinutes = isNaN(mins) ? 5 : mins;
+            this.options.timeControl = this.timeControlMinutes;
+            this.$container.find('#timeControlSelect').val(this.timeControlMinutes);
+            this.setupPosition(this.options.fen, this.userSide);
+            this.updateStatusBanner(`<i class="fas fa-stopwatch" style="color:#38bdf8;"></i> Time control set to <strong>${this.timeControlMinutes === 0 ? 'Unlimited' : this.timeControlMinutes + ' Minutes'}</strong>. Make your move!`);
+        }
+
+        /**
+         * Resign active game and record into history
+         */
+        resignGame() {
+            if (this.chess.game_over() || this.gameSaved || this.chess.history().length === 0) return;
+
+            this.stopClockTimer();
+            this.gameSaved = true;
+
+            const winner = this.userSide === 'white' ? 'Black' : 'White';
+            const resultText = winner === 'White' ? '1-0' : '0-1';
+
+            this.$container.find('#engineResultBadge').text(resultText).css({ background: 'rgba(239, 68, 68, 0.3)', color: '#f87171' });
+            this.updateStatusBanner(`<i class="fas fa-flag" style="color:#f87171;"></i> <strong>You resigned. ${winner} wins.</strong> (Saved to History)`);
+
+            if (typeof MChessGameHistory !== 'undefined') {
+                const whitePlayer = this.$container.find('#engineWhitePlayer').text() || 'White';
+                const blackPlayer = this.$container.find('#engineBlackPlayer').text() || 'Black';
+                MChessGameHistory.saveGame({
+                    white: whitePlayer,
+                    black: blackPlayer,
+                    result: resultText + ' (Resignation)',
+                    moveCount: this.chess.history().length,
+                    pgn: this.chess.pgn(),
+                    mode: `${this.options.mode} (${this.timeControlMinutes}m)`
+                });
             }
         }
 
@@ -373,7 +418,8 @@
         handleTimeout(flaggedSide) {
             const winner = flaggedSide === 'White' ? 'Black' : 'White';
             const resultText = winner === 'White' ? '1-0' : '0-1';
-            this.updateStatusBanner(`<i class="fas fa-hourglass-end" style="color:#ef4444;"></i> <strong>Time Out! ${flaggedSide} ran out of time. ${winner} wins!</strong>`);
+            this.$container.find('#engineResultBadge').text(resultText).css({ background: 'rgba(239, 68, 68, 0.3)', color: '#f87171' });
+            this.updateStatusBanner(`<i class="fas fa-hourglass-end" style="color:#ef4444;"></i> <strong>Time Out! ${flaggedSide} ran out of time. ${winner} wins!</strong> (Saved to History)`);
 
             if (typeof MChessGameHistory !== 'undefined' && !this.gameSaved) {
                 this.gameSaved = true;
@@ -633,11 +679,17 @@
                 isGameOver = true;
                 const winner = this.chess.turn() === 'w' ? 'Black' : 'White';
                 resultText = winner === 'White' ? '1-0' : '0-1';
+                this.$container.find('#engineResultBadge').text(resultText).css({ background: 'rgba(22, 163, 74, 0.3)', color: '#4ade80' });
                 this.updateStatusBanner(`<i class="fas fa-crown" style="color:#d4af37;"></i> <strong>Checkmate! ${winner} wins!</strong> (Saved to History)`);
-            } else if (this.chess.in_draw()) {
+            } else if (this.chess.in_draw() || this.chess.in_stalemate() || this.chess.in_threefold_repetition() || this.chess.insufficient_material()) {
                 isGameOver = true;
                 resultText = '1/2-1/2';
-                this.updateStatusBanner(`<i class="fas fa-handshake"></i> <strong>Game Draw!</strong> (Saved to History)`);
+                let drawReason = 'Draw';
+                if (this.chess.in_stalemate()) drawReason = 'Stalemate';
+                else if (this.chess.in_threefold_repetition()) drawReason = 'Threefold Repetition';
+                else if (this.chess.insufficient_material()) drawReason = 'Insufficient Material';
+                this.$container.find('#engineResultBadge').text('1/2-1/2').css({ background: 'rgba(100, 116, 139, 0.3)', color: '#cbd5e1' });
+                this.updateStatusBanner(`<i class="fas fa-handshake"></i> <strong>Game Draw (${drawReason})!</strong> (Saved to History)`);
             }
 
             if (isGameOver) {
@@ -703,6 +755,13 @@
                 const mins = parseInt($(this).val(), 10);
                 self.timeControlMinutes = mins;
                 self.setupPosition(self.options.fen, self.userSide);
+            });
+
+            // Resign Button
+            this.$container.find('#btnEngineResign').on('click', () => {
+                if (confirm("Are you sure you want to resign this game?")) {
+                    self.resignGame();
+                }
             });
 
             // Navigation Controls: First |<, Prev <, Next >, Last >|
@@ -789,12 +848,14 @@
             return false;
         });
 
-        $('#mchessPuzzleContainer, #mchessEngineBoardContainer, #mchessBlogEngineBoard, [data-mchess-engine]').each(function () {
+        $('#mchessPuzzleContainer, #mchessEngineBoardContainer, #mchessOnlineBoardContainer, #mchessBlogEngineBoard, [data-mchess-engine]').each(function () {
             if (!$(this).data('mchess-initialized')) {
                 $(this).data('mchess-initialized', true);
-                new MChessEngineBoard(this);
+                const instance = new MChessEngineBoard(this);
+                $(this).data('mchess-instance', instance);
             }
         });
     });
 
 })(jQuery);
+

@@ -24,22 +24,61 @@ SOFTWARE.
 TRADEMARK & BRANDING PROTECTION NOTICE
 ========================================================================
 
-The trade names, trademarks, service marks, and logos "Marwadi Chess",
-"mchess", "EG1", and associated graphic branding belong exclusively to
-the original author. This license does NOT grant permission to use the 
-trade names, trademarks, service marks, or product names of the Licensor 
-for derivative works, endorsements, or promotions without prior written consent.
+The trade names, trademarks, service marks, domain names, and logos 
+"Marwadi Chess", "mchess", "mchess.eg1.in", "EG1", "EG1DOTIN", custom 
+vector emblems, 3D graphics, favicon designs, and associated branding 
+assets belong exclusively to the original author and licensor.
+
+This license does NOT grant permission to use the trade names, trademarks, 
+service marks, logos, or product names of the Licensor for derivative works, 
+endorsements, or promotions without prior written consent.
 
 ========================================================================
 THIRD-PARTY NOTICES & ACKNOWLEDGMENTS
 ========================================================================
 
-This application incorporates or links to the following third-party components:
+This application incorporates or links to the following third-party components 
+and open-source libraries:
+
+- chess.js (https://github.com/jhlywa/chess.js) - BSD-2-Clause / MIT License
+  Chess rule validation, legal move generation, FEN/SAN parsing, and game state.
+
+- Chessboard.js (https://chessboardjs.com/ - Chris Oakman) - MIT License
+  Interactive JavaScript chessboard interface and piece drag-and-drop mechanics.
+
+- Stockfish Chess Engine (https://stockfishchess.org/ & https://github.com/niklasf/stockfish.js) - GPLv3 / Open Source
+  Client-side Web Worker AI chess engine integration for analysis and AI play.
+
+- Standard Chess Piece Vectors (Wikimedia Commons / cburnett / standard SVG piece set) - CC BY-SA 3.0
+  High-resolution SVG chess piece graphical vectors.
+
+- Lichess API & Live Embeds (https://lichess.org/) - AGPLv3 / Open API
+  Interactive spectator broadcasts, Lichess TV embeds, and community team hub.
+  All trademarks belong to their respective owners.
+
+- ChessBase & Playchess Room (https://play.chessbase.com/) - Proprietary / Embeds
+  External interactive chess club room and game services. All rights and 
+  trademarks belong to ChessBase GmbH.
+
+- Google Firebase SDK (https://firebase.google.com/) - Apache License 2.0
+  Cloud Firestore NoSQL database and Firebase Web SDK client libraries. 
+  Firebase is a trademark of Google LLC.
+
+- PeerJS (https://peerjs.com/) - MIT License
+  WebRTC Peer-to-Peer data connection wrapper for live browser-to-browser multiplayer.
 
 - jQuery (https://jquery.com/) - MIT License
+  DOM manipulation, event delegation, and asynchronous component loading.
+
 - Bootstrap (https://getbootstrap.com/) - MIT License
+  Responsive grid system and core UI styling components.
+
 - FontAwesome Free (https://fontawesome.com/) - SIL OFL 1.1 / MIT License
+  Iconography across UI panels, control headers, buttons, and navigation.
+
 - Slick Carousel (https://kenwheeler.github.io/slick/) - MIT License
-- Cinnamon Chess Engine & Chess Strategy Online (http://cinnamonchess.altervista.org/) - Open-source chess engine & interactive widget components.
-- ChessBase & Lichess Embeds - External interactive chess services. All rights
-  and trademarks belong to their respective owners.
+  Responsive carousel slider components.
+
+- Legacy Cinnamon Chess Engine & Chess Strategy Online (http://cinnamonchess.altervista.org/)
+  Historically utilized in early iterations; transitioned to native MChess custom board 
+  and Stockfish Web Worker engine architecture.
