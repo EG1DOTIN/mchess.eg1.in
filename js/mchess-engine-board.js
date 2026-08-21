@@ -759,8 +759,18 @@
     window.MChessEngineBoard = MChessEngineBoard;
 
     $(document).ready(function () {
+        // Guarantee documentElement and body scroll container integrity for Chessboard.js dragged piece coordinates
+        if (document.documentElement) {
+            document.documentElement.style.overflowX = 'hidden';
+            document.documentElement.style.overflowY = 'auto';
+        }
+        if (document.body) {
+            document.body.style.overflow = 'visible';
+            document.body.style.position = 'static';
+        }
+
         // Prevent native browser image drag on chess pieces so Chessboard.js JS handles 100% of movement
-        $(document).on('dragstart', '.board-container img, .square-55d63 img, .dragged-piece-4d2e8, [class*="piece-"]', function (e) {
+        $(document).on('dragstart', '.board-container img, .square-55d63 img, .piece-417db, body > img.piece-417db, body > img[class*="piece-"], .dragged-piece-4d2e8, [class*="piece-"]', function (e) {
             e.preventDefault();
             return false;
         });

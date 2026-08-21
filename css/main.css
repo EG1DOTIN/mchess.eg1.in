@@ -1,26 +1,30 @@
-﻿@import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic);
+@import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic);
 
-html,
-body {
+html {
   min-height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 .layout-boxed html,
 .layout-boxed body {
   height: 100%;
 }
 body {
+  min-height: 100%;
+  height: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-family: 'Source Sans Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-weight: 400;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: visible;
+  position: static;
 }
 /* Layout */
 .wrapper {
   min-height: 100%;
   position: relative;
-  overflow: hidden;
+  /* overflow: hidden was clipping the Chessboard.js dragged piece clone that is appended to body */
+  overflow: visible;
 }
 .wrapper:before,
 .wrapper:after {
