@@ -271,7 +271,23 @@
                     const tempChess = new Chess();
                     tempChess.load_pgn(pgn);
                     const h = tempChess.header();
-                    const title = `${idx + 1}. ${h.White || 'White'} vs ${h.Black || 'Black'} (${h.Event || 'Game'}, ${h.Date || ''}) - ${h.Result || ''}`;
+
+                    let title = '';
+                    const white = h.White && h.White !== '?' ? h.White : '';
+                    const black = h.Black && h.Black !== '?' ? h.Black : '';
+                    const eventName = h.Event && h.Event !== '?' ? h.Event : '';
+                    const result = h.Result && h.Result !== '*' && h.Result !== '?' ? ` - ${h.Result}` : '';
+
+                    if (eventName && (!white || white === 'White') && (!black || black === 'Black')) {
+                        title = `${idx + 1}. ${eventName}${result}`;
+                    } else if (white && black) {
+                        const eventSuffix = (eventName && eventName !== 'Game' && eventName !== 'Match') ? ` (${eventName})` : '';
+                        title = `${idx + 1}. ${white} vs ${black}${eventSuffix}${result}`;
+                    } else if (eventName) {
+                        title = `${idx + 1}. ${eventName}${result}`;
+                    } else {
+                        title = `${idx + 1}. Game #${idx + 1}${result}`;
+                    }
 
                     const option = document.createElement("option");
                     option.value = idx;

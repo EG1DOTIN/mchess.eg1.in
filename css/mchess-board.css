@@ -29,8 +29,10 @@ body {
     padding: 24px;
     margin: 20px auto 40px auto;
     text-align: left;
+    width: 100%;
     max-width: 1120px;
     box-sizing: border-box;
+    overflow: hidden;
 }
 
 html[data-theme="dark"] .pgn-viewer-container,
@@ -45,9 +47,12 @@ body.dark-theme .pgn-viewer-container {
 
 @media (max-width: 600px) {
     .pgn-viewer-container {
-        padding: 14px;
-        margin: 10px 5px 30px 5px;
+        padding: 12px;
+        margin: 10px 0 25px 0;
         border-radius: 12px;
+        width: 100%;
+        max-width: 100%;
+        overflow: hidden;
     }
 
     .moves-panel {
@@ -122,6 +127,10 @@ body.dark-theme .pgn-viewer-container {
 
 .game-select-wrapper {
     margin-bottom: 20px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 .game-select-wrapper label {
@@ -139,8 +148,10 @@ body.dark-theme .pgn-viewer-container {
 
 .game-select {
     width: 100%;
+    max-width: 100%;
+    min-width: 0;
     padding: 12px 14px;
-    font-size: 15px;
+    font-size: 14.5px;
     border-radius: 10px;
     border: 1.5px solid #cbd5e1;
     background: #f8fafc;
@@ -149,6 +160,18 @@ body.dark-theme .pgn-viewer-container {
     cursor: pointer;
     box-sizing: border-box;
     transition: all 0.2s ease;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    display: block;
+}
+
+.game-select option {
+    font-size: 13.5px;
+    max-width: 100%;
+    padding: 6px 10px;
+    color: #0f172a;
+    background: #ffffff;
 }
 
 .game-select:focus {
@@ -710,6 +733,11 @@ body.dark-theme .mode-banner.analysis-mode {
     background: #0f172a !important;
     color: #f8fafc !important;
     border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+[data-theme="dark"] .game-select option {
+    background: #0f172a !important;
+    color: #f8fafc !important;
 }
 
 [data-theme="dark"] .moves-panel,

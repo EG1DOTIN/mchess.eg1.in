@@ -136,12 +136,16 @@
             `;
         }).join('');
 
-        // Attach click listeners to individual cards to mark as read on click
+        // Attach click listeners to individual cards to mark as read and close panel
         const cards = $container.querySelectorAll('.notify-card');
         cards.forEach(card => {
             card.addEventListener('click', function () {
                 const id = this.getAttribute('data-id');
                 if (id) markAsRead(id);
+                const $dropdown = document.getElementById('headerNotifyDropdown');
+                const $btn = document.getElementById('headerNotifyBtn');
+                if ($dropdown) $dropdown.style.display = 'none';
+                if ($btn) $btn.setAttribute('aria-expanded', 'false');
             });
         });
     }

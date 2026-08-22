@@ -2423,6 +2423,8 @@ p {
     max-height: 340px;
     overflow-y: auto;
     overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
 }
 
 .notify-card {
