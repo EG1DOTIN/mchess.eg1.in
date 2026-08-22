@@ -65,18 +65,7 @@
     <link href="js/slick-theme.css" rel="stylesheet" type="text/css" />
     
 
-    <script src="js/mootools.js" type="text/javascript"></script>
     <script src="js/jquery-2.1.1.min.js" type="text/javascript"></script>
-
-    <style type="text/css">
-        .f-nav {
-            z-index: 9999;
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 100%;
-        }
-    </style>
 </head>
 
 <body>
@@ -97,41 +86,49 @@
                     <div class="box-90 content">
                         <div class="row">
                             <div class="col-md-9">
-                                <section class="about-section">
-                                    <h2 id="appSoft" class="mb-4">About Marwadi Chess</h2>
+                                <!-- ABOUT_CONTENT_START -->
+                                <section class="about-section about-content-wrapper">
+<h2 id="appSoft" class="about-main-title mb-4">About Marwadi Chess</h2>
+<p><strong>Marwadi Chess</strong> (मारवाड़ी शतरंज) is a modern, open-source, and community-driven chess platform built for chess lovers, learners, and masters around the world. What began as a heartfelt passion project has evolved into a comprehensive digital destination for strategic chess training, interactive online arenas, tactical puzzles, live master broadcasts, and timeless chess philosophy.</p>
+<div class="about-quote-wrapper my-4">
+    <div class="about-quote-card">
+        <img id="about-dynamic-quote-img" src="cpcq/id5.webp" alt="Chess Quote of the Day | Marwadi Chess" class="about-quote-img" loading="eager" />
+        <div class="about-quote-controls">
+            <button type="button" id="about-quote-shuffle-btn" class="about-quote-btn"><i class="fas fa-random"></i> Shuffle Quote</button>
+            <a href="blog.html?cat=Chess%20Quotes" class="about-quote-btn"><i class="fas fa-quote-right"></i> Browse All Quotes →</a>
+        </div>
+    </div>
+</div>
 
-                                    <article class="mb-4">
-                                        <p class="lead">
-                                            <strong>Marwadi Chess</strong> is dedicated to helping players of all skill
-                                            levels—from beginners to seasoned masters—elevate their game. What started
-                                            as a personal passion project has grown into a hub for insightful chess
-                                            strategies, analysis, and deep-dives.
-                                        </p>
-                                    </article>
-
-                                    <article class="mb-4">
-                                        <h4 class="left">A Philosophy on Chess Improvement</h4>
-                                        <p>
-                                            Tactics alone aren't enough to secure a win. True mastery requires
-                                            understanding positional play, recognizing winning patterns, and mastering
-                                            key opening theory. Here at <strong>Marwadi Chess</strong>, you'll discover
-                                            actionable ideas and fresh perspectives to give you a clear edge on the
-                                            board.
-                                        </p>
-                                    </article>
-
-                                    <article class="mb-4">
-                                        <h4 class="left">How Marwadi Chess Helps You Win</h4>
-                                        <p>
-                                            Chess is simple to learn, yet endlessly complex to master. Marwadi Chess Website bridges that
-                                            gap by breaking down key strategic concepts through annotated games,
-                                            practical puzzles, inspiring quotes, and positional breakdowns. Whether
-                                            you're stuck on a rating plateau or looking to refine your openings, this
-                                            site is built to help you spot your weaknesses and unlock your next
-                                            breakthrough.
-                                        </p>
-                                    </article>
+<hr class="about-divider my-4" />
+<h3 class="about-section-heading mt-4 mb-3">🏛️ Celebrating 4,500 Years of Chess Heritage</h3>
+<p>Chess is one of humanity’s greatest intellectual treasures, born in ancient India over 4,500 years ago as <strong><em>Chaturanga</em></strong> and <strong><em>Ashtapada</em></strong> during the Indus Valley era. From ancient carved stone tablets to modern digital battlefields, the royal game of strategy continues to inspire thinkers across generations.</p>
+<p>Marwadi Chess honors this rich cultural heritage by blending time-tested chess wisdom with cutting-edge digital training tools.</p>
+<hr class="about-divider my-4" />
+<h3 class="about-section-heading mt-4 mb-3">⚡ What You Can Explore on Marwadi Chess</h3>
+<p>Whether you are learning how pieces move, preparing for your next tournament, or seeking daily mental sharpness, Marwadi Chess provides a complete ecosystem:</p>
+<ul class="about-feature-list mb-4">
+<li><strong>⚔️ Live Play Online Chess</strong>: Play timed matches (3m, 5m, 10m, 30m) on open-source engine board with digital clocks, LocalStorage game history review, and PGN export. <a href="playonline.html" class="about-card-btn">Play Online →</a></li>
+<li><strong>🤖 Play vs. Computer (Stockfish)</strong>: Practice against the Stockfish engine across 20 difficulty levels with move hints, side selection, move navigation, and undo. <a href="playcomp.html" class="about-card-btn">Challenge Computer →</a></li>
+<li><strong>🧩 Daily Tactical Puzzles</strong>: Solve real-time daily tactics powered by official Lichess API &amp; Stockfish engine move solver with move hints, solution viewer, and streak counter. <a href="dailypuzzles.html" class="about-card-btn">Solve Daily Puzzles →</a></li>
+<li><strong>📚 Basic Chess Rules</strong>: Learn how to play chess with clear step-by-step rules covering piece movements, board setup, castling, and essential beginner strategy. <a href="chessrules.html" class="about-card-btn">Learn Rules →</a></li>
+<li><strong>🎯 Master Chess Opening Traps</strong>: Master famous opening traps to surprise opponents, avoid tactical blunders, and win games with sharp tactical ideas. <a href="chesstraps.html" class="about-card-btn">Explore Opening Traps →</a></li>
+<li><strong>📺 Watch Top Live Games</strong>: Watch live Grandmaster broadcasts across 6 channels (Top GM, Blitz, Rapid, Bullet, Classical, UltraBullet) with filter tabs and Fullscreen mode. <a href="watchlive.html" class="about-card-btn">Watch Live →</a></li>
+<li><strong>📜 Chess Quotes &amp; Mindset</strong>: Explore inspiring chess quotes from legendary World Champions and Grandmasters to boost chess mindset, strategy, and motivation. <a href="blog.html?cat=Chess%20Quotes" class="about-card-btn">Read Quotes →</a></li>
+<li><strong>📖 Interactive Chess Blog &amp; Studies</strong>: Read interactive chess blogs featuring dynamic FEN puzzle engines (Mate-in-2, Mate-in-3, Mate-in-4), chess history, and tactical studies. <a href="blog.html" class="about-card-btn">Explore Blog →</a></li>
+<li><strong>📂 Master PGN Game Archive</strong>: Study, replay, and analyze historic chess games move-by-move with interactive game viewer. <a href="pgngames.html" class="about-card-btn">Explore PGN Games →</a></li>
+<li><strong>🌐 Affiliated Platform Rooms</strong>: Enjoy direct access to official Marwadi Chess community rooms on trusted global platforms including ChessBase and Lichess.</li>
+</ul>
+<hr class="about-divider my-4" />
+<h3 class="about-section-heading mt-4 mb-3">🛡️ Guiding Principles</h3>
+<ul class="about-feature-list mb-4">
+<li><strong>Open Source Spirit</strong>: Marwadi Chess is built with an open-source spirit. Explore the codebase, report ideas, or contribute directly on official GitHub repository. <a href="https://github.com/EG1DOTIN/mchess.eg1.in" target="_blank" rel="noopener noreferrer" class="about-card-btn">View on GitHub → <i class="fas fa-external-link-alt"></i></a></li>
+<li><strong>Privacy-First Experience</strong>: Marwadi Chess respects digital privacy. No intrusive trackers, no invasive profiling, and full transparency. <a href="privacypolicy.html" class="about-card-btn">Read Privacy Policy →</a></li>
+<li><strong>Universal Accessibility</strong>: Built with lightweight, high-performance web standards, complete mobile responsiveness, and seamless Dark &amp; Light theme modes.</li>
+<li><strong>Questions &amp; Suggestions</strong>: Want to suggest an idea, write an article, or ask a question? Feel free to get in touch anytime. <a href="https://eg1.in/contact.html" target="_blank" rel="noopener noreferrer" class="about-card-btn">Contact → <i class="fas fa-external-link-alt"></i></a></li>
+</ul>
                                 </section>
+<!-- ABOUT_CONTENT_END -->
                             </div>
                         </div>
                     </div>
@@ -143,6 +140,7 @@
 
     <script src="js/slick.min.js" type="text/javascript"></script>
     <script src="js/include-components.js" type="text/javascript"></script>
+    <script src="js/about.js" type="text/javascript"></script>
 </body>
 
 </html>

@@ -13,6 +13,9 @@ function initializeComponents() {
     $.get('components/header.html', function (data) {
         var cleanData = typeof data === 'string' ? data.replace(/<script[\s\S]*?<\/script>/gi, '') : data;
         $('#header-placeholder').html(cleanData);
+        if (typeof window.initializeNotifications === 'function') {
+            window.initializeNotifications();
+        }
     });
 
     // Load menu template & initialize navigation handlers directly after insertion
@@ -33,6 +36,20 @@ function initializeComponents() {
 
     // Initialize visitor analytics tracking
     initializeVisitorTracker();
+
+    // Dynamically load theme engine
+    if (!document.querySelector('script[src*="mchess-theme.js"]')) {
+        var themeScript = document.createElement('script');
+        themeScript.src = 'js/mchess-theme.js';
+        document.body.appendChild(themeScript);
+    }
+
+    // Dynamically load in-site notification engine
+    if (!document.querySelector('script[src*="notifications.js"]')) {
+        var notifScript = document.createElement('script');
+        notifScript.src = 'js/notifications.js';
+        document.body.appendChild(notifScript);
+    }
 }
 
 /**
@@ -61,6 +78,7 @@ function initializeResponsiveMenu() {
     $(".toggleMenu").off('click').on('click', function (e) {
         e.preventDefault();
         $(this).toggleClass("active");
+        $(".navbar .menu").toggle();
         $(".nav").toggle();
     });
 
@@ -77,10 +95,12 @@ function initializeResponsiveMenu() {
     function adjustMenu() {
         ww = document.body.clientWidth;
         if (ww < 920) {
-            $(".toggleMenu").css("display", "inline-block");
+            $(".toggleMenu").css("display", "block");
             if (!$(".toggleMenu").hasClass("active")) {
+                $(".navbar .menu").hide();
                 $(".nav").hide();
             } else {
+                $(".navbar .menu").show();
                 $(".nav").show();
             }
             $(".nav li").off('mouseenter mouseleave');
@@ -91,6 +111,7 @@ function initializeResponsiveMenu() {
         }
         else if (ww >= 920) {
             $(".toggleMenu").css("display", "none");
+            $(".navbar .menu").show();
             $(".nav").show();
             $(".nav li").removeClass("hover");
             $(".nav li a").off('click');
@@ -132,15 +153,18 @@ function initializeFixedNav() {
     var navPlaceholder = $('<div class="nav-placeholder" style="display: none;"></div>');
     nav.before(navPlaceholder);
 
-    $(window).scroll(function () {
-        if ($(this).scrollTop() > 117) {
+    function updateFixedNav() {
+        if (window.innerWidth >= 768 && $(window).scrollTop() > 117) {
             nav.addClass("f-nav");
             navPlaceholder.height(nav.outerHeight()).show();
         } else {
             nav.removeClass("f-nav");
             navPlaceholder.hide();
         }
-    });
+    }
+
+    $(window).on('scroll.fixedNav resize.fixedNav orientationchange.fixedNav', updateFixedNav);
+    updateFixedNav();
 }
 
 /**

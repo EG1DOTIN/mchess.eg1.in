@@ -4,10 +4,12 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2, user-scalable=no" />
-    <title>Play Chess Online with Friends & Players | Marwadi Chess</title>
-    <meta name="title" content="Play Chess Online with Friends & Players | Marwadi Chess" />
-    <meta name="description" content="Play live chess online with friends or players worldwide. Enjoy real-time matchmaking, casual games, and chess practice directly in your browser." />
-    <meta name="keywords" content="play chess online, play chess with friends, live chess online, online chess game, multiplayer chess, free online chess, playchess" />
+    <title>Play Online Chess with Friends & Live Lobby | Marwadi Chess</title>
+    <meta name="title" content="Play Online Chess with Friends & Live Lobby | Marwadi Chess" />
+    <meta name="description"
+        content="Play live 2-player chess directly on our custom board! Discover online players in the live lobby, send 1-click challenges, invite friends via WebRTC P2P, and join the Marwadi Chess Club." />
+    <meta name="keywords"
+        content="play chess online, live chess lobby, 2 player chess online, webrtc chess, play chess with friends, marwadi chess club, online chess room" />
     <meta name="author" content="Marwadi Chess" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://mchess.eg1.in/playonline.html" />
@@ -17,42 +19,21 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@ChessMarwadi" />
     <meta name="twitter:creator" content="@ChessMarwadi" />
-    <meta name="twitter:title" content="Play Chess Online with Friends & Players | Marwadi Chess" />
-    <meta name="twitter:description" content="Play live chess online with friends or players worldwide. Enjoy real-time matchmaking, casual games, and chess practice directly in your browser." />
+    <meta name="twitter:title" content="Play Online Chess with Friends & Live Lobby | Marwadi Chess" />
+    <meta name="twitter:description"
+        content="Play live 2-player chess directly on our custom board! Discover online players in the live lobby, send 1-click challenges, invite friends via WebRTC P2P, and join the Marwadi Chess Club." />
     <meta name="twitter:image" content="https://mchess.eg1.in/img/mchesshome.webp" />
-    <meta name="twitter:image:alt" content="Play Chess Online with Friends & Players | Marwadi Chess" />
 
-    <!-- Open Graph Data (Facebook, WhatsApp, LinkedIn, Discord) -->
+    <!-- Open Graph Data -->
     <meta property="og:site_name" content="Marwadi Chess" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Play Chess Online with Friends & Players | Marwadi Chess" />
-    <meta property="og:description" content="Play live chess online with friends or players worldwide. Enjoy real-time matchmaking, casual games, and chess practice directly in your browser." />
+    <meta property="og:title" content="Play Online Chess with Friends & Live Lobby | Marwadi Chess" />
+    <meta property="og:description"
+        content="Play live 2-player chess directly on our custom board! Discover online players in the live lobby, send 1-click challenges, invite friends via WebRTC P2P, and join the Marwadi Chess Club." />
     <meta property="og:url" content="https://mchess.eg1.in/playonline.html" />
     <meta property="og:image" content="https://mchess.eg1.in/img/mchesshome.webp" />
-    <meta property="og:image:alt" content="Play Chess Online with Friends & Players | Marwadi Chess" />
 
-    <!-- Schema.org JSON-LD Structured Data for Google Search -->
-    <script type="application/ld+json">
-{
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    "name": "Play Chess Online with Friends & Players | Marwadi Chess",
-    "description": "Play live chess online with friends or players worldwide. Enjoy real-time matchmaking, casual games, and chess practice directly in your browser.",
-    "url": "https://mchess.eg1.in/playonline.html",
-    "image": "https://mchess.eg1.in/img/mchesshome.webp",
-    "publisher": {
-        "@type": "Organization",
-        "name": "Marwadi Chess",
-        "url": "https://mchess.eg1.in",
-        "logo": {
-            "@type": "ImageObject",
-            "url": "https://mchess.eg1.in/img/mchesslogo.png"
-        }
-    }
-}
-    </script>
-
-<link href="css/main.css" rel="stylesheet" type="text/css" />
+    <link href="css/main.css" rel="stylesheet" type="text/css" />
     <link href="css/responsive.css" rel="stylesheet" type="text/css" />
     <link href="css/font-awesome.css" rel="stylesheet" type="text/css" />
     <link href="css/fonts.css" rel="stylesheet" type="text/css" />
@@ -63,20 +44,21 @@
     <link href="css/socialbuttons.css" rel="stylesheet" type="text/css" />
     <link href="js/slick.css" rel="stylesheet" type="text/css" />
     <link href="js/slick-theme.css" rel="stylesheet" type="text/css" />
-    
 
-    <script src="js/mootools.js" type="text/javascript"></script>
+    <!-- Chessboard.js & MCHESS Centralized Board CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css" />
+    <link rel="stylesheet" href="css/mchess-board.css" />
+    <link rel="stylesheet" href="css/playonline.css" />
+
     <script src="js/jquery-2.1.1.min.js" type="text/javascript"></script>
 
-    <style type="text/css">
-        .f-nav {
-            z-index: 9999;
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 100%;
-        }
-    </style>
+    <!-- Firebase App & Firestore SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="js/firebase-config.js" type="text/javascript"></script>
+
+    <!-- WebRTC PeerJS -->
+    <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 </head>
 
 <body>
@@ -88,9 +70,7 @@
                 <div class="row mainContentHeader">
                     <div id="scrlbar" class="box-90 overflow">
                         <div id="Content3Header" class="col-md-12">
-                            <!-- <h1>Learn Chess on Marwadi Chess Website</h1> -->
-                            <p style="font-size:25px">
-                            </p>
+                            <p style="font-size:25px"></p>
                         </div>
                     </div>
                 </div>
@@ -98,123 +78,304 @@
                     <div class="box-90 content">
 
                         <div class="row">
-                            <div class="col-md-9">
-                                <h2 id="appSoft">
-                                    Play Chess Online
-                                </h2>
-                                <br />
-                                <p><strong> Play Online in "Marwadi Chess Club", Enter & Invite Your Friends to Join.
-                                        You can play as a guest or by creating an account with a username. </strong></p>
-                                <a href='https://play.chessbase.com?room=Marwadi Chess Club&roomtext="Welcome to everyone"&pic=https://mchess.eg1.in/img/marwadichesslogo.webp'
-                                    target="_blank" class="btn btn-primary">Enter Online Marwadi Chess Club</a>
-                                <br />
-                                <br />
+                            <div class="col-md-12">
 
-                                <p><strong> Play as a guest user on chessbase account</strong></p>
-                                <style>
-                                    .wrapper {
-                                        position: relative;
-                                        overflow: hidden;
-                                        width: 100%;
-                                        padding-top: 680px;
-                                    }
+                                <!-- Top Player Identity & Status Bar -->
+                                <div
+                                    style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; background: rgba(15, 23, 42, 0.7); padding: 12px 18px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px;">
+                                    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                                        <div
+                                            style="width:10px; height:10px; border-radius:50%; background:#22c55e; box-shadow:0 0 8px #22c55e;">
+                                        </div>
+                                        <span style="color:#94a3b8; font-size:13px;">Player Identity:</span>
+                                        <strong id="lblPlayerNameDisplay" style="color:#f8fafc; font-size:14px;">Guest
+                                            Player</strong>
+                                        <button id="btnEditPlayerIdentity"
+                                            style="background:none; border:none; color:#38bdf8; cursor:pointer; font-size:12px; padding:2px 6px;">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
 
-                                    .wrapper iframe {
-                                        position: absolute;
-                                        top: 0;
-                                        left: 0;
-                                        bottom: 0;
-                                        right: 0;
-                                        width: 100%;
-                                        height: 100%;
-                                    }
+                                        <!-- Inline Name Editor -->
+                                        <div id="pnlPlayerNameEditor"
+                                            style="display:none; gap:6px; align-items:center;">
+                                            <input type="text" id="txtNewPlayerName" maxlength="24"
+                                                class="setting-input"
+                                                style="padding:4px 8px; font-size:12px; width:130px;" />
+                                            <button id="btnSaveNewPlayerName"
+                                                style="background:#2563eb; color:#fff; border:none; padding:4px 10px; border-radius:4px; font-size:12px; cursor:pointer;">Save</button>
+                                        </div>
+                                    </div>
 
-                                    @media (max-width: 768px) {
-                                        .wrapper {
-                                            padding-top: 540px;
-                                        }
-                                    }
-                                </style>
-                                <div class="wrapper">
-                                    <iframe src="https://play.chessbase.com" style="width:100%;height:100%"></iframe>
+                                    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                                        <span style="color:#64748b; font-size:12px; font-family:monospace;">ID: <span
+                                                id="myPeerCodeDisplay"
+                                                style="color:#94a3b8;">Connecting...</span></span>
+                                        <a href="mygames.html"
+                                            style="background:#0f172a; border:1px solid rgba(56,189,248,0.4); color:#38bdf8; text-decoration:none; padding:6px 12px; border-radius:6px; font-size:12px; font-weight:600; display:inline-flex; align-items:center; gap:6px;">
+                                            <i class="fas fa-history"></i> My Played Games Archive
+                                        </a>
+                                    </div>
                                 </div>
+
+                                <!-- VIEW 1: LOBBY & CHALLENGES (Visible when not in game) -->
+                                <div id="secLobbyView" style="display:block;">
+
+                                    <!-- Card 1: Online Players Live Lobby -->
+                                    <div class="lobby-card">
+                                        <div
+                                            style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; padding-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.08);">
+                                            <div>
+                                                <h2
+                                                    style="color: #f8fafc; font-size: 20px; margin: 0; display:flex; align-items:center; gap:8px;">
+                                                    <i class="fas fa-users" style="color: #22c55e;"></i> Online Players
+                                                    in Lobby
+                                                </h2>
+                                                <div id="lobbyPresenceStatusBadge" style="margin-top:4px;">
+                                                    <span style="color:#94a3b8; font-size:12px;"><i class="fas fa-eye"
+                                                            style="font-size:9px;"></i> Viewer Mode (Invisible to
+                                                        Challenges)</span>
+                                                </div>
+                                            </div>
+                                            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                                                <button id="btnToggleLobbyOnline"
+                                                    style="background:#1e293b; color:#cbd5e1; border:1px solid rgba(255,255,255,0.2); padding:7px 14px; border-radius:6px; font-size:13px; font-weight:bold; cursor:pointer; display:inline-flex; align-items:center; gap:6px; transition:all 0.2s ease;">
+                                                    <i class="fas fa-toggle-off"></i> Join Live Lobby (Go Online)
+                                                </button>
+                                                <div style="display:flex; align-items:center; gap:6px;">
+                                                    <span style="color:#94a3b8; font-size:12px;">Time:</span>
+                                                    <select id="selLobbyPreferredTime" class="setting-input"
+                                                        style="padding:5px 8px; font-size:12px;">
+                                                        <option value="3">⚡ 3 Min (Blitz)</option>
+                                                        <option value="5" selected>⚡ 5 Min (Blitz)</option>
+                                                        <option value="10">♟️ 10 Min (Rapid)</option>
+                                                        <option value="15">♟️ 15 Min (Rapid)</option>
+                                                        <option value="30">📜 30 Min (Classical)</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div style="overflow-x: auto;">
+                                            <table class="lobby-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="width: 38%;">Player Identity</th>
+                                                        <th style="width: 22%;">Preferred Time</th>
+                                                        <th style="width: 20%;">Status</th>
+                                                        <th style="width: 20%;">Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="onlineLobbyTableBody">
+                                                    <tr>
+                                                        <td colspan="4"
+                                                            style="text-align:center; color:#94a3b8; padding: 25px;">
+                                                            <i class="fas fa-spinner fa-spin"
+                                                                style="color:#38bdf8;"></i> Connecting to online
+                                                            lobby...
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <!-- 2-Column Grid: Invite via Link & Local Pass/Play -->
+                                    <div class="lobby-grid-row">
+
+                                        <!-- Card 2: Invite a Friend via Link -->
+                                        <div class="lobby-card" style="margin-bottom:0; display:flex; flex-direction:column; justify-content:space-between;">
+                                            <div>
+                                                <h3
+                                                    style="color: #f8fafc; font-size: 17px; margin: 0 0 6px 0; display:flex; align-items:center; gap:8px;">
+                                                    <i class="fas fa-link" style="color: #38bdf8;"></i> Direct Invite
+                                                    Link
+                                                </h3>
+                                                <p style="color: #94a3b8; font-size: 13px; margin: 0 0 14px 0;">
+                                                    Send a 1-click invitation link to a friend on WhatsApp, Discord, or
+                                                    Email.
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <div class="lobby-input-row" style="margin-bottom:12px;">
+                                                    <select id="selInviteLinkTime" class="setting-input"
+                                                        style="flex:1;">
+                                                        <option value="3">⚡ 3 Min Blitz</option>
+                                                        <option value="5" selected>⚡ 5 Min Blitz</option>
+                                                        <option value="10">♟️ 10 Min Rapid</option>
+                                                        <option value="30">📜 30 Min Classical</option>
+                                                    </select>
+                                                    <button id="btnCreateInviteLink"
+                                                        style="background:#2563eb; color:#fff; border:none; padding:8px 16px; border-radius:6px; font-weight:bold; cursor:pointer;">
+                                                        Generate Link
+                                                    </button>
+                                                </div>
+                                                <div id="pnlInviteLinkOutput"
+                                                    style="display:none; background:#0f172a; border:1px solid rgba(56,189,248,0.3); border-radius:8px; padding:12px;">
+                                                    <div class="lobby-input-row" style="margin-bottom:6px;">
+                                                        <input type="text" id="txtGeneratedInviteUrl" readonly
+                                                            class="setting-input"
+                                                            style="flex:1; font-family:monospace; font-size:12px;" />
+                                                        <button id="btnCopyInviteUrl"
+                                                            style="background:#16a34a; color:#fff; border:none; padding:6px 12px; border-radius:4px; font-weight:bold; cursor:pointer;">
+                                                            Copy
+                                                        </button>
+                                                    </div>
+                                                    <span style="color:#64748b; font-size:11px;">When your friend opens
+                                                        this URL, you will be connected directly!</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Card 3: Local Pass & Play (Same Screen) -->
+                                        <div class="lobby-card" style="margin-bottom:0; display:flex; flex-direction:column; justify-content:space-between;">
+                                            <div>
+                                                <h3
+                                                    style="color: #f8fafc; font-size: 17px; margin: 0 0 6px 0; display:flex; align-items:center; gap:8px;">
+                                                    <i class="fas fa-desktop" style="color: #eab308;"></i> Local Pass &
+                                                    Play
+                                                </h3>
+                                                <p style="color: #94a3b8; font-size: 13px; margin: 0 0 14px 0;">
+                                                    Two players on the same device/screen sharing clocks and the custom
+                                                    board.
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <div class="lobby-input-row">
+                                                    <select id="selPassAndPlayTime" class="setting-input"
+                                                        style="flex:1;">
+                                                        <option value="0">Unlimited Time</option>
+                                                        <option value="3">⚡ 3 Min Blitz</option>
+                                                        <option value="5" selected>⚡ 5 Min Blitz</option>
+                                                        <option value="10">♟️ 10 Min Rapid</option>
+                                                    </select>
+                                                    <button id="btnStartPassAndPlay"
+                                                        style="background: linear-gradient(135deg, #d97706 0%, #b45309 100%); color:#fff; border:none; padding:8px 18px; border-radius:6px; font-weight:bold; cursor:pointer;">
+                                                        <i class="fas fa-play"></i> Start Local Match
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <!-- Card 4: Subtle Affiliated Chess Clubs & Communities Bar -->
+                                    <div class="lobby-card" id="club" style="padding: 16px 20px;">
+                                        <div class="club-bar-inner"
+                                            style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <i class="fas fa-crown" style="color: #fbbf24; font-size: 15px;"></i>
+                                                <span
+                                                    style="color: #f8fafc; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Affiliated
+                                                    Club Hubs:</span>
+                                            </div>
+                                            <div class="club-links-container">
+                                                <a href="https://lichess.org/team/marwadi-chess-club" target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    class="club-chip-btn">
+                                                    <i class="fas fa-chess-knight" style="color: #38bdf8;"></i> Marwadi
+                                                    Chess on Lichess <i class="fas fa-external-link-alt"
+                                                        style="font-size: 10px; color: #64748b;"></i>
+                                                </a>
+                                                <a href='https://play.chessbase.com?room=Marwadi Chess Club&roomtext="Welcome to everyone"&pic=https://mchess.eg1.in/img/marwadichesslogo.webp'
+                                                    target="_blank" rel="noopener noreferrer"
+                                                    class="club-chip-btn">
+                                                    <i class="fas fa-chess-king" style="color: #fbbf24;"></i> ChessBase:
+                                                    Marwadi Chess Club <i class="fas fa-external-link-alt"
+                                                        style="font-size: 10px; color: #64748b;"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <!-- VIEW 2: LIVE MATCH ARENA (Visible during active match) -->
+                                <div id="secMatchArenaView" style="display:none;">
+
+                                    <div class="mchess-board-shell" style="max-width: 1050px; margin: 0 auto;">
+
+                                        <!-- Header / Player Clocks Card -->
+                                        <div class="game-meta-card"
+                                            style="padding: 16px 20px; border-radius: 12px; margin-bottom: 16px;">
+                                            <div
+                                                style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+                                                <div class="player-box">
+                                                    <span class="player-badge white"></span>
+                                                    <span id="p2pWhitePlayerName"
+                                                        style="font-weight:700; color:#f8fafc;">White</span>
+                                                    <span id="p2pWhiteClock" class="tech-pill"
+                                                        style="margin-left:8px; font-family:monospace; font-size:14px; font-weight:bold; background:#0f172a; color:#38bdf8; border:1px solid rgba(56,189,248,0.4);">05:00</span>
+                                                </div>
+
+                                                <div>
+                                                    <span id="p2pMatchBadge" class="tech-pill"
+                                                        style="background:rgba(34,197,94,0.2); color:#4ade80; border:1px solid rgba(34,197,94,0.4); font-size:13px;">Match
+                                                        Active</span>
+                                                </div>
+
+                                                <div class="player-box">
+                                                    <span id="p2pBlackClock" class="tech-pill"
+                                                        style="margin-right:8px; font-family:monospace; font-size:14px; font-weight:bold; background:#0f172a; color:#38bdf8; border:1px solid rgba(56,189,248,0.4);">05:00</span>
+                                                    <span class="player-badge black"></span>
+                                                    <span id="p2pBlackPlayerName"
+                                                        style="font-weight:700; color:#f8fafc;">Black</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Status Message Banner -->
+                                        <div id="p2pStatusBanner"
+                                            style="background: #0f172a; border: 1px solid rgba(56,189,248,0.3); border-radius:8px; padding:10px 16px; color:#f8fafc; font-size:14px; margin-bottom:16px;">
+                                            Match in progress...
+                                        </div>
+
+                                        <!-- Main Board & Moves Grid -->
+                                        <div class="board-layout">
+                                            <div class="board-column">
+                                                <div class="board-wrapper">
+                                                    <div id="mchessP2pBoard" class="board-container"></div>
+                                                </div>
+                                                <div class="controls-bar" style="margin-top:12px;">
+                                                    <button id="btnP2pResign" class="btn-action-ctrl"
+                                                        style="background:rgba(239,68,68,0.2); color:#f87171; border-color:rgba(239,68,68,0.4);"
+                                                        title="Resign Match">
+                                                        <i class="fas fa-flag"></i> Resign
+                                                    </button>
+                                                    <button id="btnP2pDraw" class="btn-action-ctrl"
+                                                        title="Offer Mutual Draw">
+                                                        <i class="fas fa-handshake"></i> Offer Draw
+                                                    </button>
+                                                    <button id="btnP2pFlip" class="btn-action-ctrl"
+                                                        title="Flip Board Orientation">
+                                                        <i class="fas fa-sync-alt"></i> Flip
+                                                    </button>
+                                                    <button id="btnP2pLeaveMatch" class="btn-action-ctrl"
+                                                        title="Leave & Return to Lobby">
+                                                        <i class="fas fa-door-open"></i> Leave Match
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <div class="info-column">
+                                                <div class="moves-panel" style="height: 100%; min-height: 380px;">
+                                                    <div class="moves-panel-header">
+                                                        <span><i class="fas fa-list-ol"></i> Live Match Notation</span>
+                                                        <span id="p2pMoveCount"
+                                                            style="font-weight:normal; font-size:12px; color:#64748b;">0
+                                                            moves</span>
+                                                    </div>
+                                                    <div id="p2pMovesList" class="moves-list"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
                             </div>
-
-							<div class="col-md-3"
-								style="display: flex; flex-direction: column; align-items: center; gap: 15px; padding-top: 15px; padding-bottom: 15px;">
-
-								<!-- 1. Facebook Group Card -->
-								<div
-									style="width: 340px; background-color:#ffffff; border:1px solid #dddfe2; border-radius:8px; font-family:Helvetica, Arial, sans-serif; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); overflow:hidden;">
-									<!-- Group Cover Image -->
-									<div style="line-height: 0;">
-										<img class="img"
-											src="./img/mchess_fb_group.webp?w=500&auto=format&fit=crop&q=60"
-											width="340" height="180" alt="Marwadi Chess Group"
-											style="object-fit: cover; border-top-left-radius: 8px; border-top-right-radius: 8px;" />
-									</div>
-									<!-- Group Title -->
-									<div
-										style="font-size:16px; font-weight:bold; padding:12px 12px 4px 12px; text-align:center; color:#1c1e21;">
-										Marwadi Chess Group
-									</div>
-									<!-- Group Meta Info -->
-									<div
-										style="color:#65676b; font-size:13px; font-weight:normal; text-align:center; padding-bottom: 8px;">
-										Public group · 225 members
-									</div>
-									<!-- Join Button -->
-									<div style="padding:4px 16px 12px 16px;">
-										<div style="background-color:#1877f2; border-radius:6px; text-align:center;">
-											<a style="color:#ffffff; text-decoration:none; display:block; padding:8px 0; font-size:14px; font-weight:bold; width:100%;"
-												href="https://www.facebook.com/groups/2720714741537938" target="_blank"
-												rel="noopener">
-												Join Group
-											</a>
-										</div>
-									</div>
-									<!-- Rules / Description -->
-									<div
-										style="border-top:1px solid #e4e6eb; font-size:12px; color:#050505; padding:12px 16px; line-height:1.4; background-color:#f0f2f5;">
-										Please maintain good behavior. Let's ask, share, and comment only about
-										chess/Shatranj.
-									</div>
-								</div>
-
-								<!-- 2. Facebook Page Embed -->
-								<div style="width: 340px; height: 380px;">
-									<iframe
-										src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fm1chess%2F&tabs=timeline&width=340&height=380&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId"
-										width="340" height="380"
-										style="border: none; overflow: hidden; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);"
-										scrolling="no" frameborder="0" allowtransparency="true" allow="encrypted-media">
-									</iframe>
-								</div>
-
-								<!-- 3. Instagram Embed -->
-								<div class="iframely-embed"
-									style="width: 340px; height: 380px; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); background: #ffffff;">
-									<div class="iframely-responsive" style="height: 380px; padding-bottom: 0;">
-										<a href="https://www.instagram.com/marwadichess/"
-											data-iframely-url="https://cdn.iframe.ly/lCjhQhp?height=360"></a>
-									</div>
-									<script async src="https://cdn.iframe.ly/embed.js" charset="utf-8"></script>
-								</div>
-
-								<!-- 4. Twitter/X Follow Button -->
-								<div style="text-align: center; width: 280px; padding-top: 5px;">
-									<a href="https://twitter.com/ChessMarwadi?ref_src=twsrc%5Etfw"
-										class="twitter-follow-button" data-size="large" data-show-count="false">
-										Follow @Marwadi Chess
-									</a>
-								</div>
-
-							</div>
-
-                            <!-- Scripts Loader (Keep these together at the bottom) -->
-							<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -222,8 +383,86 @@
         </div>
     </center>
 
+    <!-- MODAL 1: INCOMING CHALLENGE POPUP -->
+    <div id="modalIncomingChallenge" class="modal-overlay" style="display:none;">
+        <div class="modal-card">
+            <div
+                style="width:54px; height:54px; border-radius:50%; background:rgba(34,197,94,0.2); color:#4ade80; display:flex; align-items:center; justify-content:center; font-size:24px; margin:0 auto 14px auto; border:1px solid rgba(34,197,94,0.4);">
+                <i class="fas fa-chess-knight"></i>
+            </div>
+            <h3 style="color:#f8fafc; font-size:20px; margin:0 0 6px 0;">Incoming Challenge!</h3>
+            <p style="color:#cbd5e1; font-size:14px; margin:0 0 4px 0;">
+                <strong id="lblIncomingChallengerName" style="color:#38bdf8;">Opponent</strong> has challenged you to a
+                match!
+            </p>
+            <p id="lblIncomingTimeDetail"
+                style="color:#94a3b8; font-size:13px; font-family:monospace; margin:0 0 20px 0;">
+                5 Minutes Blitz
+            </p>
+            <div style="display:flex; gap:12px; justify-content:center;">
+                <button id="btnAcceptIncomingChallenge"
+                    style="background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color:#fff; border:none; padding:10px 22px; border-radius:8px; font-weight:bold; font-size:14px; cursor:pointer; box-shadow:0 4px 12px rgba(22,163,74,0.4);">
+                    <i class="fas fa-check"></i> Accept & Play
+                </button>
+                <button id="btnRejectIncomingChallenge"
+                    style="background:rgba(239,68,68,0.2); color:#f87171; border:1px solid rgba(239,68,68,0.4); padding:10px 18px; border-radius:8px; font-weight:bold; font-size:14px; cursor:pointer;">
+                    <i class="fas fa-times"></i> Decline
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: OUTGOING CHALLENGE WAITING POPUP -->
+    <div id="modalOutgoingChallenge" class="modal-overlay" style="display:none;">
+        <div class="modal-card">
+            <div style="font-size:32px; color:#38bdf8; margin-bottom:14px;">
+                <i class="fas fa-spinner fa-spin"></i>
+            </div>
+            <h3 style="color:#f8fafc; font-size:18px; margin:0 0 6px 0;">Sending Match Challenge...</h3>
+            <p style="color:#cbd5e1; font-size:14px; margin:0 0 20px 0;">
+                Waiting for <strong id="lblOutgoingTargetName" style="color:#38bdf8;">Opponent</strong> to accept the
+                challenge...
+            </p>
+            <button id="btnCancelOutgoingChallenge"
+                style="background:rgba(239,68,68,0.2); color:#f87171; border:1px solid rgba(239,68,68,0.4); padding:8px 18px; border-radius:6px; font-weight:bold; cursor:pointer;">
+                <i class="fas fa-times"></i> Cancel Request
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL 3: GAME OVER DIALOG -->
+    <div id="modalP2pGameOver" class="modal-overlay" style="display:none;">
+        <div class="modal-card">
+            <div style="font-size:32px; color:#eab308; margin-bottom:10px;">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <h2 id="lblGameOverResult" style="color:#f8fafc; font-size:24px; margin:0 0 6px 0;">Game Over</h2>
+            <p id="lblGameOverMessage" style="color:#94a3b8; font-size:14px; margin:0 0 20px 0;">Match completed.</p>
+            <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+                <button id="btnGameOverReturnLobby"
+                    style="background:#2563eb; color:#fff; border:none; padding:10px 18px; border-radius:6px; font-weight:bold; cursor:pointer;">
+                    <i class="fas fa-arrow-left"></i> Return to Lobby
+                </button>
+                <a href="mygames.html"
+                    style="background:#16a34a; color:#fff; text-decoration:none; padding:10px 18px; border-radius:6px; font-weight:bold; display:inline-flex; align-items:center; gap:6px;">
+                    <i class="fas fa-history"></i> View in My Games
+                </a>
+            </div>
+        </div>
+    </div>
+
     <script src="js/slick.min.js" type="text/javascript"></script>
     <script src="js/include-components.js" type="text/javascript"></script>
+
+    <!-- Chess Engine & Board Controllers -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+    <script src="js/mchess-fen-parser.js" type="text/javascript"></script>
+    <script src="js/mchess-board.js" type="text/javascript"></script>
+    <script src="js/mchess-game-history.js" type="text/javascript"></script>
+    <script src="js/mchess-p2p.js" type="text/javascript"></script>
+
+    <script src="js/playonline.js" type="text/javascript"></script>
 </body>
 
 </html>

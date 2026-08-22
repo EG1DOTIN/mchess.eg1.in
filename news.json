@@ -1,0 +1,62 @@
+[
+  {
+    "id": "v3-0-0-about-enhancements",
+    "version": "3.0.0",
+    "title": "Major Updates in About Section",
+    "message": "Checkout Marwadi Chess about section and see major updates celebrating 4,500 years of chess heritage with dynamic Grandmaster quotes.",
+    "icon": "fa-landmark",
+    "badge": "Heritage",
+    "badgeColor": "#f59e0b",
+    "link": "about.html",
+    "date": "Aug 22, 2026",
+    "pinned": true
+  },
+  {
+    "id": "v3-0-0-stockfish-puzzles",
+    "version": "3.0.0",
+    "title": "Stockfish AI Engine & Daily Tactics",
+    "message": "Challenge 20 levels of Stockfish AI or solve daily tactical puzzles with move hints and streak counter.",
+    "icon": "fa-robot",
+    "badge": "AI & Tactics",
+    "badgeColor": "#eab308",
+    "link": "dailypuzzles.html",
+    "date": "Aug 22, 2026",
+    "pinned": false
+  },
+  {
+    "id": "v3-0-0-playonline-arena",
+    "version": "3.0.0",
+    "title": "Live Play Online Arena & Matchmaking",
+    "message": "Play real-time multiplayer chess with digital clocks (3m, 5m, 10m, 30m), live lobby challenges, and PGN export.",
+    "icon": "fa-chess-knight",
+    "badge": "Online Play",
+    "badgeColor": "#3b82f6",
+    "link": "playonline.html",
+    "date": "Aug 21, 2026",
+    "pinned": false
+  },
+  {
+    "id": "v3-0-0-mygames-pgn",
+    "version": "3.0.0",
+    "title": "My Games Dashboard & PGN Archive",
+    "message": "Review your played games with move-by-move navigation, game statistics, and interactive PGN study library.",
+    "icon": "fa-folder-open",
+    "badge": "Archive",
+    "badgeColor": "#10b981",
+    "link": "mygames.html",
+    "date": "Aug 21, 2026",
+    "pinned": false
+  },
+  {
+    "id": "v3-0-0-board-dark-theme",
+    "version": "3.0.0",
+    "title": "Interactive 2D Board Design & Dark Mode",
+    "message": "Enjoy a modernized interactive 2D chessboard interface across all training pages with seamless Dark & Light theme modes.",
+    "icon": "fa-palette",
+    "badge": "Design",
+    "badgeColor": "#8b5cf6",
+    "link": "playcomp.html",
+    "date": "Aug 20, 2026",
+    "pinned": false
+  }
+]

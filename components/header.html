@@ -43,15 +43,36 @@
             </div>
             
             <div class="header-cta-wrapper">
-                <a href="dailypuzzles.html" class="header-cta-btn cta-puzzle" title="Solve Daily Chess Puzzles">
-                    <i class="fas fa-puzzle-piece"></i> <span>Daily Puzzle</span>
-                </a>
+                <!-- Notification Bell & Dropdown -->
+                <div class="header-notify-wrapper">
+                    <button id="headerNotifyBtn" class="header-cta-btn cta-notify" title="What's New & Updates" aria-label="Notifications" aria-expanded="false">
+                        <i class="fas fa-bell"></i>
+                        <span id="headerNotifyBadge" class="notify-badge unread-pulse" style="display: none;"></span>
+                    </button>
+                    <!-- Notification Dropdown Panel -->
+                    <div id="headerNotifyDropdown" class="notify-dropdown" style="display: none;" role="region" aria-label="Recent Announcements">
+                        <div class="notify-header">
+                            <div class="notify-header-title">
+                                <i class="fas fa-bullhorn" style="color: #f59e0b;"></i>
+                                <span>What's New</span>
+                            </div>
+                            <button type="button" id="markAllReadBtn" class="notify-mark-read" title="Mark all as read">Mark all read</button>
+                        </div>
+                        <div id="notifyListContainer" class="notify-list">
+                            <!-- Populated dynamically from news.json -->
+                        </div>
+                        <div class="notify-footer">
+                            <a href="blog.html" class="notify-footer-link">Browse All Blog Updates →</a>
+                        </div>
+                    </div>
+                </div>
+
                 <a href="playonline.html" class="header-cta-btn cta-play" title="Play Online Chess">
                     <i class="fas fa-chess-knight"></i> <span>Play Online</span>
                 </a>
-                <a href="https://play.chessbase.com?room=Marwadi Chess Club&roomtext=&quot;Welcome to everyone&quot;&pic=https://mchess.eg1.in/img/marwadichesslogo.webp" target="_blank" class="header-cta-btn cta-club" title="Join Marwadi Chess Club">
-                    <i class="fas fa-crown"></i> <span>Chess Club</span>
-                </a>
+                <button id="themeToggleBtn" class="header-cta-btn cta-theme" title="Toggle Light / Dark Theme">
+                    <i class="fas fa-moon" id="themeToggleIcon"></i> <span id="themeToggleText">Dark Mode</span>
+                </button>
             </div>
         </div>
     </div>

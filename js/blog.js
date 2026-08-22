@@ -137,6 +137,12 @@ $(document).ready(function() {
                     $('#blogs-container').append(category ? renderGridBlog(blog) : renderListBlog(blog));
                 });
 
+                if (typeof MChessEngineBoard !== 'undefined') {
+                    $('#blogs-container #mchessBlogEngineBoard').each(function() {
+                        new MChessEngineBoard(this);
+                    });
+                }
+
                 renderPagination();
             })
             .catch(function(error) {
@@ -189,6 +195,15 @@ $(document).ready(function() {
             $('meta[name="description"]').attr('content', blog.metaDescription || '');
 
             $('#blogs-container').append(renderBlogView(blog));
+
+            if (typeof MChessEngineBoard !== 'undefined') {
+                $('#mchessBlogEngineBoard').each(function() {
+                    if (!$(this).data('mchess-initialized')) {
+                        $(this).data('mchess-initialized', true);
+                        new MChessEngineBoard(this);
+                    }
+                });
+            }
         })
         .catch(function(error) {
             console.error('Error getting blog document:', error);
@@ -345,7 +360,7 @@ $(document).ready(function() {
                                 '</div>' +
                                 '<div class="row mrgin-top20">' +
                                     '<div class="col-md-12 left">' +
-                                        (blog.full_description || '') +
+                                        (typeof MChessFenParser !== 'undefined' ? MChessFenParser.replaceChessbaseIframe(blog.full_description || '') : (blog.full_description || '')) +
                                         '<br/>' +
                                         '<a href="blog.html?id=' + encodeURIComponent(blog.id) + '" class="btn btn-primary btn-sm mt-2">Read More</a>' +
                                     '</div>' +
@@ -386,7 +401,18 @@ $(document).ready(function() {
     }
     function renderBlogView(blog) {
         var image_label = getBlogImageUrl(blog.output_image);
+        var processedDescription = blog.full_description || '';
         
+        if (typeof MChessFenParser !== 'undefined') {
+            processedDescription = MChessFenParser.replaceChessbaseIframe(processedDescription);
+        }
+        
+        setTimeout(function() {
+            if ($('#mchessBlogEngineBoard').length && typeof MChessEngineBoard !== 'undefined') {
+                new MChessEngineBoard('#mchessBlogEngineBoard');
+            }
+        }, 100);
+
         return '' +
             '<div class="row blog-item-container">' +
                 '<div class="col-md-12 margin-bottom">' +
@@ -401,7 +427,7 @@ $(document).ready(function() {
                         '</div>' +
                         '<div class="row mrgin-top20">' +
                             '<div class="col-md-12 left" style="font-size: 16px; line-height: 1.6;">' +
-                                (blog.full_description || '') +
+                                processedDescription +
                             '</div>' +
                         '</div>' +
                     '</div>' +
@@ -417,7 +443,7 @@ $(document).ready(function() {
         var nextDisabled = !blogsHasMore ? 'disabled' : '';
         var pageButtons = renderPageButtons();
         var paginationHtml = '' +
-            '<div id="pagination-controls" class="row blog-item-container" style="margin-top: 20px;">' +
+            '<div id="pagination-controls" class="row blog-item-container" style="margin-top: 20px; margin-bottom: 24px;">' +
                 '<div class="col-md-12">' +
                     '<div class="text-center">' +
                         '<div class="btn-group">' +
