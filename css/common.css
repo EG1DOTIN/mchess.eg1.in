@@ -57,6 +57,15 @@
     background: transparent !important;
 }
 
+/* Sticky Navigation Bar */
+.f-nav {
+    z-index: 9999;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+}
+
 [data-theme="dark"] .navbar.f-nav,
 body.dark-theme .navbar.f-nav,
 [data-theme="dark"] .f-nav {

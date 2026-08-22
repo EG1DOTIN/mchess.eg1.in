@@ -1,0 +1,198 @@
+/**
+ * @file mygames.css
+ * @description Page-specific styling and theme variables for MCHESS Game History & Archive.
+ */
+
+:root {
+    --mg-bg-card: #ffffff;
+    --mg-text-title: #1e293b;
+    --mg-text-desc: #475569;
+    --mg-text-muted: #64748b;
+    --mg-border: #e2e8f0;
+    --mg-input-bg: #f8fafc;
+    --mg-table-bg: #ffffff;
+    --mg-table-th-bg: #f8fafc;
+    --mg-table-th-text: #475569;
+    --mg-table-border: #f1f5f9;
+    --mg-card-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"], body.dark-theme {
+    --mg-bg-card: rgba(30, 41, 59, 0.7);
+    --mg-text-title: #f8fafc;
+    --mg-text-desc: #94a3b8;
+    --mg-text-muted: #94a3b8;
+    --mg-border: rgba(255, 255, 255, 0.1);
+    --mg-input-bg: #0f172a;
+    --mg-table-bg: #1e293b;
+    --mg-table-th-bg: #0f172a;
+    --mg-table-th-text: #94a3b8;
+    --mg-table-border: rgba(255, 255, 255, 0.08);
+    --mg-card-shadow: none;
+}
+
+.mygames-header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--mg-border);
+    padding-bottom: 15px;
+}
+
+.mygames-header-title {
+    color: var(--mg-text-title);
+    font-size: 24px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mygames-header-desc {
+    color: var(--mg-text-desc);
+    font-size: 13px;
+    margin: 4px 0 0 0;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.stat-card {
+    background: var(--mg-bg-card);
+    border: 1px solid var(--mg-border);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+    box-shadow: var(--mg-card-shadow);
+    backdrop-filter: blur(8px);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(59, 130, 246, 0.5);
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--mg-text-title);
+    margin: 6px 0 2px 0;
+    font-family: monospace;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: var(--mg-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.filter-controls-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    background: var(--mg-bg-card);
+    padding: 14px 18px;
+    border-radius: 10px;
+    border: 1px solid var(--mg-border);
+    box-shadow: var(--mg-card-shadow);
+    margin-bottom: 15px;
+}
+
+.filter-btn {
+    padding: 7px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--mg-border);
+    background: var(--mg-input-bg);
+    color: var(--mg-text-desc);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filter-btn.active, .filter-btn:hover {
+    background: #2563eb;
+    color: #ffffff;
+    border-color: #3b82f6;
+}
+
+.search-games-input {
+    background: var(--mg-input-bg);
+    border: 1px solid var(--mg-border);
+    color: var(--mg-text-title);
+    padding: 7px 12px 7px 30px;
+    border-radius: 6px;
+    font-size: 13px;
+    outline: none;
+    width: 200px;
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    background: var(--mg-table-bg);
+    border: 1px solid var(--mg-border);
+    border-radius: 8px;
+    overflow: hidden;
+    color: var(--mg-text-title);
+    box-shadow: var(--mg-card-shadow);
+}
+
+.history-table th, .history-table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--mg-table-border);
+}
+
+.history-table th {
+    background: var(--mg-table-th-bg);
+    color: var(--mg-table-th-text);
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.history-table tr:hover {
+    background: rgba(59, 130, 246, 0.04);
+}
+
+.btn-action {
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+    margin-right: 4px;
+}
+
+.btn-action:hover {
+    opacity: 0.9;
+    transform: scale(1.04);
+}
+
+#reviewBoardContainer {
+    background: var(--mg-bg-card);
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+[data-theme="dark"] #reviewBoardContainer, body.dark-theme #reviewBoardContainer {
+    background: rgba(15, 23, 42, 0.95);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+}
