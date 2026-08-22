@@ -443,7 +443,7 @@ $(document).ready(function() {
         var nextDisabled = !blogsHasMore ? 'disabled' : '';
         var pageButtons = renderPageButtons();
         var paginationHtml = '' +
-            '<div id="pagination-controls" class="row blog-item-container" style="margin-top: 20px;">' +
+            '<div id="pagination-controls" class="row blog-item-container" style="margin-top: 20px; margin-bottom: 24px;">' +
                 '<div class="col-md-12">' +
                     '<div class="text-center">' +
                         '<div class="btn-group">' +

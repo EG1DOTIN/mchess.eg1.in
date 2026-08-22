@@ -965,6 +965,22 @@ iframe[src*="fritz.chessbase.com"] {
 @media (max-width: 768px) {
     .blog-item-container .our-product img {
         width: 100% !important;
+        height: auto !important;
+        max-height: none !important;
+        object-fit: contain !important;
+    }
+
+    .blogs .blogimg {
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+    }
+
+    .blogs .blogimg img {
+        width: 100% !important;
+        height: auto !important;
+        max-height: none !important;
+        object-fit: contain !important;
     }
 
     .our-product iframe,
@@ -979,6 +995,22 @@ iframe[src*="fritz.chessbase.com"] {
 @media (max-width: 480px) {
     .blog-item-container .our-product img {
         width: 100% !important;
+        height: auto !important;
+        max-height: none !important;
+        object-fit: contain !important;
+    }
+
+    .blogs .blogimg {
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+    }
+
+    .blogs .blogimg img {
+        width: 100% !important;
+        height: auto !important;
+        max-height: none !important;
+        object-fit: contain !important;
     }
 
     .our-product iframe,

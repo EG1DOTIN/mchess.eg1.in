@@ -46,8 +46,8 @@
 
 [data-theme="dark"] .mainContentHeader {
     background-image: url('../img/mchesshome.webp') !important;
-    background-color: rgba(15, 23, 42, 0.4) !important;
-    background-blend-mode: multiply;
+    background-color: transparent !important;
+    background-blend-mode: normal !important;
 }
 
 [data-theme="dark"] .mainContentHeader .box-90,
@@ -125,6 +125,83 @@ body.dark-theme #txtSearch {
     background-color: #151c2c !important;
     border-color: rgba(255, 255, 255, 0.12) !important;
     color: #f8fafc !important;
+}
+
+[data-theme="dark"] #btnSearch,
+body.dark-theme #btnSearch {
+    background-color: #1e293b !important;
+    background: #1e293b !important;
+    color: #f8fafc !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+[data-theme="dark"] #btnSearch:hover,
+body.dark-theme #btnSearch:hover {
+    background-color: #2563eb !important;
+    background: #2563eb !important;
+    color: #ffffff !important;
+    border-color: #3b82f6 !important;
+}
+
+/* Dark Theme for Blog Pagination Controls */
+[data-theme="dark"] #pagination-controls,
+body.dark-theme #pagination-controls {
+    background-color: transparent !important;
+    background: transparent !important;
+    border: none !important;
+}
+
+[data-theme="dark"] #pagination-controls .btn-default,
+body.dark-theme #pagination-controls .btn-default,
+[data-theme="dark"] #pagination-controls .bg-pager,
+body.dark-theme #pagination-controls .bg-pager {
+    background-color: #151c2c !important;
+    background: #151c2c !important;
+    color: #e2e8f0 !important;
+    border-color: #334155 !important;
+    transition: all 0.2s ease !important;
+}
+
+[data-theme="dark"] #pagination-controls .btn-default:hover:not(:disabled),
+body.dark-theme #pagination-controls .btn-default:hover:not(:disabled),
+[data-theme="dark"] #pagination-controls .bg-pager:hover:not(:disabled),
+body.dark-theme #pagination-controls .bg-pager:hover:not(:disabled) {
+    background-color: #1e293b !important;
+    background: #1e293b !important;
+    color: #38bdf8 !important;
+    border-color: #60a5fa !important;
+}
+
+[data-theme="dark"] #pagination-controls .btn-default:disabled,
+body.dark-theme #pagination-controls .btn-default:disabled,
+[data-theme="dark"] #pagination-controls .btn-default.disabled:not(.btn-primary),
+body.dark-theme #pagination-controls .btn-default.disabled:not(.btn-primary) {
+    background-color: #0b0f19 !important;
+    background: #0b0f19 !important;
+    color: #64748b !important;
+    border-color: #1e293b !important;
+    opacity: 0.55 !important;
+    cursor: not-allowed !important;
+}
+
+[data-theme="dark"] #pagination-controls .btn-primary,
+body.dark-theme #pagination-controls .btn-primary,
+[data-theme="dark"] #pagination-controls .btn-primary.disabled,
+body.dark-theme #pagination-controls .btn-primary.disabled {
+    background-color: #2563eb !important;
+    background: #2563eb !important;
+    color: #ffffff !important;
+    border-color: #3b82f6 !important;
+    opacity: 1 !important;
+    font-weight: 700 !important;
+    box-shadow: 0 0 12px rgba(37, 99, 235, 0.4) !important;
+}
+
+[data-theme="dark"] #pagination-controls .btn-group,
+body.dark-theme #pagination-controls .btn-group {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+    border-radius: 4px !important;
+    overflow: hidden !important;
 }
 
 [data-theme="dark"] .our-product p,
@@ -1698,7 +1775,7 @@ p {
         display: none !important;
     }
 
-    /* Mobile Hero Banner: Full-width edge-to-edge with intact piece crowns */
+    /* Mobile Hero Banner: Full-width edge-to-edge with intact piece crowns and undimmed brightness */
     .mainContentHeader {
         width: 100% !important;
         height: clamp(190px, 52vw, 230px) !important;
@@ -1706,8 +1783,10 @@ p {
         background-size: 100% auto !important;
         background-repeat: no-repeat !important;
         background-position: center 38% !important;
-        background-color: #ffffff !important;
+        background-color: transparent !important;
+        background-blend-mode: normal !important;
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08) !important;
+        filter: brightness(1.35) contrast(1.05) !important;
     }
 
     .mainContentHeader .overflow {
@@ -1716,7 +1795,9 @@ p {
 
     [data-theme="dark"] .mainContentHeader,
     body.dark-theme .mainContentHeader {
-        background-color: #151c2c !important;
+        background-color: transparent !important;
+        background-blend-mode: normal !important;
+        filter: brightness(1.45) contrast(1.05) !important;
     }
 
     /* Mobile Floating Back to Top Button: Small, unobtrusive */
@@ -1825,6 +1906,48 @@ p {
         max-width: 100% !important;
         margin: 0 auto !important;
         box-sizing: border-box !important;
+    }
+
+    /* Mobile Blog Grid Cards: Display full chessboard thumbnail without vertical cropping */
+    .blogs {
+        min-height: auto !important;
+    }
+
+    .blogs .blogimg {
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+        padding-top: 0 !important;
+        width: 100% !important;
+    }
+
+    .blogs .blogimg a {
+        display: block !important;
+        width: 100% !important;
+        line-height: 0 !important;
+    }
+
+    .blogs .blogimg img {
+        width: 100% !important;
+        height: auto !important;
+        max-height: none !important;
+        object-fit: contain !important;
+        display: block !important;
+    }
+
+    .blogs .blogbody .shortcontent {
+        height: auto !important;
+        max-height: 80px !important;
+    }
+
+    /* Mobile Spacing between Pagination Controls and Search Bar */
+    #pagination-controls {
+        margin-top: 16px !important;
+        margin-bottom: 24px !important;
+    }
+
+    #blogs-container {
+        margin-bottom: 20px !important;
     }
 
     .footer-grid {
