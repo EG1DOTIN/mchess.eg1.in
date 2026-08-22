@@ -2024,3 +2024,290 @@ p {
         text-align: center;
     }
 }
+
+/* ──────────────────────────────────────────────────────────
+   About Page Typography & Interactive Cards
+────────────────────────────────────────────────────────── */
+.about-content-wrapper {
+    padding: 10px 0 30px;
+    line-height: 1.75;
+    font-size: 15.5px;
+}
+
+.about-main-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1e293b;
+    position: relative;
+    padding-bottom: 12px;
+}
+
+.about-main-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 4px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, #d4af37, #f59e0b);
+}
+
+.about-section-heading {
+    font-size: 20px;
+    font-weight: 600;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.about-divider {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(212, 175, 55, 0.4), rgba(212, 175, 55, 0.1), transparent);
+    margin: 28px 0;
+}
+
+.about-feature-list {
+    list-style: none;
+    padding-left: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.about-feature-list > li {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid #d4af37;
+    border-radius: 8px;
+    padding: 14px 18px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.about-feature-list > li:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.about-quick-links-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 14px;
+}
+
+.about-quick-link-item {
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+}
+
+.about-pill-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #ffffff;
+    color: #1e293b;
+    border: 1px solid #cbd5e1;
+    padding: 10px 18px;
+    border-radius: 24px;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+    transition: all 0.2s ease;
+}
+
+.about-pill-btn:hover {
+    background: #d4af37;
+    color: #ffffff !important;
+    border-color: #d4af37;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(212, 175, 55, 0.3);
+}
+
+.about-pill-btn i {
+    font-size: 11px;
+    color: #d4af37;
+    transition: transform 0.2s ease;
+}
+
+.about-pill-btn:hover i {
+    color: #ffffff;
+    transform: translateX(3px);
+}
+
+/* Feature Card Inline Action Button */
+.about-card-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 8px;
+    background: rgba(212, 175, 55, 0.12);
+    color: #92640e !important;
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    padding: 3px 12px;
+    border-radius: 14px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.about-card-btn:hover {
+    background: #d4af37;
+    color: #ffffff !important;
+    border-color: #d4af37;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+}
+
+/* Dark Theme Adaptations for About Page */
+[data-theme="dark"] .about-main-title {
+    color: #f8fafc;
+}
+
+[data-theme="dark"] .about-section-heading {
+    color: #f1f5f9;
+}
+
+[data-theme="dark"] .about-content-wrapper p {
+    color: #cbd5e1;
+}
+
+[data-theme="dark"] .about-feature-list > li {
+    background: #1e293b;
+    border-color: #334155;
+    border-left-color: #fbbf24;
+    color: #e2e8f0;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .about-feature-list > li:hover {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+    background: #243044;
+}
+
+[data-theme="dark"] .about-card-btn {
+    background: rgba(251, 191, 36, 0.15);
+    color: #fbbf24 !important;
+    border-color: rgba(251, 191, 36, 0.4);
+}
+
+[data-theme="dark"] .about-card-btn:hover {
+    background: #fbbf24;
+    color: #0f172a !important;
+}
+
+[data-theme="dark"] .about-pill-btn {
+    background: #1e293b;
+    color: #f8fafc;
+    border-color: #475569;
+}
+
+[data-theme="dark"] .about-pill-btn:hover {
+    background: #fbbf24;
+    color: #0f172a !important;
+    border-color: #fbbf24;
+}
+
+[data-theme="dark"] .about-pill-btn:hover i {
+    color: #0f172a;
+}
+
+/* ──────────────────────────────────────────────────────────
+   About Page Dynamic Quote Card
+────────────────────────────────────────────────────────── */
+.about-quote-wrapper {
+    display: flex;
+    justify-content: center;
+    margin: 25px 0 35px;
+    width: 100%;
+}
+
+.about-quote-card {
+    max-width: 440px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 14px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.about-quote-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.about-quote-img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 8px;
+    transition: opacity 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.about-quote-controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.about-quote-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+    color: #1e293b !important;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.about-quote-btn:hover {
+    background: #d4af37;
+    color: #ffffff !important;
+    border-color: #d4af37;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+}
+
+[data-theme="dark"] .about-quote-card {
+    background: #1e293b;
+    border-color: #334155;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .about-quote-btn {
+    background: #0f172a;
+    border-color: #334155;
+    color: #e2e8f0 !important;
+}
+
+[data-theme="dark"] .about-quote-btn:hover {
+    background: #fbbf24;
+    color: #0f172a !important;
+    border-color: #fbbf24;
+}
+
+
