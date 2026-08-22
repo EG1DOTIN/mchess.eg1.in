@@ -13,6 +13,9 @@ function initializeComponents() {
     $.get('components/header.html', function (data) {
         var cleanData = typeof data === 'string' ? data.replace(/<script[\s\S]*?<\/script>/gi, '') : data;
         $('#header-placeholder').html(cleanData);
+        if (typeof window.initializeNotifications === 'function') {
+            window.initializeNotifications();
+        }
     });
 
     // Load menu template & initialize navigation handlers directly after insertion
@@ -39,6 +42,13 @@ function initializeComponents() {
         var themeScript = document.createElement('script');
         themeScript.src = 'js/mchess-theme.js';
         document.body.appendChild(themeScript);
+    }
+
+    // Dynamically load in-site notification engine
+    if (!document.querySelector('script[src*="notifications.js"]')) {
+        var notifScript = document.createElement('script');
+        notifScript.src = 'js/notifications.js';
+        document.body.appendChild(notifScript);
     }
 }
 

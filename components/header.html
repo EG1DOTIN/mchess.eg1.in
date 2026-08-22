@@ -43,6 +43,30 @@
             </div>
             
             <div class="header-cta-wrapper">
+                <!-- Notification Bell & Dropdown -->
+                <div class="header-notify-wrapper">
+                    <button id="headerNotifyBtn" class="header-cta-btn cta-notify" title="What's New & Updates" aria-label="Notifications" aria-expanded="false">
+                        <i class="fas fa-bell"></i>
+                        <span id="headerNotifyBadge" class="notify-badge unread-pulse" style="display: none;"></span>
+                    </button>
+                    <!-- Notification Dropdown Panel -->
+                    <div id="headerNotifyDropdown" class="notify-dropdown" style="display: none;" role="region" aria-label="Recent Announcements">
+                        <div class="notify-header">
+                            <div class="notify-header-title">
+                                <i class="fas fa-bullhorn" style="color: #f59e0b;"></i>
+                                <span>What's New</span>
+                            </div>
+                            <button type="button" id="markAllReadBtn" class="notify-mark-read" title="Mark all as read">Mark all read</button>
+                        </div>
+                        <div id="notifyListContainer" class="notify-list">
+                            <!-- Populated dynamically from news.json -->
+                        </div>
+                        <div class="notify-footer">
+                            <a href="blog.html" class="notify-footer-link">Browse All Blog Updates →</a>
+                        </div>
+                    </div>
+                </div>
+
                 <a href="playonline.html" class="header-cta-btn cta-play" title="Play Online Chess">
                     <i class="fas fa-chess-knight"></i> <span>Play Online</span>
                 </a>
