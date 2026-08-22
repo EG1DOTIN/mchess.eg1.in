@@ -524,9 +524,19 @@
                         const self = this;
                         setTimeout(() => {
                             self.playUciMove(counterUci);
-                            self.updateStatusBanner(`<i class="fas fa-puzzle-piece" style="color:#d4af37;"></i> Continue calculation...`);
+                            if (self.solutionIndex >= self.solutionMoves.length) {
+                                self.stopClockTimer();
+                                self.$container.find('#engineResultBadge').text('Solved').css({ background: 'rgba(22, 163, 74, 0.3)', color: '#4ade80' });
+                                self.scoreStreak++;
+                                self.$container.find('#puzzleStreakBadge').text(self.scoreStreak);
+                                self.updateStatusBanner(`<i class="fas fa-trophy" style="color:#d4af37;"></i> 🎉 <strong>Puzzle Solved! Great Job!</strong>`);
+                            } else {
+                                self.updateStatusBanner(`<i class="fas fa-puzzle-piece" style="color:#d4af37;"></i> Continue calculation...`);
+                            }
                         }, 400);
                     } else {
+                        this.stopClockTimer();
+                        this.$container.find('#engineResultBadge').text('Solved').css({ background: 'rgba(22, 163, 74, 0.3)', color: '#4ade80' });
                         this.scoreStreak++;
                         this.$container.find('#puzzleStreakBadge').text(this.scoreStreak);
                         this.updateStatusBanner(`<i class="fas fa-trophy" style="color:#d4af37;"></i> 🎉 <strong>Puzzle Solved! Great Job!</strong>`);
@@ -819,6 +829,11 @@
                     const nextMove = self.solutionMoves[self.solutionIndex];
                     self.playUciMove(nextMove);
                     self.solutionIndex++;
+                    if (self.solutionIndex >= self.solutionMoves.length) {
+                        self.stopClockTimer();
+                        self.$container.find('#engineResultBadge').text('Solved').css({ background: 'rgba(22, 163, 74, 0.3)', color: '#4ade80' });
+                        self.updateStatusBanner(`<i class="fas fa-trophy" style="color:#d4af37;"></i> <strong>Puzzle Solution Completed!</strong>`);
+                    }
                 }
             });
 
