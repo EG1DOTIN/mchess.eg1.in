@@ -1386,16 +1386,36 @@
 
             if (!this.gameSaved && typeof MChessGameHistory !== 'undefined') {
                 this.gameSaved = true;
-                const whitePlayer = (this.mySide === 'white') ? this.playerName : this.opponentName;
-                const blackPlayer = (this.mySide === 'black') ? this.playerName : this.opponentName;
+                const whitePlayer = this.isPassAndPlay ? 'Player 1' : ((this.mySide === 'white') ? this.playerName : this.opponentName);
+                const blackPlayer = this.isPassAndPlay ? 'Player 2' : ((this.mySide === 'black') ? this.playerName : this.opponentName);
+
+                const moveSanList = (this.historyFen && this.historyFen.length > 1)
+                    ? this.historyFen.slice(1).map(h => h.san)
+                    : this.chess.history();
+
+                let cleanPgn = this.chess.pgn();
+                if (!cleanPgn || cleanPgn.trim().length === 0 || moveSanList.length > this.chess.history().length) {
+                    cleanPgn = MChessGameHistory.buildPgnFromMoves({
+                        white: whitePlayer,
+                        black: blackPlayer,
+                        date: new Date().toISOString().slice(0, 10).replace(/-/g, '.'),
+                        result: resultText.includes('1-0') ? '1-0' : (resultText.includes('0-1') ? '0-1' : (resultText.includes('1/2') ? '1/2-1/2' : '*')),
+                        termination: message,
+                        moves: moveSanList,
+                        mode: this.isPassAndPlay ? `Local Pass & Play (${this.timeControlMinutes}m)` : `Online P2P (${this.timeControlMinutes}m)`
+                    });
+                }
 
                 MChessGameHistory.saveGame({
                     white: whitePlayer,
                     black: blackPlayer,
+                    userSide: this.mySide || 'white',
+                    playerName: this.playerName || 'Guest Player',
                     result: resultText,
-                    moveCount: this.chess.history().length,
-                    pgn: this.chess.pgn(),
-                    mode: `Online P2P (${this.timeControlMinutes}m)`
+                    moveCount: moveSanList.length,
+                    moves: moveSanList,
+                    pgn: cleanPgn,
+                    mode: this.isPassAndPlay ? `Local Pass & Play (${this.timeControlMinutes}m)` : `Online P2P (${this.timeControlMinutes}m)`
                 });
             }
 

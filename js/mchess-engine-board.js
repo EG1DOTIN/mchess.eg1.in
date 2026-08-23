@@ -218,6 +218,9 @@
                                 <button id="btnEngineFlip" class="btn-ctrl" title="Flip Board">
                                     <i class="fas fa-sync-alt"></i> Flip
                                 </button>
+                                <button type="button" class="btn-ctrl btn-board-theme" title="Change Board Theme">
+                                    <i class="fas fa-palette"></i> Theme
+                                </button>
                                 ${!isDailyOrPuzzle ? `
                                 <button id="btnEngineResign" class="btn-ctrl" title="Resign Current Match" style="background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4);">
                                     <i class="fas fa-flag"></i> Resign
@@ -454,11 +457,15 @@
             if (typeof MChessGameHistory !== 'undefined') {
                 const whitePlayer = this.$container.find('#engineWhitePlayer').text() || 'White';
                 const blackPlayer = this.$container.find('#engineBlackPlayer').text() || 'Black';
+                const moveSanList = (this.historyFen && this.historyFen.length > 1) ? this.historyFen.slice(1).map(h => h.san) : this.chess.history();
                 MChessGameHistory.saveGame({
                     white: whitePlayer,
                     black: blackPlayer,
+                    userSide: this.userSide || 'white',
+                    playerName: (this.userSide === 'white' ? whitePlayer : blackPlayer) || 'Player',
                     result: resultText + ' (Resignation)',
-                    moveCount: this.chess.history().length,
+                    moveCount: moveSanList.length,
+                    moves: moveSanList,
                     pgn: this.chess.pgn(),
                     mode: `${this.options.mode} (${this.timeControlMinutes}m)`
                 });
@@ -536,11 +543,15 @@
                 this.gameSaved = true;
                 const whitePlayer = this.$container.find('#engineWhitePlayer').text() || 'White';
                 const blackPlayer = this.$container.find('#engineBlackPlayer').text() || 'Black';
+                const moveSanList = (this.historyFen && this.historyFen.length > 1) ? this.historyFen.slice(1).map(h => h.san) : this.chess.history();
                 MChessGameHistory.saveGame({
                     white: whitePlayer,
                     black: blackPlayer,
+                    userSide: this.userSide || 'white',
+                    playerName: (this.userSide === 'white' ? whitePlayer : blackPlayer) || 'Player',
                     result: resultText + ' (Time Out)',
-                    moveCount: this.chess.history().length,
+                    moveCount: moveSanList.length,
+                    moves: moveSanList,
                     pgn: this.chess.pgn(),
                     mode: `${this.options.mode} (${this.timeControlMinutes}m)`
                 });
@@ -940,11 +951,15 @@
                     this.gameSaved = true;
                     const whitePlayer = this.$container.find('#engineWhitePlayer').text() || 'White';
                     const blackPlayer = this.$container.find('#engineBlackPlayer').text() || 'Black';
+                    const moveSanList = (this.historyFen && this.historyFen.length > 1) ? this.historyFen.slice(1).map(h => h.san) : this.chess.history();
                     MChessGameHistory.saveGame({
                         white: whitePlayer,
                         black: blackPlayer,
+                        userSide: this.userSide || 'white',
+                        playerName: (this.userSide === 'white' ? whitePlayer : blackPlayer) || 'Player',
                         result: resultText,
-                        moveCount: this.chess.history().length,
+                        moveCount: moveSanList.length,
+                        moves: moveSanList,
                         pgn: this.chess.pgn(),
                         mode: `${this.options.mode} (${this.timeControlMinutes}m)`
                     });

@@ -192,6 +192,9 @@
                                 <button id="btnFlip_${this.uid}" class="btn-ctrl" title="Flip Board">
                                     <i class="fas fa-sync-alt"></i> Flip
                                 </button>
+                                <button type="button" class="btn-ctrl btn-board-theme" title="Change Board Theme">
+                                    <i class="fas fa-palette"></i> Theme
+                                </button>
                                 <select id="autoplaySpeed_${this.uid}" class="speed-select" title="Autoplay Speed">
                                     <option value="2000">2s / move</option>
                                     <option value="1000" selected>1s / move</option>
@@ -498,6 +501,16 @@
                 // If direct move text was supplied without headers, try wrapping it
                 const wrappedPgn = `[Event "Match"]\n[White "White"]\n[Black "Black"]\n\n` + pgnString;
                 success = this.mainChess.load_pgn(wrappedPgn);
+            }
+
+            if (!success) {
+                // Try sanitizing variations/comments and retrying
+                const sanitizedPgn = pgnString.replace(/\([^\)]*\)/g, '').replace(/\{[^\}]*\}/g, '').trim();
+                success = this.mainChess.load_pgn(sanitizedPgn);
+                if (!success) {
+                    const wrappedPgn = `[Event "Match"]\n[White "White"]\n[Black "Black"]\n\n` + sanitizedPgn;
+                    success = this.mainChess.load_pgn(wrappedPgn);
+                }
             }
 
             if (!success) {

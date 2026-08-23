@@ -1,5 +1,29 @@
 [
   {
+    "id": "v3-5-1-feat-board-theme-customizer",
+    "version": "3.5.1",
+    "title": "5 Centralized Board Themes & Customizer",
+    "message": "Customize your chessboard anytime with 5 themes: Classic Slate, Lichess Wood, ChessBase Blue, Emerald Green, and Midnight Sapphire with 1-click modal & instant persistence.",
+    "icon": "fa-palette",
+    "badge": "New Feature",
+    "badgeColor": "#a855f7",
+    "link": "playonline.html",
+    "date": "Aug 23, 2026",
+    "pinned": true
+  },
+  {
+    "id": "v3-5-1-bugfixes-mygames-perspective-pgn",
+    "version": "3.5.1",
+    "title": "My Games Player Perspective & PGN Fixes",
+    "message": "Fixed online match PGN 0 moves bug, added player perspective win/loss outcome colors (Green for Victories, Red for Defeats), and resolved move review parsing.",
+    "icon": "fa-wrench",
+    "badge": "Bug Fixes",
+    "badgeColor": "#10b981",
+    "link": "mygames.html",
+    "date": "Aug 23, 2026",
+    "pinned": true
+  },
+  {
     "id": "v3-5-0-feat-tap-to-move-audio",
     "version": "3.5.0",
     "title": "Universal Tap-to-Move & Rich Sound Engine",
@@ -9,7 +33,7 @@
     "badgeColor": "#10b981",
     "link": "dailypuzzles.html",
     "date": "Aug 23, 2026",
-    "pinned": true
+    "pinned": false
   },
   {
     "id": "v3-5-0-opt-mobile-board-maximization",
@@ -21,7 +45,7 @@
     "badgeColor": "#8b5cf6",
     "link": "playcomp.html",
     "date": "Aug 23, 2026",
-    "pinned": true
+    "pinned": false
   },
   {
     "id": "v3-5-0-bugfixes-playonline-sync",
@@ -33,7 +57,7 @@
     "badgeColor": "#ef4444",
     "link": "playonline.html",
     "date": "Aug 23, 2026",
-    "pinned": true
+    "pinned": false
   },
   {
     "id": "v3-0-0-about-enhancements",

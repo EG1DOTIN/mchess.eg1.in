@@ -270,14 +270,20 @@ body.dark-theme .pgn-viewer-container {
 }
 
 /* Custom Board Square Colors */
-.board-container .white-1e1d7 {
-    background-color: #e6e6e6 !important;
-    color: #000000 !important;
+.board-container .white-1e1d7,
+.board-wrapper .white-1e1d7,
+.white-1e1d7 {
+    background-color: var(--mchess-sq-light, #e6e6e6) !important;
+    color: var(--mchess-sq-light-text, #1e293b) !important;
+    transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-.board-container .black-3c85d {
-    background-color: #616261 !important;
-    color: #ffffff !important;
+.board-container .black-3c85d,
+.board-wrapper .black-3c85d,
+.black-3c85d {
+    background-color: var(--mchess-sq-dark, #616261) !important;
+    color: var(--mchess-sq-dark-text, #f8fafc) !important;
+    transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 /* Custom Piece Filter Styles (Square & Dragged Pieces on Body) */
