@@ -130,11 +130,15 @@ $(document).ready(function () {
         if (game && game.pgn) {
             const normalized = MChessGameHistory.normalizeGameRecord(game);
             activePgn = normalized.pgn;
-            $('#reviewGameTitle').text(`${normalized.white} vs ${normalized.black} (${normalized.date})`);
-            $('#reviewBoardContainer').slideDown(250);
+            let reviewBoardInstance = null;
+            $('#reviewBoardContainer').slideDown(250, function () {
+                if (reviewBoardInstance && reviewBoardInstance.board) {
+                    reviewBoardInstance.board.resize();
+                }
+            });
 
             $('#mchessReviewBoardSlot').empty();
-            new MChessBoard('#mchessReviewBoardSlot', {
+            reviewBoardInstance = new MChessBoard('#mchessReviewBoardSlot', {
                 pgn: normalized.pgn,
                 showSelect: false,
                 autoPlay: false

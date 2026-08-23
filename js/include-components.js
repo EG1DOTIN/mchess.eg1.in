@@ -168,21 +168,74 @@ function initializeFixedNav() {
 }
 
 /**
- * Configures floating back to top button behavior and scroll visibility
+ * Configures smart bidirectional floating scroll button (Scroll Down to Bottom / Scroll Up to Top).
+ * Automatically adapts arrow direction, tooltip, and scrolling target based on page scroll position.
  */
 function initializeBackToTop() {
-    $(window).scroll(function () {
-        if ($(this).scrollTop() > 250) {
-            $('#backToTopBtn').fadeIn();
+    var $btn = $('#backToTopBtn');
+    if (!$btn.length) return;
+
+    var currentDirection = 'down';
+
+    function updateScrollState() {
+        var scrollTop = $(window).scrollTop();
+        var docHeight = $(document).height();
+        var winHeight = $(window).height();
+        var maxScroll = docHeight - winHeight;
+
+        // If page has negligible scrollable content, hide button
+        if (maxScroll <= 80) {
+            $btn.fadeOut(200);
+            return;
+        }
+
+        // Show button when page has scrollable content
+        if ($btn.is(':hidden')) {
+            $btn.css('display', 'inline-flex').hide().fadeIn(200);
+        }
+
+        // Dynamic threshold: switch to UP after scrolling 300px or past 35% of max scroll
+        var threshold = Math.min(300, maxScroll * 0.35);
+
+        if (scrollTop < threshold) {
+            if (currentDirection !== 'down') {
+                currentDirection = 'down';
+                $btn.attr('data-direction', 'down')
+                    .attr('title', 'Scroll to Bottom')
+                    .attr('aria-label', 'Scroll to Bottom');
+                $btn.find('i').removeClass('fa-chevron-up').addClass('fa-chevron-down');
+            }
         } else {
-            $('#backToTopBtn').fadeOut();
+            if (currentDirection !== 'up') {
+                currentDirection = 'up';
+                $btn.attr('data-direction', 'up')
+                    .attr('title', 'Scroll to Top')
+                    .attr('aria-label', 'Scroll to Top');
+                $btn.find('i').removeClass('fa-chevron-down').addClass('fa-chevron-up');
+            }
+        }
+    }
+
+    // Scroll click handler
+    $btn.off('click.smartScroll').on('click.smartScroll', function (e) {
+        e.preventDefault();
+        var dir = $btn.attr('data-direction') || currentDirection;
+        if (dir === 'down') {
+            var targetScroll = $(document).height() - $(window).height();
+            $('html, body').stop().animate({ scrollTop: targetScroll }, 450);
+        } else {
+            $('html, body').stop().animate({ scrollTop: 0 }, 450);
         }
     });
 
-    $('#backToTopBtn').click(function (e) {
-        e.preventDefault();
-        $('html, body').animate({ scrollTop: 0 }, 400);
-    });
+    // Window scroll and resize listeners
+    $(window).off('scroll.smartScroll resize.smartScroll orientationchange.smartScroll')
+             .on('scroll.smartScroll resize.smartScroll orientationchange.smartScroll', function () {
+                 updateScrollState();
+             });
+
+    // Initial state evaluation
+    updateScrollState();
 }
 
 // Trigger component initialization on DOM ready

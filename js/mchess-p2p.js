@@ -39,6 +39,13 @@
             this.isPassAndPlay = false;
             this.isLobbyOnline = false; // Option B: Offline/Viewer by default
 
+            // Outbound message queue for unready channels
+            this.outboundQueue = [];
+            // Application ACK tracking for moves
+            this.pendingMoveAck = null;
+            this.moveAckTimer = null;
+            this.heartbeatInterval = null;
+
             // Tap-to-Move state
             this.selectedSquare = null;
             this.legalMoves = [];
@@ -82,12 +89,47 @@
                 if (this.audioCtx.state === 'suspended') {
                     this.audioCtx.resume();
                 }
+                const now = this.audioCtx.currentTime;
+
+                if (type === 'checkmate') {
+                    // Triumphant 4-note ascending fanfare (C5 -> E5 -> G5 -> C6)
+                    const notes = [523.25, 659.25, 783.99, 1046.50];
+                    notes.forEach((freq, i) => {
+                        const osc = this.audioCtx.createOscillator();
+                        const gain = this.audioCtx.createGain();
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(freq, now + i * 0.08);
+                        gain.gain.setValueAtTime(0.3, now + i * 0.08);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 0.35);
+                        osc.connect(gain);
+                        gain.connect(this.audioCtx.destination);
+                        osc.start(now + i * 0.08);
+                        osc.stop(now + i * 0.08 + 0.35);
+                    });
+                    return;
+                } else if (type === 'stalemate' || type === 'draw') {
+                    // Neutral 2-tone harmonic chime (A4 -> F4)
+                    const notes = [440, 349.23];
+                    notes.forEach((freq, i) => {
+                        const osc = this.audioCtx.createOscillator();
+                        const gain = this.audioCtx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(freq, now + i * 0.12);
+                        gain.gain.setValueAtTime(0.25, now + i * 0.12);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.12 + 0.3);
+                        osc.connect(gain);
+                        gain.connect(this.audioCtx.destination);
+                        osc.start(now + i * 0.12);
+                        osc.stop(now + i * 0.12 + 0.3);
+                    });
+                    return;
+                }
+
                 const osc = this.audioCtx.createOscillator();
                 const gain = this.audioCtx.createGain();
                 osc.connect(gain);
                 gain.connect(this.audioCtx.destination);
 
-                const now = this.audioCtx.currentTime;
                 if (type === 'capture') {
                     osc.type = 'triangle';
                     osc.frequency.setValueAtTime(450, now);
@@ -237,7 +279,8 @@
 
             conn.on('open', () => {
                 console.log("[MChessP2P] Reconnected to opponent peer!");
-                conn.send({
+                self.flushOutboundQueue();
+                self.safeSend({
                     type: 'reconnect_request',
                     senderPeerId: self.peerId,
                     senderName: self.playerName,
@@ -249,6 +292,7 @@
 
             conn.on('data', (data) => self.handleP2PMessage(data));
             conn.on('close', () => self.onOpponentDisconnected());
+            conn.on('error', (err) => console.warn("[MChessP2P] Reconnect connection error:", err));
         }
 
         saveActiveMatchToSession() {
@@ -408,12 +452,55 @@
         }
 
         /**
+         * Safe WebRTC Data Transmission with Queueing & ReadyState Checks
+         */
+        safeSend(payload) {
+            if (!payload) return false;
+
+            if (this.activeConnection && this.activeConnection.open) {
+                try {
+                    this.activeConnection.send(payload);
+                    return true;
+                } catch (e) {
+                    console.warn("[MChessP2P] Send failed, queueing message:", e);
+                    this.outboundQueue.push(payload);
+                    return false;
+                }
+            } else if (this.activeConnection) {
+                console.log("[MChessP2P] Connection not yet open, queuing message:", payload.type);
+                this.outboundQueue.push(payload);
+                return false;
+            }
+            return false;
+        }
+
+        flushOutboundQueue() {
+            if (!this.activeConnection || !this.activeConnection.open || this.outboundQueue.length === 0) return;
+            console.log(`[MChessP2P] Flushing ${this.outboundQueue.length} queued messages...`);
+            while (this.outboundQueue.length > 0 && this.activeConnection.open) {
+                const item = this.outboundQueue.shift();
+                try {
+                    this.activeConnection.send(item);
+                } catch (e) {
+                    console.warn("[MChessP2P] Error flushing queued message:", e);
+                    this.outboundQueue.unshift(item);
+                    break;
+                }
+            }
+        }
+
+        /**
          * Handle Incoming WebRTC Connection
          */
         handleIncomingConnection(conn) {
             const self = this;
             this.activeConnection = conn;
             this.lastConnectedPeerId = conn.peer;
+
+            conn.on('open', () => {
+                console.log("[MChessP2P] Incoming DataConnection opened successfully with:", conn.peer);
+                self.flushOutboundQueue();
+            });
 
             conn.on('data', (data) => {
                 self.handleP2PMessage(data);
@@ -424,7 +511,7 @@
             });
 
             conn.on('error', (err) => {
-                console.warn("[MChessP2P] Connection error:", err);
+                console.warn("[MChessP2P] Incoming connection error:", err);
             });
         }
 
@@ -456,6 +543,12 @@
                 case 'move':
                     this.onRemoteMoveReceived(msg);
                     break;
+                case 'move_ack':
+                    this.onMoveAckReceived(msg);
+                    break;
+                case 'sync_heartbeat':
+                    this.onSyncHeartbeatReceived(msg);
+                    break;
                 case 'resign':
                     this.onOpponentResigned();
                     break;
@@ -466,7 +559,7 @@
                     this.onDrawAccepted();
                     break;
                 case 'draw_decline':
-                    alert(`${this.opponentName} declined the draw offer.`);
+                    this.onDrawDeclined();
                     break;
             }
         }
@@ -489,6 +582,8 @@
             this.activeConnection = conn;
 
             conn.on('open', () => {
+                console.log("[MChessP2P] Outgoing DataConnection opened to target peer:", targetPeerId);
+                self.flushOutboundQueue();
                 self.isHost = true;
                 let hostSide = sideChoice || 'random';
                 if (hostSide === 'random') {
@@ -497,7 +592,7 @@
                 self.mySide = hostSide;
                 const guestSide = hostSide === 'white' ? 'black' : 'white';
 
-                conn.send({
+                self.safeSend({
                     type: 'challenge_request',
                     challengerName: self.playerName,
                     timeControlMinutes: self.timeControlMinutes,
@@ -507,6 +602,7 @@
 
             conn.on('data', (data) => self.handleP2PMessage(data));
             conn.on('close', () => self.onOpponentDisconnected());
+            conn.on('error', (err) => console.warn("[MChessP2P] Outgoing connection error:", err));
         }
 
         /**
@@ -514,9 +610,7 @@
          */
         onChallengeReceived(msg) {
             if (this.gameActive) {
-                if (this.activeConnection) {
-                    this.activeConnection.send({ type: 'challenge_rejected', reason: 'busy' });
-                }
+                this.safeSend({ type: 'challenge_rejected', reason: 'busy' });
                 return;
             }
 
@@ -536,7 +630,7 @@
             $('#modalIncomingChallenge').fadeOut(200);
             if (!this.activeConnection) return;
 
-            this.activeConnection.send({
+            this.safeSend({
                 type: 'challenge_accepted',
                 accepterName: this.playerName
             });
@@ -547,7 +641,7 @@
         rejectIncomingChallenge() {
             $('#modalIncomingChallenge').fadeOut(200);
             if (this.activeConnection) {
-                this.activeConnection.send({ type: 'challenge_rejected' });
+                this.safeSend({ type: 'challenge_rejected' });
                 this.activeConnection.close();
                 this.activeConnection = null;
             }
@@ -575,17 +669,16 @@
             console.log("[MChessP2P] Opponent reconnected to active match!", msg);
             this.stopDisconnectGraceTimer();
 
-            if (this.activeConnection) {
-                this.activeConnection.send({
-                    type: 'reconnect_accept',
-                    fen: this.chess.fen(),
-                    whiteTime: this.whiteTime,
-                    blackTime: this.blackTime
-                });
-            }
+            this.safeSend({
+                type: 'reconnect_accept',
+                fen: this.chess.fen(),
+                whiteTime: this.whiteTime,
+                blackTime: this.blackTime
+            });
 
             this.updateStatusBanner(`<i class="fas fa-link" style="color:#22c55e;"></i> Opponent reconnected! Match resumed.`);
             this.startClockTimer();
+            this.initHeartbeat();
         }
 
         onReconnectAcceptedByOpponent(msg) {
@@ -603,6 +696,7 @@
 
             this.updateStatusBanner(`<i class="fas fa-check-circle" style="color:#22c55e;"></i> Reconnected! <strong>${this.chess.turn() === 'w' ? 'White' : 'Black'} to move</strong>.`);
             this.startClockTimer();
+            this.initHeartbeat();
         }
 
         /**
@@ -612,7 +706,15 @@
             this.gameActive = true;
             this.gameSaved = false;
             this.isPassAndPlay = false;
+            this.stopDisconnectGraceTimer();
+            this.clearPendingMoveAck();
             this.registerLobbyPresence('in_game');
+
+            // Strictly reset game engine and history state for fresh match
+            this.chess = new Chess();
+            this.historyFen = [{ fen: this.chess.fen(), san: 'Start', ply: 0 }];
+            this.currentPly = 0;
+            this.clearTapHighlights();
             this.saveActiveMatchToSession();
 
             // Switch UI view to Arena Match View
@@ -634,6 +736,7 @@
             this.initChessboard(this.mySide);
             this.updateStatusBanner(`<i class="fas fa-play" style="color:#22c55e;"></i> Match Started! <strong>White to move</strong>.`);
             this.startClockTimer();
+            this.initHeartbeat();
         }
 
         /**
@@ -724,12 +827,9 @@
             $container.off('click', '[class*="square-"]').on('click', '[class*="square-"]', function (e) {
                 if (!self.gameActive || self.chess.game_over()) return;
 
-                // Extract square from class names (e.g. "square-e4")
-                const classList = $(this).attr('class') || '';
-                const match = classList.match(/square-([a-h][1-8])/);
-                if (!match) return;
+                const clickedSquare = $(this).attr('data-square') || (($(this).attr('class') || '').match(/square-([a-h][1-8])/) || [])[1];
+                if (!clickedSquare) return;
 
-                const clickedSquare = match[1];
                 const pieceOnSquare = self.chess.get(clickedSquare);
 
                 // Determine if clicked square has player's piece
@@ -753,8 +853,9 @@
 
                     if (isLegalDest) {
                         // Execute move via click
+                        const fromSq = self.selectedSquare;
                         const move = self.chess.move({
-                            from: self.selectedSquare,
+                            from: fromSq,
                             to: clickedSquare,
                             promotion: 'q'
                         });
@@ -762,7 +863,7 @@
                         if (move) {
                             self.clearTapHighlights();
                             self.board.position(self.chess.fen());
-                            self.onMoveExecuted(move, self.selectedSquare, clickedSquare);
+                            self.onMoveExecuted(move, fromSq, clickedSquare);
                             return;
                         }
                     } else if (isMyPiece && clickedSquare !== self.selectedSquare) {
@@ -791,16 +892,20 @@
             // Highlight selected source square
             $(`.square-${square}`).addClass('square-selected');
 
-            // Highlight all legal destination squares with green dots
+            // Highlight all legal destination squares with green dots or capture rings
             this.legalMoves.forEach(m => {
-                $(`.square-${m.to}`).addClass('dest-highlight');
+                const $dest = $(`.square-${m.to}`);
+                $dest.addClass('dest-highlight');
+                if (m.captured) {
+                    $dest.addClass('dest-capture');
+                }
             });
         }
 
         clearTapHighlights() {
             this.selectedSquare = null;
             this.legalMoves = [];
-            $('[class*="square-"]').removeClass('square-selected dest-highlight');
+            $('[class*="square-"]').removeClass('square-selected dest-highlight dest-capture');
         }
 
         onDragStart(source, piece) {
@@ -835,8 +940,10 @@
 
         onMoveExecuted(move, source, target) {
             // Sound
-            if (move.captured) this.playSound('capture');
+            if (this.chess.in_checkmate()) this.playSound('checkmate');
+            else if (this.chess.in_draw() || this.chess.in_stalemate() || this.chess.in_threefold_repetition() || this.chess.insufficient_material()) this.playSound('stalemate');
             else if (this.chess.in_check()) this.playSound('check');
+            else if (move.captured) this.playSound('capture');
             else this.playSound('move');
 
             // Record history
@@ -852,20 +959,65 @@
             this.saveActiveMatchToSession();
 
             // Transmit to peer if online match
-            if (!this.isPassAndPlay && this.activeConnection) {
-                this.activeConnection.send({
+            if (!this.isPassAndPlay) {
+                const movePayload = {
                     type: 'move',
                     from: source,
                     to: target,
-                    promotion: 'q',
+                    promotion: move.promotion || 'q',
                     san: move.san,
                     fen: this.chess.fen(),
+                    ply: this.currentPly,
                     whiteTime: this.whiteTime,
                     blackTime: this.blackTime
-                });
+                };
+                this.safeSend(movePayload);
+                this.trackPendingMoveAck(movePayload);
             }
 
             this.checkGameOver();
+        }
+
+        trackPendingMoveAck(payload) {
+            this.clearPendingMoveAck();
+
+            this.pendingMoveAck = {
+                payload: payload,
+                attempts: 0
+            };
+
+            const self = this;
+            const checkAck = () => {
+                if (!self.gameActive || !self.pendingMoveAck || self.pendingMoveAck.payload.ply !== payload.ply) {
+                    return;
+                }
+
+                if (self.pendingMoveAck.attempts < 3) {
+                    self.pendingMoveAck.attempts++;
+                    console.log(`[MChessP2P] No ACK for move ply ${payload.ply}. Auto-retransmitting (attempt ${self.pendingMoveAck.attempts})...`);
+                    self.safeSend(self.pendingMoveAck.payload);
+                    self.moveAckTimer = setTimeout(checkAck, 600);
+                } else {
+                    console.warn(`[MChessP2P] Move ply ${payload.ply} unacknowledged after 3 retries.`);
+                    self.clearPendingMoveAck();
+                }
+            };
+
+            this.moveAckTimer = setTimeout(checkAck, 600);
+        }
+
+        onMoveAckReceived(msg) {
+            if (this.pendingMoveAck && (!msg.ply || msg.ply >= this.pendingMoveAck.payload.ply)) {
+                this.clearPendingMoveAck();
+            }
+        }
+
+        clearPendingMoveAck() {
+            if (this.moveAckTimer) {
+                clearTimeout(this.moveAckTimer);
+                this.moveAckTimer = null;
+            }
+            this.pendingMoveAck = null;
         }
 
         onSnapEnd() {
@@ -874,27 +1026,68 @@
 
         onRemoteMoveReceived(msg) {
             this.clearTapHighlights();
-            const move = this.chess.move({
-                from: msg.from,
-                to: msg.to,
-                promotion: msg.promotion || 'q'
-            });
+            if (!this.gameActive) return;
 
-            if (move) {
-                if (move.captured) this.playSound('capture');
-                else if (this.chess.in_check()) this.playSound('check');
+            let moveSuccess = false;
+            let moveSan = msg.san;
+            let moveCaptured = false;
+            let inCheck = false;
+
+            // 1. Attempt standard legal move in current engine state
+            try {
+                const move = this.chess.move({
+                    from: msg.from,
+                    to: msg.to,
+                    promotion: msg.promotion || 'q'
+                });
+                if (move) {
+                    moveSuccess = true;
+                    moveSan = move.san;
+                    moveCaptured = !!move.captured;
+                    inCheck = this.chess.in_check();
+                }
+            } catch (e) {
+                moveSuccess = false;
+            }
+
+            // 2. Smart FEN Fallback: If move failed (due to desync or stale state), load authoritative FEN
+            if (!moveSuccess && msg.fen) {
+                console.warn("[MChessP2P] Standard move failed. Falling back to authoritative FEN:", msg.fen);
+                try {
+                    const loaded = this.chess.load(msg.fen);
+                    if (loaded) {
+                        moveSuccess = true;
+                        inCheck = this.chess.in_check();
+                    }
+                } catch (err) {
+                    console.error("[MChessP2P] FEN fallback failed:", err);
+                }
+            }
+
+            if (moveSuccess) {
+                // Play appropriate sound
+                if (this.chess.in_checkmate()) this.playSound('checkmate');
+                else if (this.chess.in_draw() || this.chess.in_stalemate() || this.chess.in_threefold_repetition() || this.chess.insufficient_material()) this.playSound('stalemate');
+                else if (inCheck) this.playSound('check');
+                else if (moveCaptured) this.playSound('capture');
                 else this.playSound('move');
 
+                // Update move history
                 this.historyFen.push({
                     fen: this.chess.fen(),
-                    san: move.san,
+                    san: moveSan || 'Move',
                     ply: this.historyFen.length
                 });
                 this.currentPly = this.historyFen.length - 1;
 
-                this.board.position(this.chess.fen(), true);
+                // Sync board visually without animation glitch
+                if (this.board) {
+                    this.board.position(this.chess.fen(), false);
+                }
                 this.renderMovesList();
-                this.highlightLastMove(msg.from, msg.to);
+                if (msg.from && msg.to) {
+                    this.highlightLastMove(msg.from, msg.to);
+                }
                 this.saveActiveMatchToSession();
 
                 // Sync clocks if provided
@@ -902,7 +1095,61 @@
                 if (typeof msg.blackTime === 'number') this.blackTime = msg.blackTime;
                 this.updateClockDisplays();
 
+                // Send immediate ACK to sender so they know move was rendered
+                this.safeSend({
+                    type: 'move_ack',
+                    ply: msg.ply || this.currentPly
+                });
+
                 this.checkGameOver();
+            } else {
+                console.error("[MChessP2P] Failed to apply remote move payload:", msg);
+            }
+        }
+
+        initHeartbeat() {
+            this.stopHeartbeat();
+            const self = this;
+            this.heartbeatInterval = setInterval(() => {
+                if (!self.gameActive || self.isPassAndPlay || self.chess.game_over()) {
+                    return;
+                }
+                self.safeSend({
+                    type: 'sync_heartbeat',
+                    ply: self.currentPly,
+                    fen: self.chess.fen(),
+                    whiteTime: self.whiteTime,
+                    blackTime: self.blackTime
+                });
+            }, 10000);
+        }
+
+        stopHeartbeat() {
+            if (this.heartbeatInterval) {
+                clearInterval(this.heartbeatInterval);
+                this.heartbeatInterval = null;
+            }
+        }
+
+        onSyncHeartbeatReceived(msg) {
+            if (!this.gameActive || this.isPassAndPlay || !msg || !msg.fen) return;
+
+            // Check if remote state differs from local state
+            if (msg.fen !== this.chess.fen()) {
+                console.log("[MChessP2P] Heartbeat detected state drift. Reconciling with remote state...");
+                try {
+                    const loaded = this.chess.load(msg.fen);
+                    if (loaded) {
+                        if (this.board) this.board.position(this.chess.fen(), false);
+                        if (typeof msg.whiteTime === 'number') this.whiteTime = msg.whiteTime;
+                        if (typeof msg.blackTime === 'number') this.blackTime = msg.blackTime;
+                        this.updateClockDisplays();
+                        this.saveActiveMatchToSession();
+                        this.checkGameOver();
+                    }
+                } catch (e) {
+                    console.warn("[MChessP2P] Heartbeat alignment error:", e);
+                }
             }
         }
 
@@ -1008,14 +1255,28 @@
             }
         }
 
+        promptResign() {
+            if (!this.gameActive || this.chess.game_over()) return;
+            $('#modalConfirmResign').fadeIn(200);
+        }
+
+        confirmResign() {
+            $('#modalConfirmResign').fadeOut(200);
+            this.resignMatch();
+        }
+
+        cancelResign() {
+            $('#modalConfirmResign').fadeOut(200);
+        }
+
         resignMatch() {
             if (!this.gameActive || this.chess.game_over()) return;
 
             const winner = this.mySide === 'white' ? 'Black' : 'White';
             const resultText = winner === 'White' ? '1-0' : '0-1';
 
-            if (!this.isPassAndPlay && this.activeConnection) {
-                this.activeConnection.send({ type: 'resign' });
+            if (!this.isPassAndPlay) {
+                this.safeSend({ type: 'resign' });
             }
 
             this.onGameCompleted(resultText + ' (Resignation)', `You resigned. ${winner} wins.`);
@@ -1029,28 +1290,40 @@
 
         offerDraw() {
             if (!this.gameActive || this.chess.game_over()) return;
-            if (!this.isPassAndPlay && this.activeConnection) {
-                this.activeConnection.send({ type: 'draw_offer' });
-                alert("Draw offer sent to opponent.");
+            if (!this.isPassAndPlay) {
+                this.safeSend({ type: 'draw_offer' });
+                this.updateStatusBanner(`<i class="fas fa-handshake" style="color:#38bdf8;"></i> <strong>Draw offer sent.</strong> Waiting for opponent's response...`);
+                $('#btnP2pDraw').prop('disabled', true).css('opacity', '0.6').html('<i class="fas fa-handshake"></i> Draw Offered');
             } else if (this.isPassAndPlay) {
                 this.onGameCompleted('1/2-1/2 (Agreement)', 'Mutual Draw Agreed.');
             }
         }
 
         onDrawOfferReceived() {
-            if (confirm(`${this.opponentName} offers a draw. Do you accept?`)) {
-                if (this.activeConnection) {
-                    this.activeConnection.send({ type: 'draw_accept' });
-                }
-                this.onGameCompleted('1/2-1/2 (Agreement)', 'Draw accepted by agreement.');
-            } else {
-                if (this.activeConnection) {
-                    this.activeConnection.send({ type: 'draw_decline' });
-                }
-            }
+            if (!this.gameActive || this.chess.game_over()) return;
+            $('#lblIncomingDrawPlayerName').text(this.opponentName);
+            $('#modalIncomingDrawOffer').fadeIn(200);
+            this.playSound('check');
+        }
+
+        acceptIncomingDrawOffer() {
+            $('#modalIncomingDrawOffer').fadeOut(200);
+            this.safeSend({ type: 'draw_accept' });
+            this.onGameCompleted('1/2-1/2 (Agreement)', 'Draw accepted by agreement.');
+        }
+
+        declineIncomingDrawOffer() {
+            $('#modalIncomingDrawOffer').fadeOut(200);
+            this.safeSend({ type: 'draw_decline' });
+        }
+
+        onDrawDeclined() {
+            this.updateStatusBanner(`<i class="fas fa-info-circle" style="color:#f87171;"></i> <strong>${this.opponentName} declined the draw offer.</strong>`);
+            $('#btnP2pDraw').prop('disabled', false).css('opacity', '1').html('<i class="fas fa-handshake"></i> Offer Draw');
         }
 
         onDrawAccepted() {
+            $('#btnP2pDraw').prop('disabled', false).css('opacity', '1').html('<i class="fas fa-handshake"></i> Offer Draw');
             this.onGameCompleted('1/2-1/2 (Agreement)', 'Draw accepted by agreement.');
         }
 
@@ -1100,10 +1373,15 @@
             this.gameActive = false;
             this.stopClockTimer();
             this.stopDisconnectGraceTimer();
+            this.stopHeartbeat();
+            this.clearPendingMoveAck();
             this.clearActiveMatchSession();
             this.clearTapHighlights();
             this.registerLobbyPresence('available');
 
+            $('#btnP2pDraw').prop('disabled', false).css('opacity', '1').html('<i class="fas fa-handshake"></i> Offer Draw');
+            $('#modalIncomingDrawOffer').hide();
+            $('#modalConfirmResign').hide();
             $('#p2pMatchBadge').text(resultText).css({ background: 'rgba(234,179,8,0.2)', color: '#facc15' });
 
             if (!this.gameSaved && typeof MChessGameHistory !== 'undefined') {
@@ -1131,9 +1409,15 @@
             this.gameActive = false;
             this.stopClockTimer();
             this.stopDisconnectGraceTimer();
+            this.stopHeartbeat();
+            this.clearPendingMoveAck();
             this.clearActiveMatchSession();
             this.clearTapHighlights();
             this.registerLobbyPresence('available');
+
+            $('#btnP2pDraw').prop('disabled', false).css('opacity', '1').html('<i class="fas fa-handshake"></i> Offer Draw');
+            $('#modalIncomingDrawOffer').hide();
+            $('#modalConfirmResign').hide();
 
             if (this.activeConnection) {
                 this.activeConnection.close();
@@ -1179,6 +1463,11 @@
             const urlParams = new URLSearchParams(window.location.search);
             const room = urlParams.get('room');
             if (room && room !== this.peerId) {
+                // Consume and clean invite parameter so reload won't spawn duplicate connections
+                if (window.history && window.history.replaceState) {
+                    const cleanUrl = window.location.pathname;
+                    window.history.replaceState({}, document.title, cleanUrl);
+                }
                 this.sendChallenge(room, 'Friend (Invite Link)', 5, 'random');
             }
         }
@@ -1203,24 +1492,20 @@
             $('#btnCancelOutgoingChallenge').on('click', () => {
                 $('#modalOutgoingChallenge').fadeOut(200);
                 if (self.activeConnection) {
-                    self.activeConnection.send({ type: 'challenge_cancelled' });
+                    self.safeSend({ type: 'challenge_cancelled' });
                     self.activeConnection.close();
                     self.activeConnection = null;
                 }
             });
 
-            // In-Game Action Buttons
-            $('#btnP2pResign').on('click', () => {
-                if (confirm("Are you sure you want to resign this match?")) {
-                    self.resignMatch();
-                }
-            });
+            // In-Game Action Buttons & Modals
+            $('#btnP2pResign').on('click', () => self.promptResign());
+            $('#btnConfirmResignYes').on('click', () => self.confirmResign());
+            $('#btnConfirmResignNo').on('click', () => self.cancelResign());
 
-            $('#btnP2pDraw').on('click', () => {
-                if (confirm("Offer a draw to your opponent?")) {
-                    self.offerDraw();
-                }
-            });
+            $('#btnP2pDraw').on('click', () => self.offerDraw());
+            $('#btnAcceptDrawOffer').on('click', () => self.acceptIncomingDrawOffer());
+            $('#btnDeclineDrawOffer').on('click', () => self.declineIncomingDrawOffer());
 
             $('#btnP2pFlip').on('click', () => {
                 if (self.board) self.board.flip();

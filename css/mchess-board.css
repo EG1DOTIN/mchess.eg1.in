@@ -47,40 +47,76 @@ body.dark-theme .pgn-viewer-container {
 
 @media (max-width: 600px) {
     .pgn-viewer-container {
-        padding: 12px;
-        margin: 10px 0 25px 0;
-        border-radius: 12px;
-        width: 100%;
-        max-width: 100%;
-        overflow: hidden;
+        padding: 8px 4px !important;
+        margin: 6px auto 20px auto !important;
+        border-radius: 10px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+    }
+
+    .board-column {
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 auto !important;
+    }
+
+    .board-wrapper {
+        width: 100% !important;
+        max-width: 100% !important;
+        border-width: 3px !important;
+        outline-width: 1.5px !important;
+        border-radius: 8px !important;
+        margin: 0 auto !important;
+    }
+
+    .viewer-grid {
+        gap: 12px !important;
+    }
+
+    .controls-bar {
+        gap: 6px !important;
+        margin-top: 10px !important;
+        width: 100% !important;
+        justify-content: center !important;
+        flex-wrap: wrap !important;
+    }
+
+    .btn-ctrl {
+        min-height: 40px !important;
+        min-width: 40px !important;
+        padding: 6px 10px !important;
+        font-size: 13.5px !important;
+        flex: 1 1 auto !important;
     }
 
     .moves-panel {
-        min-height: 160px;
-        max-height: 210px;
+        min-height: 160px !important;
+        max-height: 220px !important;
     }
 
     .moves-panel-header {
-        padding: 10px 12px;
-        font-size: 13px;
+        padding: 8px 10px !important;
+        font-size: 12.5px !important;
     }
 
     .moves-list {
-        padding: 8px 10px;
-        grid-template-columns: 40px 1fr 1fr;
-        font-size: 13px;
-        row-gap: 3px;
+        padding: 6px 8px !important;
+        grid-template-columns: 36px 1fr 1fr !important;
+        font-size: 12.5px !important;
+        row-gap: 3px !important;
     }
 
     .move-num {
-        padding: 5px 2px;
-        font-size: 12px;
+        padding: 4px 2px !important;
+        font-size: 11.5px !important;
     }
 
     .move-cell {
-        padding: 5px 8px;
-        font-size: 13px;
-        text-align: center;
+        padding: 4px 6px !important;
+        font-size: 12.5px !important;
+        text-align: center !important;
     }
 }
 
@@ -1220,4 +1256,40 @@ body.dark-theme .live-indicator-badge {
     #btnCloseModal .btn-close-text {
         display: none;
     }
+}
+
+/* ==========================================================================
+   Tap-to-Move (Click-to-Move) Destination Dots & Capture Rings
+   ========================================================================== */
+.square-selected {
+    box-shadow: inset 0 0 0 3.5px #f59e0b, inset 0 0 16px rgba(245, 158, 11, 0.45) !important;
+}
+
+.dest-highlight {
+    position: relative;
+    cursor: pointer !important;
+}
+
+.dest-highlight::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 28%;
+    height: 28%;
+    background: rgba(34, 197, 94, 0.75);
+    border-radius: 50%;
+    pointer-events: none;
+    box-shadow: 0 0 8px rgba(34, 197, 94, 0.9);
+    z-index: 10;
+}
+
+.dest-highlight.dest-capture::after {
+    width: 80%;
+    height: 80%;
+    background: transparent;
+    border: 3.5px solid rgba(239, 68, 68, 0.85);
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.8);
 }
