@@ -44,6 +44,21 @@ function initializeComponents() {
         document.body.appendChild(themeScript);
     }
 
+    // Dynamically load board theme stylesheet
+    if (!document.querySelector('link[href*="mchess-board-theme.css"]')) {
+        var boardThemeCss = document.createElement('link');
+        boardThemeCss.rel = 'stylesheet';
+        boardThemeCss.href = 'css/mchess-board-theme.css';
+        document.head.appendChild(boardThemeCss);
+    }
+
+    // Dynamically load board theme engine
+    if (!document.querySelector('script[src*="mchess-board-theme.js"]')) {
+        var boardThemeScript = document.createElement('script');
+        boardThemeScript.src = 'js/mchess-board-theme.js';
+        document.body.appendChild(boardThemeScript);
+    }
+
     // Dynamically load in-site notification engine
     if (!document.querySelector('script[src*="notifications.js"]')) {
         var notifScript = document.createElement('script');

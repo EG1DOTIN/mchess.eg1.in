@@ -196,3 +196,60 @@
     background: rgba(15, 23, 42, 0.95);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
 }
+
+/* Mobile Responsive Optimizations */
+@media (max-width: 640px) {
+    .mygames-header-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+        padding-bottom: 12px;
+    }
+
+    .mygames-header-title {
+        font-size: 20px;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .filter-controls-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        padding: 12px;
+    }
+
+    .search-games-input {
+        width: 100% !important;
+        box-sizing: border-box;
+    }
+
+    .filter-btn {
+        min-height: 40px;
+        font-size: 12px;
+        padding: 6px 10px;
+        flex: 1 1 auto;
+    }
+
+    .btn-action {
+        min-height: 38px;
+        padding: 6px 10px;
+        font-size: 12px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    #reviewBoardContainer {
+        padding: 12px 6px;
+    }
+
+    .history-table th, .history-table td {
+        padding: 8px 10px;
+        font-size: 12px;
+    }
+}
+
