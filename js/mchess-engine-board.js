@@ -50,6 +50,11 @@
             this.solutionIndex = 0;
             this.scoreStreak = 0;
 
+            // Tap-to-Move (Click-to-Move) state
+            this.selectedSquare = null;
+            this.legalMoves = [];
+
+            this.initAudio();
             this.initLayout();
             this.initEngineWorker();
 
@@ -60,6 +65,95 @@
             }
 
             this.bindEvents();
+        }
+
+        initAudio() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (AudioContext) {
+                    this.audioCtx = new AudioContext();
+                }
+            } catch (e) {
+                console.warn("[MChessEngineBoard] Web Audio not available:", e);
+            }
+        }
+
+        playSound(type) {
+            if (!this.audioCtx) return;
+            try {
+                if (this.audioCtx.state === 'suspended') {
+                    this.audioCtx.resume();
+                }
+                const now = this.audioCtx.currentTime;
+
+                if (type === 'checkmate') {
+                    // Triumphant 4-note ascending fanfare (C5 -> E5 -> G5 -> C6)
+                    const notes = [523.25, 659.25, 783.99, 1046.50];
+                    notes.forEach((freq, i) => {
+                        const osc = this.audioCtx.createOscillator();
+                        const gain = this.audioCtx.createGain();
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(freq, now + i * 0.08);
+                        gain.gain.setValueAtTime(0.3, now + i * 0.08);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 0.35);
+                        osc.connect(gain);
+                        gain.connect(this.audioCtx.destination);
+                        osc.start(now + i * 0.08);
+                        osc.stop(now + i * 0.08 + 0.35);
+                    });
+                    return;
+                } else if (type === 'stalemate' || type === 'draw') {
+                    // Neutral 2-tone harmonic chime (A4 -> F4)
+                    const notes = [440, 349.23];
+                    notes.forEach((freq, i) => {
+                        const osc = this.audioCtx.createOscillator();
+                        const gain = this.audioCtx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(freq, now + i * 0.12);
+                        gain.gain.setValueAtTime(0.25, now + i * 0.12);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.12 + 0.3);
+                        osc.connect(gain);
+                        gain.connect(this.audioCtx.destination);
+                        osc.start(now + i * 0.12);
+                        osc.stop(now + i * 0.12 + 0.3);
+                    });
+                    return;
+                }
+
+                const osc = this.audioCtx.createOscillator();
+                const gain = this.audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(this.audioCtx.destination);
+
+                if (type === 'capture') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(450, now);
+                    osc.frequency.exponentialRampToValueAtTime(150, now + 0.12);
+                    gain.gain.setValueAtTime(0.35, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.12);
+                    osc.start(now);
+                    osc.stop(now + 0.12);
+                } else if (type === 'check') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(600, now);
+                    osc.frequency.setValueAtTime(800, now + 0.08);
+                    gain.gain.setValueAtTime(0.4, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+                    osc.start(now);
+                    osc.stop(now + 0.2);
+                } else {
+                    // Regular move
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(320, now);
+                    osc.frequency.exponentialRampToValueAtTime(200, now + 0.08);
+                    gain.gain.setValueAtTime(0.25, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
+                    osc.start(now);
+                    osc.stop(now + 0.08);
+                }
+            } catch (e) {
+                // Ignore audio errors
+            }
         }
 
         /**
@@ -305,6 +399,8 @@
             }
 
             this.renderMovesList();
+            this.clearTapHighlights();
+            this.bindTapToMove();
 
             // Auto-start Stockfish if player chose Black and it's White's turn
             if (this.options.mode === 'engine' && this.userSide === 'black' && turn === 'w' && this.chess.history().length === 0) {
@@ -469,8 +565,107 @@
             }
         }
 
+        /**
+         * Tap-to-Move (Click-to-Move) for Mobile & Desktop
+         */
+        bindTapToMove() {
+            const self = this;
+            const $board = this.$container.find('#' + this.boardId);
+
+            $board.off('click', '[class*="square-"]').on('click', '[class*="square-"]', function (e) {
+                if (self.chess.game_over() || self.isEngineThinking) return;
+
+                // Ensure player is at latest ply before making new move
+                if (self.currentPly < self.historyFen.length - 1) {
+                    self.jumpToPly(self.historyFen.length - 1);
+                }
+
+                const clickedSquare = $(this).attr('data-square') || (($(this).attr('class') || '').match(/square-([a-h][1-8])/) || [])[1];
+                if (!clickedSquare) return;
+
+                const pieceOnSquare = self.chess.get(clickedSquare);
+
+                // Is clicked square the player's piece?
+                let isMyPiece = false;
+                if (pieceOnSquare) {
+                    if (self.options.mode === 'engine') {
+                        isMyPiece = (self.userSide === 'white' && pieceOnSquare.color === 'w') ||
+                                    (self.userSide === 'black' && pieceOnSquare.color === 'b');
+                    } else {
+                        // Daily puzzle mode
+                        const currentTurn = self.chess.turn();
+                        isMyPiece = pieceOnSquare.color === currentTurn;
+                    }
+                }
+
+                // Is it player's turn?
+                let isMyTurn = true;
+                if (self.options.mode === 'engine') {
+                    isMyTurn = (self.chess.turn() === 'w' && self.userSide === 'white') ||
+                               (self.chess.turn() === 'b' && self.userSide === 'black');
+                }
+
+                if (!isMyTurn) return;
+
+                // CASE 1: A square is already selected
+                if (self.selectedSquare) {
+                    // Check if clicked square is a valid legal move destination
+                    const isLegalDest = self.legalMoves && self.legalMoves.some(m => m.to === clickedSquare);
+
+                    if (isLegalDest) {
+                        const fromSq = self.selectedSquare;
+                        self.clearTapHighlights();
+                        // Execute move via click
+                        const snapResult = self.onDrop(fromSq, clickedSquare);
+                        if (snapResult !== 'snapback') {
+                            self.board.position(self.chess.fen());
+                        }
+                        return;
+                    } else if (isMyPiece && clickedSquare !== self.selectedSquare) {
+                        // Switch selected piece
+                        self.selectSquareForTap(clickedSquare);
+                        return;
+                    } else {
+                        // Deselect
+                        self.clearTapHighlights();
+                        return;
+                    }
+                }
+
+                // CASE 2: No square selected yet -> Select piece
+                if (isMyPiece) {
+                    self.selectSquareForTap(clickedSquare);
+                }
+            });
+        }
+
+        selectSquareForTap(square) {
+            this.clearTapHighlights();
+            this.selectedSquare = square;
+            this.legalMoves = this.chess.moves({ square: square, verbose: true });
+
+            // Highlight selected source square
+            this.$container.find(`.square-${square}`).addClass('square-selected');
+
+            // Highlight all legal destination squares with green dots or capture rings
+            this.legalMoves.forEach(m => {
+                const $dest = this.$container.find(`.square-${m.to}`);
+                $dest.addClass('dest-highlight');
+                if (m.captured) {
+                    $dest.addClass('dest-capture');
+                }
+            });
+        }
+
+        clearTapHighlights() {
+            this.selectedSquare = null;
+            this.legalMoves = [];
+            this.$container.find('[class*="square-"]').removeClass('square-selected dest-highlight dest-capture');
+        }
+
         onDragStart(source, piece) {
             if (this.chess.game_over() || this.isEngineThinking) return false;
+            this.clearTapHighlights();
 
             // Ensure player is at latest ply before making new move
             if (this.currentPly < this.historyFen.length - 1) {
@@ -498,6 +693,13 @@
             });
 
             if (move === null) return 'snapback';
+
+            // Audio effect
+            if (this.chess.in_checkmate()) this.playSound('checkmate');
+            else if (this.chess.in_draw() || this.chess.in_stalemate() || this.chess.in_threefold_repetition() || this.chess.insufficient_material()) this.playSound('stalemate');
+            else if (this.chess.in_check()) this.playSound('check');
+            else if (move.captured) this.playSound('capture');
+            else this.playSound('move');
 
             // Start game clock on first move
             this.startClockTimer();
@@ -570,6 +772,13 @@
 
             const move = this.chess.move({ from: from, to: to, promotion: promotion });
             if (move) {
+                // Audio effect
+                if (this.chess.in_checkmate()) this.playSound('checkmate');
+                else if (this.chess.in_draw() || this.chess.in_stalemate() || this.chess.in_threefold_repetition() || this.chess.insufficient_material()) this.playSound('stalemate');
+                else if (this.chess.in_check()) this.playSound('check');
+                else if (move.captured) this.playSound('capture');
+                else this.playSound('move');
+
                 this.historyFen.push({
                     fen: this.chess.fen(),
                     san: move.san,
@@ -595,8 +804,10 @@
         onEngineMoveFound(uciMove) {
             this.isEngineThinking = false;
             this.playUciMove(uciMove);
-            this.startClockTimer();
-            this.updateStatusBanner(`<i class="fas fa-robot"></i> Stockfish played ${uciMove}. Your turn!`);
+            if (!this.chess.game_over()) {
+                this.startClockTimer();
+                this.updateStatusBanner(`<i class="fas fa-robot"></i> Stockfish played ${uciMove}. Your turn!`);
+            }
         }
 
         /**
@@ -659,6 +870,12 @@
 
             if (this.board) {
                 this.board.position(item.fen, true);
+            }
+
+            if (item && item.san) {
+                if (item.san.includes('x')) this.playSound('capture');
+                else if (item.san.includes('+') || item.san.includes('#')) this.playSound('check');
+                else this.playSound('move');
             }
 
             this.$container.find('.move-cell').removeClass('active');

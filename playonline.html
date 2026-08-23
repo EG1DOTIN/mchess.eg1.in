@@ -451,6 +451,54 @@
         </div>
     </div>
 
+    <!-- MODAL 4: INCOMING DRAW OFFER POPUP -->
+    <div id="modalIncomingDrawOffer" class="modal-overlay" style="display:none;">
+        <div class="modal-card">
+            <div
+                style="width:54px; height:54px; border-radius:50%; background:rgba(56,189,248,0.2); color:#38bdf8; display:flex; align-items:center; justify-content:center; font-size:24px; margin:0 auto 14px auto; border:1px solid rgba(56,189,248,0.4);">
+                <i class="fas fa-handshake"></i>
+            </div>
+            <h3 style="color:#f8fafc; font-size:20px; margin:0 0 6px 0;">Draw Offered</h3>
+            <p style="color:#cbd5e1; font-size:14px; margin:0 0 20px 0;">
+                <strong id="lblIncomingDrawPlayerName" style="color:#38bdf8;">Opponent</strong> has offered a mutual draw.
+            </p>
+            <div style="display:flex; gap:12px; justify-content:center;">
+                <button id="btnAcceptDrawOffer"
+                    style="background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color:#fff; border:none; padding:10px 22px; border-radius:8px; font-weight:bold; font-size:14px; cursor:pointer; box-shadow:0 4px 12px rgba(22,163,74,0.4);">
+                    <i class="fas fa-check"></i> Accept Draw
+                </button>
+                <button id="btnDeclineDrawOffer"
+                    style="background:rgba(239,68,68,0.2); color:#f87171; border:1px solid rgba(239,68,68,0.4); padding:10px 18px; border-radius:8px; font-weight:bold; font-size:14px; cursor:pointer;">
+                    <i class="fas fa-times"></i> Decline
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 5: CONFIRM RESIGN POPUP -->
+    <div id="modalConfirmResign" class="modal-overlay" style="display:none;">
+        <div class="modal-card">
+            <div
+                style="width:54px; height:54px; border-radius:50%; background:rgba(239,68,68,0.2); color:#f87171; display:flex; align-items:center; justify-content:center; font-size:24px; margin:0 auto 14px auto; border:1px solid rgba(239,68,68,0.4);">
+                <i class="fas fa-flag"></i>
+            </div>
+            <h3 style="color:#f8fafc; font-size:20px; margin:0 0 6px 0;">Resign Match?</h3>
+            <p style="color:#cbd5e1; font-size:14px; margin:0 0 20px 0;">
+                Are you sure you want to resign this game? This will count as a loss.
+            </p>
+            <div style="display:flex; gap:12px; justify-content:center;">
+                <button id="btnConfirmResignYes"
+                    style="background:rgba(239,68,68,0.9); color:#fff; border:none; padding:10px 22px; border-radius:8px; font-weight:bold; font-size:14px; cursor:pointer;">
+                    <i class="fas fa-flag"></i> Yes, Resign
+                </button>
+                <button id="btnConfirmResignNo"
+                    style="background:#334155; color:#cbd5e1; border:none; padding:10px 18px; border-radius:8px; font-weight:bold; font-size:14px; cursor:pointer;">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script src="js/slick.min.js" type="text/javascript"></script>
     <script src="js/include-components.js" type="text/javascript"></script>
 

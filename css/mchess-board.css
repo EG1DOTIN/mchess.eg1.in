@@ -1221,3 +1221,39 @@ body.dark-theme .live-indicator-badge {
         display: none;
     }
 }
+
+/* ==========================================================================
+   Tap-to-Move (Click-to-Move) Destination Dots & Capture Rings
+   ========================================================================== */
+.square-selected {
+    box-shadow: inset 0 0 0 3.5px #f59e0b, inset 0 0 16px rgba(245, 158, 11, 0.45) !important;
+}
+
+.dest-highlight {
+    position: relative;
+    cursor: pointer !important;
+}
+
+.dest-highlight::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 28%;
+    height: 28%;
+    background: rgba(34, 197, 94, 0.75);
+    border-radius: 50%;
+    pointer-events: none;
+    box-shadow: 0 0 8px rgba(34, 197, 94, 0.9);
+    z-index: 10;
+}
+
+.dest-highlight.dest-capture::after {
+    width: 80%;
+    height: 80%;
+    background: transparent;
+    border: 3.5px solid rgba(239, 68, 68, 0.85);
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.8);
+}

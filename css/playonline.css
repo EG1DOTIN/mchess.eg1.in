@@ -178,6 +178,15 @@
     z-index: 10;
 }
 
+.dest-highlight.dest-capture::after {
+    width: 80%;
+    height: 80%;
+    background: transparent;
+    border: 3.5px solid rgba(239, 68, 68, 0.85);
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.8);
+}
+
 /* Fluid Mobile Responsiveness */
 @media (max-width: 640px) {
     .lobby-card {
