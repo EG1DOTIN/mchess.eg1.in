@@ -390,8 +390,23 @@
                     onSnapEnd: () => self.onSnapEnd()
                 });
 
-                $(window).on('resize orientationchange', () => {
-                    if (self.board) self.board.resize();
+                // Clean up previous observer if any
+                if (this.resizeObserver) {
+                    this.resizeObserver.disconnect();
+                }
+
+                // Dynamic ResizeObserver for responsive resizing on mobile & container changes
+                if (window.ResizeObserver && boardEl) {
+                    this.resizeObserver = new ResizeObserver(() => {
+                        if (self.board) self.board.resize();
+                    });
+                    this.resizeObserver.observe(boardEl);
+                }
+
+                $(window).off(`resize.engine_${this.uid} orientationchange.engine_${this.uid}`).on(`resize.engine_${this.uid} orientationchange.engine_${this.uid}`, () => {
+                    setTimeout(() => {
+                        if (self.board) self.board.resize();
+                    }, 50);
                 });
             } else {
                 this.board.orientation(boardOrientation);

@@ -1911,7 +1911,7 @@ p {
     .box-90 {
         width: 100% !important;
         max-width: 100% !important;
-        padding: 12px 8px !important;
+        padding: 8px 4px !important;
         box-sizing: border-box !important;
         overflow: visible !important;
     }
@@ -1928,14 +1928,15 @@ p {
 
     .body .col-md-12,
     .body .col-md-9 {
-        padding-left: 12px !important;
-        padding-right: 12px !important;
+        padding-left: 8px !important;
+        padding-right: 8px !important;
         width: 100% !important;
         box-sizing: border-box !important;
     }
 
     #myBoard,
     .board-container,
+    .board-wrapper,
     .cg-wrap {
         width: 100% !important;
         max-width: 100% !important;
@@ -1983,6 +1984,71 @@ p {
 
     #blogs-container {
         margin-bottom: 20px !important;
+    }
+
+    /* Mobile Blog Article & Embedded Chessboard Maximization */
+    #blogs-container,
+    .blog-item-container,
+    .blog-item-container .col-md-12,
+    .blog-item-container .row {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .our-product {
+        padding: 10px 4px !important;
+        margin: 0 0 16px 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        border-radius: 8px !important;
+    }
+
+    .our-product .row {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .our-product .col-md-12,
+    .our-product .col-lg-12,
+    .our-product .col-sm-12,
+    .our-product .col-xs-12 {
+        padding-left: 4px !important;
+        padding-right: 4px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .our-product .pgn-viewer-container,
+    #blogs-container .pgn-viewer-container,
+    .blog-item-container .pgn-viewer-container,
+    #mchessBlogEngineBoard .pgn-viewer-container {
+        padding: 6px 2px !important;
+        margin: 8px auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        border-radius: 8px !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+    }
+
+    .our-product .board-wrapper,
+    #blogs-container .board-wrapper,
+    #mchessBlogEngineBoard .board-wrapper {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 auto !important;
+        border-width: 3px !important;
+        outline-width: 1.5px !important;
+        border-radius: 8px !important;
+        box-sizing: border-box !important;
     }
 
     .footer-grid {
