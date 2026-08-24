@@ -298,7 +298,8 @@
                 if (self.activeChess.game_over()) return;
                 self.stopAutoplay();
 
-                const clickedSquare = $(this).attr('data-square') || (($(this).attr('class') || '').match(/square-([a-h][1-8])/) || [])[1];
+                const $targetSq = $(this).closest('[class*="square-"]');
+                const clickedSquare = $targetSq.attr('data-square') || (($targetSq.attr('class') || '').match(/square-([a-h][1-8])/) || [])[1];
                 if (!clickedSquare) return;
 
                 const pieceOnSquare = self.activeChess.get(clickedSquare);
@@ -361,22 +362,140 @@
 
         onDragStart(source, piece) {
             if (this.activeChess.game_over()) return false;
-            this.clearTapHighlights();
-            this.stopAutoplay();
-            if ((this.activeChess.turn() === 'w' && piece.search(/^b/) !== -1) ||
-                (this.activeChess.turn() === 'b' && piece.search(/^w/) !== -1)) {
+
+            const isWhiteTurn = this.activeChess.turn() === 'w';
+            const isBlackTurn = this.activeChess.turn() === 'b';
+            const isPieceWhite = piece.search(/^w/) !== -1;
+            const isPieceBlack = piece.search(/^b/) !== -1;
+
+            if ((isWhiteTurn && isPieceBlack) || (isBlackTurn && isPieceWhite)) {
+                // Do not clear tap highlights if user touched opponent piece to capture
                 return false;
             }
+
+            this.clearTapHighlights();
+            this.stopAutoplay();
+        }
+
+        isPromotionMove(source, target) {
+            const piece = this.activeChess.get(source);
+            if (!piece || piece.type !== 'p') return false;
+            if ((piece.color === 'w' && target[1] !== '8') || (piece.color === 'b' && target[1] !== '1')) return false;
+            const moves = this.activeChess.moves({ square: source, verbose: true });
+            return moves.some(m => m.to === target && m.promotion);
+        }
+
+        showPromotionDialog(color, callback) {
+            $('.mchess-promotion-overlay').remove();
+            const colorPrefix = (color === 'w' || color === 'white') ? 'w' : 'b';
+            const colorName = colorPrefix === 'w' ? 'White' : 'Black';
+
+            const pieces = [
+                { code: 'q', name: 'Queen', icon: colorPrefix === 'w' ? '♕' : '♛', key: 'Q / 1' },
+                { code: 'r', name: 'Rook', icon: colorPrefix === 'w' ? '♖' : '♜', key: 'R / 2' },
+                { code: 'b', name: 'Bishop', icon: colorPrefix === 'w' ? '♗' : '♝', key: 'B / 3' },
+                { code: 'n', name: 'Knight', icon: colorPrefix === 'w' ? '♘' : '♞', key: 'N / 4' }
+            ];
+
+            const pieceThemeUrl = (pCode) => `https://chessboardjs.com/img/chesspieces/wikipedia/${colorPrefix}${pCode.toUpperCase()}.png`;
+
+            const html = `
+                <div class="mchess-promotion-overlay" id="mchessPromotionOverlay">
+                    <div class="mchess-promotion-card" role="dialog" aria-modal="true" aria-labelledby="promoTitle">
+                        <h3 class="mchess-promotion-title" id="promoTitle">
+                            <i class="fas fa-chess-queen" style="color:#eab308;"></i>
+                            Promote Your Pawn
+                        </h3>
+                        <p class="mchess-promotion-subtitle">Choose your promotion piece for ${colorName}</p>
+
+                        <div class="promotion-piece-grid">
+                            ${pieces.map(p => `
+                                <button type="button" class="promotion-piece-btn" data-piece="${p.code}" title="Promote to ${p.name}">
+                                    <img src="${pieceThemeUrl(p.code)}" alt="${p.name}" class="promotion-piece-img" onerror="this.outerHTML='<span style=\\'font-size:36px;\\'>${p.icon}</span>'">
+                                    <span class="promotion-piece-name">${p.name}</span>
+                                    <span class="promotion-piece-shortcut">${p.key}</span>
+                                </button>
+                            `).join('')}
+                        </div>
+
+                        <div style="margin-top: 10px;">
+                            <button type="button" id="btnCancelPromotion" class="modal-btn modal-btn-secondary" style="font-size:12.5px; padding: 6px 16px;">
+                                <i class="fas fa-times"></i> Cancel Move
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const $overlay = $(html);
+            $('body').append($overlay);
+            $overlay.find('.promotion-piece-btn').first().focus();
+
+            const cleanup = () => {
+                $(document).off('keydown.mchessPromotion');
+                $overlay.fadeOut(150, function () {
+                    $(this).remove();
+                });
+            };
+
+            $overlay.on('click', '.promotion-piece-btn', function () {
+                const piece = $(this).data('piece');
+                cleanup();
+                if (typeof callback === 'function') callback(piece);
+            });
+
+            $overlay.on('click', '#btnCancelPromotion', function () {
+                cleanup();
+                if (typeof callback === 'function') callback(null);
+            });
+
+            $(document).on('keydown.mchessPromotion', function (e) {
+                if (e.key === 'Escape') {
+                    cleanup();
+                    if (typeof callback === 'function') callback(null);
+                } else if (e.key === 'q' || e.key === 'Q' || e.key === '1') {
+                    cleanup();
+                    if (typeof callback === 'function') callback('q');
+                } else if (e.key === 'r' || e.key === 'R' || e.key === '2') {
+                    cleanup();
+                    if (typeof callback === 'function') callback('r');
+                } else if (e.key === 'b' || e.key === 'B' || e.key === '3') {
+                    cleanup();
+                    if (typeof callback === 'function') callback('b');
+                } else if (e.key === 'n' || e.key === 'N' || e.key === '4') {
+                    cleanup();
+                    if (typeof callback === 'function') callback('n');
+                }
+            });
         }
 
         onDrop(source, target) {
+            if (this.isPromotionMove(source, target)) {
+                const turnColor = this.activeChess.turn();
+                const self = this;
+                this.showPromotionDialog(turnColor, (piece) => {
+                    if (piece) {
+                        self.executeMove(source, target, piece);
+                    } else {
+                        self.board.position(self.activeChess.fen());
+                    }
+                });
+                return 'snapback';
+            }
+
+            return this.executeMove(source, target, 'q');
+        }
+
+        executeMove(source, target, promotionPiece = 'q') {
             const move = this.activeChess.move({
                 from: source,
                 to: target,
-                promotion: 'q'
+                promotion: promotionPiece
             });
 
             if (move === null) return 'snapback';
+
+            this.board.position(this.activeChess.fen());
 
             // Audio effect
             if (this.activeChess.in_checkmate()) this.playSound('checkmate');

@@ -655,7 +655,7 @@
 
         onChallengeRejectedByOpponent() {
             $('#modalOutgoingChallenge').fadeOut(200);
-            alert(`${this.opponentName} declined your challenge request.`);
+            this.showToast(`${this.opponentName || 'Opponent'} declined your challenge request.`, 'fa-times-circle');
             if (this.activeConnection) {
                 this.activeConnection.close();
                 this.activeConnection = null;
@@ -827,7 +827,8 @@
             $container.off('click', '[class*="square-"]').on('click', '[class*="square-"]', function (e) {
                 if (!self.gameActive || self.chess.game_over()) return;
 
-                const clickedSquare = $(this).attr('data-square') || (($(this).attr('class') || '').match(/square-([a-h][1-8])/) || [])[1];
+                const $targetSq = $(this).closest('[class*="square-"]');
+                const clickedSquare = $targetSq.attr('data-square') || (($targetSq.attr('class') || '').match(/square-([a-h][1-8])/) || [])[1];
                 if (!clickedSquare) return;
 
                 const pieceOnSquare = self.chess.get(clickedSquare);
@@ -844,7 +845,7 @@
                                  (self.chess.turn() === 'b' && self.mySide === 'black') ||
                                  self.isPassAndPlay;
 
-                if (!isMyTurn) return;
+                if (!isMyTurn && !self.selectedSquare) return;
 
                 // CASE 1: A square is already selected
                 if (self.selectedSquare) {
@@ -854,18 +855,12 @@
                     if (isLegalDest) {
                         // Execute move via click
                         const fromSq = self.selectedSquare;
-                        const move = self.chess.move({
-                            from: fromSq,
-                            to: clickedSquare,
-                            promotion: 'q'
-                        });
-
-                        if (move) {
-                            self.clearTapHighlights();
+                        self.clearTapHighlights();
+                        const snapResult = self.onDrop(fromSq, clickedSquare);
+                        if (snapResult !== 'snapback') {
                             self.board.position(self.chess.fen());
-                            self.onMoveExecuted(move, fromSq, clickedSquare);
-                            return;
                         }
+                        return;
                     } else if (isMyPiece && clickedSquare !== self.selectedSquare) {
                         // Switch piece selection
                         self.selectSquareForTap(clickedSquare);
@@ -878,7 +873,7 @@
                 }
 
                 // CASE 2: No square selected yet -> Select piece
-                if (isMyPiece) {
+                if (isMyPiece && isMyTurn) {
                     self.selectSquareForTap(clickedSquare);
                 }
             });
@@ -910,31 +905,162 @@
 
         onDragStart(source, piece) {
             if (!this.gameActive || this.chess.game_over()) return false;
-            this.clearTapHighlights();
 
             // In P2P mode, player can only drag their own color
+            let isMovablePiece = true;
             if (!this.isPassAndPlay) {
-                if (this.mySide === 'white' && piece.search(/^b/) !== -1) return false;
-                if (this.mySide === 'black' && piece.search(/^w/) !== -1) return false;
+                if (this.mySide === 'white' && piece.search(/^b/) !== -1) isMovablePiece = false;
+                if (this.mySide === 'black' && piece.search(/^w/) !== -1) isMovablePiece = false;
             }
 
             // Must be that player's turn
             if ((this.chess.turn() === 'w' && piece.search(/^b/) !== -1) ||
                 (this.chess.turn() === 'b' && piece.search(/^w/) !== -1)) {
+                isMovablePiece = false;
+            }
+
+            if (!isMovablePiece) {
+                // Do not clear tap highlights when touching enemy piece as a capture target
                 return false;
             }
+
+            this.clearTapHighlights();
+        }
+
+        showToast(message, iconClass = 'fa-info-circle') {
+            $('.mchess-toast').remove();
+            const $toast = $(`<div class="mchess-toast"><i class="fas ${iconClass}" style="color:#38bdf8;"></i> <span>${message}</span></div>`);
+            $('body').append($toast);
+            setTimeout(() => $toast.addClass('show'), 20);
+            setTimeout(() => {
+                $toast.removeClass('show');
+                setTimeout(() => $toast.remove(), 350);
+            }, 4000);
+        }
+
+        isPromotionMove(source, target) {
+            const piece = this.chess.get(source);
+            if (!piece || piece.type !== 'p') return false;
+            if ((piece.color === 'w' && target[1] !== '8') || (piece.color === 'b' && target[1] !== '1')) return false;
+            const moves = this.chess.moves({ square: source, verbose: true });
+            return moves.some(m => m.to === target && m.promotion);
+        }
+
+        showPromotionDialog(color, callback) {
+            $('.mchess-promotion-overlay').remove();
+            const colorPrefix = (color === 'w' || color === 'white') ? 'w' : 'b';
+            const colorName = colorPrefix === 'w' ? 'White' : 'Black';
+
+            const pieces = [
+                { code: 'q', name: 'Queen', icon: colorPrefix === 'w' ? '♕' : '♛', key: 'Q / 1' },
+                { code: 'r', name: 'Rook', icon: colorPrefix === 'w' ? '♖' : '♜', key: 'R / 2' },
+                { code: 'b', name: 'Bishop', icon: colorPrefix === 'w' ? '♗' : '♝', key: 'B / 3' },
+                { code: 'n', name: 'Knight', icon: colorPrefix === 'w' ? '♘' : '♞', key: 'N / 4' }
+            ];
+
+            const pieceThemeUrl = (pCode) => `https://chessboardjs.com/img/chesspieces/wikipedia/${colorPrefix}${pCode.toUpperCase()}.png`;
+
+            const html = `
+                <div class="mchess-promotion-overlay" id="mchessPromotionOverlay">
+                    <div class="mchess-promotion-card" role="dialog" aria-modal="true" aria-labelledby="promoTitle">
+                        <h3 class="mchess-promotion-title" id="promoTitle">
+                            <i class="fas fa-chess-queen" style="color:#eab308;"></i>
+                            Promote Your Pawn
+                        </h3>
+                        <p class="mchess-promotion-subtitle">Choose your promotion piece for ${colorName}</p>
+
+                        <div class="promotion-piece-grid">
+                            ${pieces.map(p => `
+                                <button type="button" class="promotion-piece-btn" data-piece="${p.code}" title="Promote to ${p.name}">
+                                    <img src="${pieceThemeUrl(p.code)}" alt="${p.name}" class="promotion-piece-img" onerror="this.outerHTML='<span style=\\'font-size:36px;\\'>${p.icon}</span>'">
+                                    <span class="promotion-piece-name">${p.name}</span>
+                                    <span class="promotion-piece-shortcut">${p.key}</span>
+                                </button>
+                            `).join('')}
+                        </div>
+
+                        <div style="margin-top: 10px;">
+                            <button type="button" id="btnCancelPromotion" class="modal-btn modal-btn-secondary" style="font-size:12.5px; padding: 6px 16px;">
+                                <i class="fas fa-times"></i> Cancel Move
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const $overlay = $(html);
+            $('body').append($overlay);
+            $overlay.find('.promotion-piece-btn').first().focus();
+
+            const cleanup = () => {
+                $(document).off('keydown.mchessPromotion');
+                $overlay.fadeOut(150, function () {
+                    $(this).remove();
+                });
+            };
+
+            $overlay.on('click', '.promotion-piece-btn', function () {
+                const piece = $(this).data('piece');
+                cleanup();
+                if (typeof callback === 'function') callback(piece);
+            });
+
+            $overlay.on('click', '#btnCancelPromotion', function () {
+                cleanup();
+                if (typeof callback === 'function') callback(null);
+            });
+
+            $(document).on('keydown.mchessPromotion', function (e) {
+                if (e.key === 'Escape') {
+                    cleanup();
+                    if (typeof callback === 'function') callback(null);
+                } else if (e.key === 'q' || e.key === 'Q' || e.key === '1') {
+                    cleanup();
+                    if (typeof callback === 'function') callback('q');
+                } else if (e.key === 'r' || e.key === 'R' || e.key === '2') {
+                    cleanup();
+                    if (typeof callback === 'function') callback('r');
+                } else if (e.key === 'b' || e.key === 'B' || e.key === '3') {
+                    cleanup();
+                    if (typeof callback === 'function') callback('b');
+                } else if (e.key === 'n' || e.key === 'N' || e.key === '4') {
+                    cleanup();
+                    if (typeof callback === 'function') callback('n');
+                }
+            });
         }
 
         onDrop(source, target) {
             this.clearTapHighlights();
+            if (this.isPromotionMove(source, target)) {
+                const turnColor = this.chess.turn();
+                const self = this;
+                this.showPromotionDialog(turnColor, (piece) => {
+                    if (piece) {
+                        self.executePlayerMove(source, target, piece);
+                    } else {
+                        self.board.position(self.chess.fen());
+                    }
+                });
+                return 'snapback';
+            }
+
+            return this.executePlayerMove(source, target, 'q');
+        }
+
+        executePlayerMove(source, target, promotionPiece = 'q') {
             const move = this.chess.move({
                 from: source,
                 to: target,
-                promotion: 'q'
+                promotion: promotionPiece
             });
 
-            if (move === null) return 'snapback';
+            if (move === null) {
+                this.board.position(this.chess.fen());
+                return 'snapback';
+            }
 
+            this.board.position(this.chess.fen());
             this.onMoveExecuted(move, source, target);
         }
 
