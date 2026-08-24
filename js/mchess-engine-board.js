@@ -180,13 +180,13 @@
 
                     <div id="engineStatusBanner" class="mode-banner game-line" style="margin-bottom: 16px;">
                         <span id="engineStatusText"><i class="fas fa-info-circle"></i> Initializing Stockfish Chess Engine...</span>
-                        <div id="puzzleActionBtns" style="display: none; gap: 8px;">
+                        <div id="puzzleActionBtns" style="display: none; gap: 8px; flex-wrap: wrap;">
                             <button id="btnSolve" class="btn-reset-analysis" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
                                 <i class="fas fa-eye"></i> Solution
                             </button>
-                            <button id="btnNextPuzzle" class="btn-reset-analysis" style="background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);">
-                                <i class="fas fa-forward"></i> Next
-                            </button>
+                            <a href="train.html" class="btn-reset-analysis" style="background: linear-gradient(135deg, #d97706 0%, #b45309 100%); text-decoration: none; color: #fff;">
+                                <i class="fas fa-bolt"></i> Train More Puzzles ⚡
+                            </a>
                         </div>
                     </div>
 
@@ -277,6 +277,25 @@
                                     <span id="engineMoveCount" style="font-weight:normal; font-size:12px; color:#64748b;">0 moves</span>
                                 </div>
                                 <div id="engineMovesList" class="moves-list"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Enhanced Resign Confirmation Modal -->
+                    <div id="modalConfirmResign" class="modal-overlay" style="display:none;">
+                        <div class="modal-card">
+                            <div class="modal-icon-circle danger">
+                                <i class="fas fa-flag"></i>
+                            </div>
+                            <h3 class="modal-title">Resign Match?</h3>
+                            <p class="modal-description">Are you sure you want to resign this game? This will count as a loss and record into your played games history.</p>
+                            <div class="modal-btn-row">
+                                <button id="btnConfirmResignYes" class="modal-btn modal-btn-danger">
+                                    <i class="fas fa-flag"></i> Yes, Resign
+                                </button>
+                                <button id="btnConfirmResignNo" class="modal-btn modal-btn-secondary">
+                                    Cancel
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -606,7 +625,8 @@
                     self.jumpToPly(self.historyFen.length - 1);
                 }
 
-                const clickedSquare = $(this).attr('data-square') || (($(this).attr('class') || '').match(/square-([a-h][1-8])/) || [])[1];
+                const $targetSq = $(this).closest('[class*="square-"]');
+                const clickedSquare = $targetSq.attr('data-square') || (($targetSq.attr('class') || '').match(/square-([a-h][1-8])/) || [])[1];
                 if (!clickedSquare) return;
 
                 const pieceOnSquare = self.chess.get(clickedSquare);
@@ -631,7 +651,7 @@
                                (self.chess.turn() === 'b' && self.userSide === 'black');
                 }
 
-                if (!isMyTurn) return;
+                if (!isMyTurn && !self.selectedSquare) return;
 
                 // CASE 1: A square is already selected
                 if (self.selectedSquare) {
@@ -659,7 +679,7 @@
                 }
 
                 // CASE 2: No square selected yet -> Select piece
-                if (isMyPiece) {
+                if (isMyPiece && isMyTurn) {
                     self.selectSquareForTap(clickedSquare);
                 }
             });
@@ -691,34 +711,151 @@
 
         onDragStart(source, piece) {
             if (this.chess.game_over() || this.isEngineThinking) return false;
+
+            // Turn check
+            const isWhiteTurn = this.chess.turn() === 'w';
+            const isBlackTurn = this.chess.turn() === 'b';
+            const isPieceWhite = piece.search(/^w/) !== -1;
+            const isPieceBlack = piece.search(/^b/) !== -1;
+
+            let isDraggableTurn = (isWhiteTurn && isPieceWhite) || (isBlackTurn && isPieceBlack);
+            if (this.options.mode === 'engine') {
+                if (this.userSide === 'white' && isPieceBlack) isDraggableTurn = false;
+                if (this.userSide === 'black' && isPieceWhite) isDraggableTurn = false;
+            }
+
+            if (!isDraggableTurn) {
+                // Do not clear tap highlights if player tapped on an enemy piece as a capture target
+                return false;
+            }
+
             this.clearTapHighlights();
 
             // Ensure player is at latest ply before making new move
             if (this.currentPly < this.historyFen.length - 1) {
                 this.jumpToPly(this.historyFen.length - 1);
             }
+        }
 
-            // Only allow dragging pieces that belong to the user's chosen side
-            if (this.options.mode === 'engine') {
-                if (this.userSide === 'white' && piece.search(/^b/) !== -1) return false;
-                if (this.userSide === 'black' && piece.search(/^w/) !== -1) return false;
-            }
+        isPromotionMove(source, target) {
+            const piece = this.chess.get(source);
+            if (!piece || piece.type !== 'p') return false;
+            if ((piece.color === 'w' && target[1] !== '8') || (piece.color === 'b' && target[1] !== '1')) return false;
+            const moves = this.chess.moves({ square: source, verbose: true });
+            return moves.some(m => m.to === target && m.promotion);
+        }
 
-            // Turn check
-            if ((this.chess.turn() === 'w' && piece.search(/^b/) !== -1) ||
-                (this.chess.turn() === 'b' && piece.search(/^w/) !== -1)) {
-                return false;
-            }
+        showPromotionDialog(color, callback) {
+            $('.mchess-promotion-overlay').remove();
+            const colorPrefix = (color === 'w' || color === 'white') ? 'w' : 'b';
+            const colorName = colorPrefix === 'w' ? 'White' : 'Black';
+
+            const pieces = [
+                { code: 'q', name: 'Queen', icon: colorPrefix === 'w' ? '♕' : '♛', key: 'Q / 1' },
+                { code: 'r', name: 'Rook', icon: colorPrefix === 'w' ? '♖' : '♜', key: 'R / 2' },
+                { code: 'b', name: 'Bishop', icon: colorPrefix === 'w' ? '♗' : '♝', key: 'B / 3' },
+                { code: 'n', name: 'Knight', icon: colorPrefix === 'w' ? '♘' : '♞', key: 'N / 4' }
+            ];
+
+            const pieceThemeUrl = (pCode) => `https://chessboardjs.com/img/chesspieces/wikipedia/${colorPrefix}${pCode.toUpperCase()}.png`;
+
+            const html = `
+                <div class="mchess-promotion-overlay" id="mchessPromotionOverlay">
+                    <div class="mchess-promotion-card" role="dialog" aria-modal="true" aria-labelledby="promoTitle">
+                        <h3 class="mchess-promotion-title" id="promoTitle">
+                            <i class="fas fa-chess-queen" style="color:#eab308;"></i>
+                            Promote Your Pawn
+                        </h3>
+                        <p class="mchess-promotion-subtitle">Choose your promotion piece for ${colorName}</p>
+
+                        <div class="promotion-piece-grid">
+                            ${pieces.map(p => `
+                                <button type="button" class="promotion-piece-btn" data-piece="${p.code}" title="Promote to ${p.name}">
+                                    <img src="${pieceThemeUrl(p.code)}" alt="${p.name}" class="promotion-piece-img" onerror="this.outerHTML='<span style=\\'font-size:36px;\\'>${p.icon}</span>'">
+                                    <span class="promotion-piece-name">${p.name}</span>
+                                    <span class="promotion-piece-shortcut">${p.key}</span>
+                                </button>
+                            `).join('')}
+                        </div>
+
+                        <div style="margin-top: 10px;">
+                            <button type="button" id="btnCancelPromotion" class="modal-btn modal-btn-secondary" style="font-size:12.5px; padding: 6px 16px;">
+                                <i class="fas fa-times"></i> Cancel Move
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const $overlay = $(html);
+            $('body').append($overlay);
+            $overlay.find('.promotion-piece-btn').first().focus();
+
+            const cleanup = () => {
+                $(document).off('keydown.mchessPromotion');
+                $overlay.fadeOut(150, function () {
+                    $(this).remove();
+                });
+            };
+
+            $overlay.on('click', '.promotion-piece-btn', function () {
+                const piece = $(this).data('piece');
+                cleanup();
+                if (typeof callback === 'function') callback(piece);
+            });
+
+            $overlay.on('click', '#btnCancelPromotion', function () {
+                cleanup();
+                if (typeof callback === 'function') callback(null);
+            });
+
+            $(document).on('keydown.mchessPromotion', function (e) {
+                if (e.key === 'Escape') {
+                    cleanup();
+                    if (typeof callback === 'function') callback(null);
+                } else if (e.key === 'q' || e.key === 'Q' || e.key === '1') {
+                    cleanup();
+                    if (typeof callback === 'function') callback('q');
+                } else if (e.key === 'r' || e.key === 'R' || e.key === '2') {
+                    cleanup();
+                    if (typeof callback === 'function') callback('r');
+                } else if (e.key === 'b' || e.key === 'B' || e.key === '3') {
+                    cleanup();
+                    if (typeof callback === 'function') callback('b');
+                } else if (e.key === 'n' || e.key === 'N' || e.key === '4') {
+                    cleanup();
+                    if (typeof callback === 'function') callback('n');
+                }
+            });
         }
 
         onDrop(source, target) {
+            if (this.isPromotionMove(source, target)) {
+                const turnColor = this.chess.turn();
+                const self = this;
+                this.showPromotionDialog(turnColor, (piece) => {
+                    if (piece) {
+                        self.executePlayerMove(source, target, piece);
+                    } else {
+                        self.board.position(self.chess.fen());
+                    }
+                });
+                return 'snapback';
+            }
+
+            return this.executePlayerMove(source, target, 'q');
+        }
+
+        executePlayerMove(source, target, promotionPiece = 'q') {
             const move = this.chess.move({
                 from: source,
                 to: target,
-                promotion: 'q'
+                promotion: promotionPiece
             });
 
             if (move === null) return 'snapback';
+
+            this.board.position(this.chess.fen());
 
             // Audio effect
             if (this.chess.in_checkmate()) this.playSound('checkmate');
@@ -739,10 +876,10 @@
             this.currentPly = this.historyFen.length - 1;
 
             if (this.options.mode === 'daily' || this.options.mode === 'puzzle') {
-                const playedMoveUci = `${source}${target}`;
+                const playedMoveUci = `${source}${target}${promotionPiece !== 'q' ? promotionPiece : ''}`;
                 const expectedMove = this.solutionMoves[this.solutionIndex];
 
-                if (expectedMove && (playedMoveUci === expectedMove || move.san === expectedMove)) {
+                if (expectedMove && (playedMoveUci === expectedMove || move.san === expectedMove || `${source}${target}` === expectedMove)) {
                     this.solutionIndex++;
                     this.updateStatusBanner(`<i class="fas fa-check" style="color:#16a34a;"></i> Correct move!`);
 
@@ -1014,10 +1151,29 @@
                 self.setupPosition(self.options.fen, self.userSide);
             });
 
-            // Resign Button
+            // Resign Button with Enhanced Modal Dialog
             this.$container.find('#btnEngineResign').on('click', () => {
-                if (confirm("Are you sure you want to resign this game?")) {
-                    self.resignGame();
+                self.$container.find('#modalConfirmResign').css('display', 'flex').hide().fadeIn(200);
+            });
+
+            this.$container.find('#btnConfirmResignYes').on('click', () => {
+                self.$container.find('#modalConfirmResign').fadeOut(150, function () {
+                    $(this).hide();
+                });
+                self.resignGame();
+            });
+
+            this.$container.find('#btnConfirmResignNo').on('click', () => {
+                self.$container.find('#modalConfirmResign').fadeOut(150, function () {
+                    $(this).hide();
+                });
+            });
+
+            this.$container.find('#modalConfirmResign').on('click', function (e) {
+                if (e.target === this) {
+                    $(this).fadeOut(150, function () {
+                        $(this).hide();
+                    });
                 }
             });
 

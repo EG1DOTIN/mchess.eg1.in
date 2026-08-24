@@ -1,0 +1,341 @@
+/**
+ * @file train.css
+ * @description Page-specific styles for Marwadi Chess "Train Yourself" Tactics Arena & Focused Zen Mode.
+ */
+
+.trainer-container {
+    max-width: 1120px;
+    margin: 0 auto 40px auto;
+    box-sizing: border-box;
+}
+
+/* Header & Stats Banner */
+.trainer-header-card {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    border-radius: 16px;
+    padding: 24px 28px;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.trainer-title {
+    font-size: clamp(20px, 4vw, 26px);
+    font-weight: 800;
+    color: #f8fafc;
+    margin: 0 0 6px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.trainer-subtitle {
+    color: #94a3b8;
+    font-size: 13.5px;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.trainer-stats-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.trainer-stat-badge {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 8px 16px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #f8fafc;
+}
+
+.trainer-stat-badge i {
+    color: #fbbf24;
+}
+
+/* Mode & Settings Toolbar */
+.trainer-controls-panel {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="dark"] .trainer-controls-panel,
+body.dark-theme .trainer-controls-panel,
+html[data-theme="dark"] .trainer-controls-panel {
+    background: #1e293b !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3) !important;
+}
+
+.mode-selector-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.mode-chip-btn {
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    color: #475569;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.mode-chip-btn:hover {
+    background: #e2e8f0;
+    color: #1e293b;
+}
+
+.mode-chip-btn.active {
+    background: linear-gradient(135deg, #d97706 0%, #b45309 100%) !important;
+    color: #ffffff !important;
+    border-color: #d97706 !important;
+    box-shadow: 0 2px 8px rgba(217, 119, 6, 0.35);
+}
+
+[data-theme="dark"] .mode-chip-btn,
+body.dark-theme .mode-chip-btn,
+html[data-theme="dark"] .mode-chip-btn {
+    background: #0f172a !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    color: #cbd5e1 !important;
+}
+
+[data-theme="dark"] .mode-chip-btn:hover,
+body.dark-theme .mode-chip-btn:hover {
+    background: #334155 !important;
+    color: #f8fafc !important;
+}
+
+/* Strikes / Lives Indicator */
+.strikes-container {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 18px;
+}
+
+.strike-heart {
+    color: #ef4444;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.5));
+}
+
+.strike-heart.lost {
+    color: #475569;
+    opacity: 0.35;
+    filter: none;
+    transform: scale(0.85);
+}
+
+.shake-effect {
+    animation: shake 0.35s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes shake {
+    10%, 90% { transform: translate3d(-2px, 0, 0); }
+    20%, 80% { transform: translate3d(3px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-5px, 0, 0); }
+    40%, 60% { transform: translate3d(5px, 0, 0); }
+}
+
+/* Focused Zen Mode Button */
+.btn-zen-mode {
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+    color: #ffffff;
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+}
+
+.btn-zen-mode:hover {
+    background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(2, 132, 199, 0.45);
+}
+
+/* ==========================================================================
+   Focused Calculation Mode (Zen Fullscreen Modal)
+   ========================================================================== */
+.zen-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(15, 23, 42, 0.96);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 100000;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+.zen-board-shell {
+    width: 100%;
+    max-width: 580px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+}
+
+.zen-topbar {
+    width: 100%;
+    background: #1e293b;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 12px;
+    padding: 12px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    box-sizing: border-box;
+}
+
+.zen-topbar-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #f8fafc;
+}
+
+.zen-topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-exit-zen {
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #f87171;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+}
+
+.btn-exit-zen:hover {
+    background: #ef4444;
+    color: #ffffff;
+}
+
+/* Game Over Summary Modal */
+.summary-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin: 18px 0 24px 0;
+}
+
+.summary-stat-box {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+}
+
+.summary-stat-box .val {
+    font-size: 22px;
+    font-weight: 800;
+    color: #38bdf8;
+}
+
+.summary-stat-box .lbl {
+    font-size: 11px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+@media (max-width: 640px) {
+    .trainer-header-card {
+        padding: 18px 14px;
+    }
+
+    .trainer-controls-panel {
+        padding: 12px 10px;
+    }
+
+    .mode-selector-group {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .mode-chip-btn {
+        flex: 1 1 auto;
+        justify-content: center;
+        padding: 7px 10px;
+        font-size: 12px;
+    }
+
+    .zen-modal-overlay {
+        padding: 6px;
+    }
+
+    .zen-board-shell {
+        max-width: 100%;
+    }
+
+    .zen-topbar {
+        padding: 8px 10px;
+        font-size: 12px;
+    }
+
+    .btn-zen-mode {
+        width: 100%;
+        justify-content: center;
+    }
+}

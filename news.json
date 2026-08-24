@@ -1,5 +1,53 @@
 [
   {
+    "id": "v3-6-0-feat-train-yourself-tactics",
+    "version": "3.6.0",
+    "title": "Train Yourself Fast-Paced Tactics Arena",
+    "message": "Sharpen your checkmate calculations with 500 curated puzzles across Mate in 2, 3, 4, 5, and Sprint modes, 3-strike survival chances, time controls, and distraction-free Focused Zen Mode.",
+    "icon": "fa-brain",
+    "badge": "New Feature",
+    "badgeColor": "#f59e0b",
+    "link": "train.html",
+    "date": "Aug 24, 2026",
+    "pinned": true
+  },
+  {
+    "id": "v3-6-0-feat-universal-pawn-promotion",
+    "version": "3.6.0",
+    "title": "Universal Interactive Pawn Promotion (Queen, Rook, Bishop, Knight)",
+    "message": "Choose your exact promotion piece anytime a pawn reaches the back rank with animated piece selection popups, keyboard shortcuts (Q/R/B/N), and full P2P WebRTC synchronization.",
+    "icon": "fa-chess-queen",
+    "badge": "New Feature",
+    "badgeColor": "#eab308",
+    "link": "playonline.html",
+    "date": "Aug 24, 2026",
+    "pinned": true
+  },
+  {
+    "id": "v3-6-0-feat-news-release-notes-page",
+    "version": "3.6.0",
+    "title": "All Product Updates & Changelog Feed",
+    "message": "Browse complete release history, feature updates, bug fixes, and optimization notes with 1-click filters, search, and direct navigation links.",
+    "icon": "fa-bullhorn",
+    "badge": "New Feature",
+    "badgeColor": "#38bdf8",
+    "link": "news.html",
+    "date": "Aug 24, 2026",
+    "pinned": true
+  },
+  {
+    "id": "v3-6-0-bugfixes-tap-capture-modals",
+    "version": "3.6.0",
+    "title": "Tap-to-Move Piece Capture & Modern Resign Popups",
+    "message": "Resolved tap-to-move capture execution across all boards and replaced old browser confirm/alert dialogs in Play vs Computer & My Games with sleek non-blocking custom modals.",
+    "icon": "fa-wrench",
+    "badge": "Bug Fixes",
+    "badgeColor": "#10b981",
+    "link": "playcomp.html",
+    "date": "Aug 24, 2026",
+    "pinned": false
+  },
+  {
     "id": "v3-5-1-feat-board-theme-customizer",
     "version": "3.5.1",
     "title": "5 Centralized Board Themes & Customizer",
@@ -9,7 +57,7 @@
     "badgeColor": "#a855f7",
     "link": "playonline.html",
     "date": "Aug 23, 2026",
-    "pinned": true
+    "pinned": false
   },
   {
     "id": "v3-5-1-bugfixes-mygames-perspective-pgn",

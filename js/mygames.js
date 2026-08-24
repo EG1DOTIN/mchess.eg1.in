@@ -233,34 +233,104 @@ $(document).ready(function () {
         }
     });
 
+    // Modal Confirmation & Toast Helpers
+    function showConfirmModal(options) {
+        $('.mchess-confirm-modal').remove();
+        const iconClass = options.iconClass || 'fa-trash-alt';
+        const modalHtml = `
+            <div class="modal-overlay mchess-confirm-modal" style="display:flex;">
+                <div class="modal-card">
+                    <div class="modal-icon-circle ${options.danger ? 'danger' : 'warning'}">
+                        <i class="fas ${iconClass}"></i>
+                    </div>
+                    <h3 class="modal-title">${options.title || 'Are you sure?'}</h3>
+                    <p class="modal-description">${options.message || 'This action cannot be undone.'}</p>
+                    <div class="modal-btn-row">
+                        <button id="btnGenericModalConfirm" class="modal-btn ${options.danger ? 'modal-btn-danger' : 'modal-btn-success'}">
+                            <i class="fas ${iconClass}"></i> ${options.confirmText || 'Confirm'}
+                        </button>
+                        <button id="btnGenericModalCancel" class="modal-btn modal-btn-secondary">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        const $modal = $(modalHtml);
+        $('body').append($modal);
+
+        $modal.find('#btnGenericModalConfirm').on('click', function () {
+            $modal.fadeOut(150, function () { $modal.remove(); });
+            if (typeof options.onConfirm === 'function') options.onConfirm();
+        });
+
+        $modal.find('#btnGenericModalCancel').on('click', function () {
+            $modal.fadeOut(150, function () { $modal.remove(); });
+        });
+
+        $modal.on('click', function (e) {
+            if (e.target === this) {
+                $modal.fadeOut(150, function () { $modal.remove(); });
+            }
+        });
+    }
+
+    function showToast(message, iconClass = 'fa-info-circle') {
+        $('.mchess-toast').remove();
+        const $toast = $(`<div class="mchess-toast"><i class="fas ${iconClass}" style="color:#38bdf8;"></i> <span>${message}</span></div>`);
+        $('body').append($toast);
+        setTimeout(() => $toast.addClass('show'), 20);
+        setTimeout(() => {
+            $toast.removeClass('show');
+            setTimeout(() => $toast.remove(), 350);
+        }, 4000);
+    }
+
     // Delete Single Game
     $(document).on('click', '.btn-delete-game', function () {
         const gameId = $(this).data('id');
-        if (confirm("Are you sure you want to delete this game record?")) {
-            MChessGameHistory.deleteGame(gameId);
-            renderDashboard();
-        }
+        showConfirmModal({
+            title: 'Delete Game Record?',
+            message: 'Are you sure you want to permanently delete this game record from your local history?',
+            iconClass: 'fa-trash-alt',
+            danger: true,
+            confirmText: 'Yes, Delete',
+            onConfirm: function () {
+                MChessGameHistory.deleteGame(gameId);
+                renderDashboard();
+                showToast('Game record deleted successfully.', 'fa-check-circle');
+            }
+        });
     });
 
     // Export All Games as Multi-PGN
     $('#btnExportAllPgn').on('click', function () {
         const games = MChessGameHistory.getSavedGames() || [];
         if (games.length === 0) {
-            alert("No saved games found to export.");
+            showToast('No saved games found to export.', 'fa-exclamation-circle');
             return;
         }
         const multiPgn = games.map(g => (g.pgn || '').trim()).filter(p => p.length > 0).join('\n\n\n');
         MChessGameHistory.downloadPgn(multiPgn, `mchess_all_games_${Date.now()}.pgn`);
+        showToast(`Exported ${games.length} games to PGN file.`, 'fa-download');
     });
 
     // Clear All History
     $('#btnClearHistory').on('click', function () {
-        if (confirm("Are you sure you want to clear your entire game history from LocalStorage? This action cannot be undone.")) {
-            MChessGameHistory.clearAllHistory();
-            $('#reviewBoardContainer').hide();
-            $('#mchessReviewBoardSlot').empty();
-            renderDashboard();
-        }
+        showConfirmModal({
+            title: 'Clear Entire Archive?',
+            message: 'Are you sure you want to clear your entire game history from LocalStorage? All saved match records will be lost permanently.',
+            iconClass: 'fa-exclamation-triangle',
+            danger: true,
+            confirmText: 'Yes, Clear All History',
+            onConfirm: function () {
+                MChessGameHistory.clearAllHistory();
+                $('#reviewBoardContainer').hide();
+                $('#mchessReviewBoardSlot').empty();
+                renderDashboard();
+                showToast('Match history archive cleared.', 'fa-trash-alt');
+            }
+        });
     });
 
     // Initial Render
