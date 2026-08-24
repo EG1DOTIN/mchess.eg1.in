@@ -728,19 +728,6 @@
                 const $activeCell = this.$container.find(`#move_${this.uid}_${this.currentMoveIndex}`);
                 if ($activeCell.length) {
                     $activeCell.addClass("active");
-                    const movesListEl = this.$container.find(`#movesList_${this.uid}`)[0];
-                    if (movesListEl) {
-                        const cellTop = $activeCell[0].offsetTop;
-                        const cellHeight = $activeCell[0].offsetHeight;
-                        const listScrollTop = movesListEl.scrollTop;
-                        const listHeight = movesListEl.clientHeight;
-
-                        if (cellTop < listScrollTop) {
-                            movesListEl.scrollTop = Math.max(0, cellTop - 6);
-                        } else if (cellTop + cellHeight > listScrollTop + listHeight) {
-                            movesListEl.scrollTop = cellTop + cellHeight - listHeight + 6;
-                        }
-                    }
                 }
             }
 

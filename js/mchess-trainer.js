@@ -39,12 +39,14 @@
             this.bestStreak = this.getStoredBestStreak();
             this.timeLeft = this.options.timeControl;
             this.clockTimer = null;
+            this.stockfishWorker = null;
 
             // Tap-to-Move state
             this.selectedSquare = null;
             this.legalMoves = [];
 
             this.initAudio();
+            this.initStockfishWorker();
             this.initLayout();
             this.loadPgnPuzzles();
             this.bindEvents();
@@ -58,6 +60,21 @@
                 }
             } catch (e) {
                 console.warn("[MChessTrainer] Web Audio not available:", e);
+            }
+        }
+
+        initStockfishWorker() {
+            try {
+                const workerBlob = new Blob([
+                    `importScripts('https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js');`
+                ], { type: 'application/javascript' });
+
+                this.stockfishWorker = new Worker(URL.createObjectURL(workerBlob));
+                this.stockfishWorker.postMessage('uci');
+                this.stockfishWorker.postMessage('setoption name Skill Level value 20');
+            } catch (err) {
+                console.warn("[MChessTrainer] Stockfish Web Worker fallback:", err);
+                this.stockfishWorker = null;
             }
         }
 
@@ -167,14 +184,17 @@
 
                     <div id="trainerStatusBanner" class="mode-banner game-line" style="margin-bottom: 16px;">
                         <span id="trainerStatusText"><i class="fas fa-spinner fa-spin"></i> Loading tactical puzzle library...</span>
-                        <div style="display:inline-flex; gap:8px; align-items:center;">
+                        <div style="display:inline-flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                            <button id="btnTrainerRestartTop" class="btn-reset-analysis" style="background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);" title="Restart Training Session">
+                                <i class="fas fa-redo"></i> Restart
+                            </button>
                             <button id="btnTrainerHint" class="btn-reset-analysis" style="background: linear-gradient(135deg, #d97706 0%, #b45309 100%);">
                                 <i class="far fa-lightbulb"></i> Hint
                             </button>
                             <button id="btnTrainerSolution" class="btn-reset-analysis" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
                                 <i class="fas fa-eye"></i> Solution
                             </button>
-                            <button id="btnTrainerSkip" class="btn-reset-analysis" style="background: linear-gradient(135deg, #475569 0%, #334155 100%);">
+                            <button id="btnTrainerSkip" class="btn-reset-analysis" style="background: linear-gradient(135deg, #475569 0%, #334155 100%);" title="Skip to Next Puzzle">
                                 <i class="fas fa-forward"></i> Skip
                             </button>
                         </div>
@@ -187,6 +207,9 @@
                             </div>
 
                             <div class="controls-bar">
+                                <button id="btnTrainerRestartBottom" class="btn-ctrl" style="border-color: rgba(34,197,94,0.4); color:#4ade80;" title="Restart Training Session">
+                                    <i class="fas fa-redo"></i> Restart
+                                </button>
                                 <button id="btnTrainerResetPuzzle" class="btn-ctrl" title="Reset Current Position">
                                     <i class="fas fa-undo"></i> Reset
                                 </button>
@@ -418,6 +441,16 @@
             this.solutionMoves = this.extractSolutionMoves(this.currentPuzzle.pgnMoves, normalizedFen);
             this.solutionIndex = 0;
 
+            // Calculate strict maximum allowed player moves from theme or solution length
+            let themeMoves = 0;
+            if (this.currentPuzzle.theme) {
+                const match = this.currentPuzzle.theme.match(/mateIn(\d+)/i);
+                if (match) themeMoves = parseInt(match[1], 10);
+            }
+            const solutionPlayerMoves = Math.ceil(this.solutionMoves.length / 2);
+            this.maxPlayerMoves = Math.max(themeMoves || solutionPlayerMoves || 1, 1);
+            this.playerMovesPlayed = 0;
+
             // UI updates
             this.$container.find('#lblTrainerSideToMove, #zenSideLabel').text(`${playerColorText} to Move`);
             this.$container.find('#lblPuzzleEventTitle').html(`<i class="fas fa-puzzle-piece"></i> ${this.currentPuzzle.event}`);
@@ -533,7 +566,11 @@
             const $board = this.$container.find('#' + this.boardId);
 
             $board.off('click', '[class*="square-"]').on('click', '[class*="square-"]', function (e) {
-                if (!self.isPlaying || self.chess.game_over()) return;
+                if (!self.isPlaying) {
+                    self.updateStatusBanner('<i class="fas fa-flag-checkered" style="color:#eab308;"></i> <strong>Session Ended.</strong> Click <a href="javascript:void(0)" class="link-restart-trainer" style="color:#38bdf8; text-decoration:underline; font-weight:bold;">Restart Session</a> or <strong>Skip</strong> to start fresh!');
+                    return;
+                }
+                if (self.chess.game_over()) return;
 
                 const $targetSq = $(this).closest('[class*="square-"]');
                 const clickedSquare = $targetSq.attr('data-square') || (($targetSq.attr('class') || '').match(/square-([a-h][1-8])/) || [])[1];
@@ -593,7 +630,11 @@
         }
 
         onDragStart(source, piece) {
-            if (!this.isPlaying || this.chess.game_over()) return false;
+            if (!this.isPlaying) {
+                this.updateStatusBanner('<i class="fas fa-flag-checkered" style="color:#eab308;"></i> <strong>Session Ended.</strong> Click <a href="javascript:void(0)" class="link-restart-trainer" style="color:#38bdf8; text-decoration:underline; font-weight:bold;">Restart Session</a> or <strong>Skip</strong> to start fresh!');
+                return false;
+            }
+            if (this.chess.game_over()) return false;
 
             const isWhiteTurn = this.chess.turn() === 'w';
             const isBlackTurn = this.chess.turn() === 'b';
@@ -733,11 +774,32 @@
             }
 
             this.board.position(this.chess.fen());
+            this.playerMovesPlayed++;
+
+            // 1. Immediate Checkmate Rule: Any legal checkmate move immediately solves the puzzle!
+            if (this.chess.in_checkmate()) {
+                this.playSound('checkmate');
+                this.renderMovesList();
+                this.onPuzzleSolved();
+                return;
+            }
+
+            // 2. Strict Move Budget: If player moves reach or exceed max allowed moves and not checkmate -> Fail!
+            if (this.playerMovesPlayed >= this.maxPlayerMoves) {
+                this.updateStatusBanner(`<i class="fas fa-times-circle" style="color:#ef4444;"></i> <strong>Incorrect!</strong> Must be Mate in ${this.maxPlayerMoves}.`);
+                this.handleIncorrectMove();
+                return 'snapback';
+            }
 
             const expectedMove = this.solutionMoves[this.solutionIndex];
             const isCorrect = expectedMove && (
-                (source === expectedMove.from && target === expectedMove.to && (expectedMove.promotion ? expectedMove.promotion === promotionPiece : true)) ||
-                move.san === expectedMove.san
+                (typeof expectedMove === 'object' && source === expectedMove.from && target === expectedMove.to && (expectedMove.promotion ? expectedMove.promotion.toLowerCase() === promotionPiece.toLowerCase() : true)) ||
+                (typeof expectedMove === 'object' && move.san === expectedMove.san) ||
+                (typeof expectedMove === 'string' && (
+                    `${source}${target}${(move.promotion || promotionPiece || '').toLowerCase()}` === expectedMove.toLowerCase() ||
+                    `${source}${target}` === expectedMove.toLowerCase() ||
+                    (move.san || '').toLowerCase() === expectedMove.toLowerCase()
+                ))
             );
 
             if (isCorrect) {
@@ -763,20 +825,141 @@
                             self.board.position(self.chess.fen(), true);
                             self.solutionIndex++;
                             self.renderMovesList();
-                            if (self.solutionIndex >= self.solutionMoves.length) {
+                            if (self.solutionIndex >= self.solutionMoves.length || self.chess.in_checkmate() || self.chess.game_over()) {
                                 self.onPuzzleSolved();
                             }
                         }
                     }, 350);
                 }
+            } else if (this.stockfishWorker) {
+                // Stockfish Dynamic Defense for unscripted forced mate branches
+                this.evaluateAlternativeMove();
             } else {
-                // Incorrect move!
-                this.playSound('error');
-                this.onIncorrectMove();
-                this.chess.undo();
-                this.board.position(this.chess.fen());
+                this.handleIncorrectMove();
                 return 'snapback';
             }
+        }
+
+        async evaluateAlternativeMove() {
+            if (!this.stockfishWorker) {
+                this.handleIncorrectMove();
+                return;
+            }
+
+            this.updateStatusBanner(`<i class="fas fa-robot fa-spin" style="color:#38bdf8;"></i> Checking forced mate with Stockfish...`);
+
+            try {
+                const evalResult = await this.queryStockfishEval(this.chess.fen(), 400);
+                const remainingAllowedMoves = this.maxPlayerMoves - this.playerMovesPlayed;
+
+                // STRICT RULE: Must be a forced mate within the remaining moves budget!
+                // evalResult.mateVal < 0 means opponent is being mated in Math.abs(evalResult.mateVal) moves
+                const isForcedMateInBudget = evalResult.isMateForPlayer && evalResult.mateVal !== null && Math.abs(evalResult.mateVal) <= remainingAllowedMoves;
+
+                if (isForcedMateInBudget && evalResult.bestMove) {
+                    this.updateStatusBanner(`<i class="fas fa-check" style="color:#16a34a;"></i> Valid Mate in ${this.maxPlayerMoves} line! Opponent defending...`);
+                    this.renderMovesList();
+
+                    const self = this;
+                    setTimeout(() => {
+                        const m = self.playUciDefenseMove(evalResult.bestMove);
+                        if (self.chess.in_checkmate() || self.chess.game_over()) {
+                            self.onPuzzleSolved();
+                        } else {
+                            const playedSan = m ? m.san : evalResult.bestMove;
+                            self.updateStatusBanner(`<i class="fas fa-crosshairs" style="color:#eab308;"></i> Opponent defended with <strong>${playedSan}</strong>. Deliver the checkmate!`);
+                        }
+                    }, 350);
+                } else {
+                    this.updateStatusBanner(`<i class="fas fa-times-circle" style="color:#ef4444;"></i> <strong>Incorrect!</strong> Does not force Mate in ${this.maxPlayerMoves}.`);
+                    this.handleIncorrectMove();
+                }
+            } catch (err) {
+                console.warn("[MChessTrainer] Alternative move eval error:", err);
+                this.handleIncorrectMove();
+            }
+        }
+
+        queryStockfishEval(fen, timeoutMs = 400) {
+            return new Promise((resolve) => {
+                if (!this.stockfishWorker) {
+                    resolve({ isMateForPlayer: false, mateVal: null, bestMove: null });
+                    return;
+                }
+
+                let bestMove = null;
+                let isMateForPlayer = false;
+                let mateVal = null;
+                let resolved = false;
+
+                const timer = setTimeout(() => {
+                    if (!resolved) {
+                        resolved = true;
+                        this.stockfishWorker.onmessage = null;
+                        resolve({ isMateForPlayer, mateVal, bestMove });
+                    }
+                }, timeoutMs);
+
+                this.stockfishWorker.onmessage = (event) => {
+                    const line = typeof event.data === 'string' ? event.data : '';
+
+                    if (line.includes('score mate')) {
+                        const matchMate = line.match(/score mate (-?\d+)/);
+                        if (matchMate) {
+                            const val = parseInt(matchMate[1], 10);
+                            // Opponent's turn: negative mate value means opponent is being mated (player is forcing mate!)
+                            if (val < 0) {
+                                isMateForPlayer = true;
+                                mateVal = val;
+                            }
+                        }
+                    }
+
+                    if (line.startsWith('bestmove')) {
+                        const matchMove = line.match(/^bestmove\s+([a-h][1-8][a-h][1-8][qrbn]?)/);
+                        if (matchMove && matchMove[1]) {
+                            bestMove = matchMove[1];
+                        }
+                        if (!resolved) {
+                            resolved = true;
+                            clearTimeout(timer);
+                            this.stockfishWorker.onmessage = null;
+                            resolve({ isMateForPlayer, mateVal, bestMove });
+                        }
+                    }
+                };
+
+                this.stockfishWorker.postMessage(`position fen ${fen}`);
+                this.stockfishWorker.postMessage('go depth 12 movetime 300');
+            });
+        }
+
+        playUciDefenseMove(uciString) {
+            if (!uciString) return null;
+            const from = uciString.substring(0, 2);
+            const to = uciString.substring(2, 4);
+            const promotion = uciString.length > 4 ? uciString.substring(4, 5) : 'q';
+
+            const move = this.chess.move({ from: from, to: to, promotion: promotion });
+            if (move) {
+                if (this.chess.in_checkmate()) this.playSound('checkmate');
+                else if (this.chess.in_check()) this.playSound('check');
+                else if (move.captured) this.playSound('capture');
+                else this.playSound('move');
+
+                this.board.position(this.chess.fen(), true);
+                this.renderMovesList();
+                return move;
+            }
+            return null;
+        }
+
+        handleIncorrectMove() {
+            this.playSound('error');
+            this.onIncorrectMove();
+            this.chess.undo();
+            if (this.playerMovesPlayed > 0) this.playerMovesPlayed--;
+            this.board.position(this.chess.fen());
         }
 
         onSnapEnd() {
@@ -833,7 +1016,14 @@
             $('#sumStreak').text(this.currentStreak);
             $('#sumBestRecord').text(this.bestStreak);
 
+            this.updateStatusBanner('<i class="fas fa-flag-checkered" style="color:#eab308;"></i> <strong>Session Ended.</strong> Click <a href="javascript:void(0)" class="link-restart-trainer" style="color:#38bdf8; text-decoration:underline; font-weight:bold;">Restart Session</a> or <strong>Skip</strong> to start fresh!');
+
             $('#modalTrainerSummary').css('display', 'flex').hide().fadeIn(250);
+        }
+
+        restartSession() {
+            $('#modalTrainerSummary').fadeOut(150);
+            this.filterQueueAndStart(this.options.mode);
         }
 
         triggerHint() {
@@ -874,6 +1064,7 @@
             const $list = this.$container.find('#trainerMovesList');
             $list.empty();
 
+            const rows = [];
             for (let i = 0; i < history.length; i += 2) {
                 const moveNum = Math.floor(i / 2) + 1;
                 const numDiv = `<div class="move-num">${moveNum}.</div>`;
@@ -882,7 +1073,12 @@
                 if (i + 1 < history.length) {
                     blackDiv = `<div class="move-cell active">${history[i + 1].san}</div>`;
                 }
-                $list.append(numDiv + whiteDiv + blackDiv);
+                rows.push(numDiv + whiteDiv + blackDiv);
+            }
+
+            // Append in reverse order so latest move is at the top
+            for (let r = rows.length - 1; r >= 0; r--) {
+                $list.append(rows[r]);
             }
         }
 
@@ -945,13 +1141,23 @@
             });
 
             // Action controls
+            this.$container.find('#btnTrainerRestartTop, #btnTrainerRestartBottom').on('click', () => self.restartSession());
+            this.$container.on('click', '.link-restart-trainer', () => self.restartSession());
             this.$container.find('#btnTrainerHint').on('click', () => self.triggerHint());
             this.$container.find('#btnTrainerSolution').on('click', () => self.revealSolution());
             this.$container.find('#btnTrainerSkip').on('click', () => {
+                if (!self.isPlaying) {
+                    self.restartSession();
+                    return;
+                }
                 self.currentPuzzleIndex++;
                 self.loadActivePuzzle();
             });
             this.$container.find('#btnTrainerResetPuzzle').on('click', () => {
+                if (!self.isPlaying) {
+                    self.restartSession();
+                    return;
+                }
                 if (self.currentPuzzle) self.loadActivePuzzle();
             });
             this.$container.find('#btnTrainerFlip').on('click', () => {
@@ -967,11 +1173,11 @@
 
             // Restart / Summary modal
             $('#btnTrainerRestart').on('click', () => {
-                $('#modalTrainerSummary').fadeOut(150);
-                self.filterQueueAndStart(self.options.mode);
+                self.restartSession();
             });
             $('#btnTrainerReviewLast').on('click', () => {
                 $('#modalTrainerSummary').fadeOut(150);
+                self.updateStatusBanner('<i class="fas fa-flag-checkered" style="color:#eab308;"></i> <strong>Reviewing Position.</strong> Click <a href="javascript:void(0)" class="link-restart-trainer" style="color:#38bdf8; text-decoration:underline; font-weight:bold;">Restart Session</a> or <strong>Skip</strong> to start a new workout.');
             });
         }
     }

@@ -166,8 +166,8 @@
          */
         initPeer() {
             const self = this;
-            // Reuse peer ID for this tab session so refresh doesn't break reconnection
-            const savedSessionPeerId = sessionStorage.getItem('mchess_session_peer_id');
+            // Reuse peer ID for this session so refresh doesn't break reconnection
+            const savedSessionPeerId = sessionStorage.getItem('mchess_session_peer_id') || localStorage.getItem('mchess_session_peer_id');
             const randomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
             const preferredId = savedSessionPeerId || ('MC-' + randomCode);
 
@@ -186,6 +186,7 @@
                 this.peer.on('open', (id) => {
                     self.peerId = id;
                     sessionStorage.setItem('mchess_session_peer_id', id);
+                    localStorage.setItem('mchess_session_peer_id', id);
                     console.log("[MChessP2P] PeerJS initialized with ID:", id);
                     $('#myPeerCodeDisplay').text(id);
 
@@ -204,6 +205,7 @@
                         // Generate fresh ID if previous is still locked on server
                         const freshId = 'MC-' + Math.random().toString(36).substring(2, 8).toUpperCase();
                         sessionStorage.setItem('mchess_session_peer_id', freshId);
+                        localStorage.setItem('mchess_session_peer_id', freshId);
                         self.peer = new Peer(freshId, { debug: 1 });
                     }
                 });
@@ -214,11 +216,35 @@
         }
 
         /**
+         * Rebuild this.historyFen and currentPly cleanly from chess engine's move history
+         */
+        rebuildHistoryFenFromChess() {
+            try {
+                const moves = this.chess.history({ verbose: true });
+                const tempChess = new Chess();
+                this.historyFen = [{ fen: tempChess.fen(), san: 'Start', ply: 0 }];
+                moves.forEach((m, idx) => {
+                    tempChess.move(m);
+                    this.historyFen.push({
+                        fen: tempChess.fen(),
+                        san: m.san,
+                        ply: idx + 1
+                    });
+                });
+                this.currentPly = Math.max(0, this.historyFen.length - 1);
+            } catch (e) {
+                console.warn("[MChessP2P] Failed to rebuild historyFen from chess:", e);
+                this.historyFen = [{ fen: this.chess.fen(), san: 'Start', ply: 0 }];
+                this.currentPly = 0;
+            }
+        }
+
+        /**
          * Check and restore active game if user refreshed page
          */
         checkSessionRecovery() {
             try {
-                const sessionRaw = sessionStorage.getItem('mchess_active_match');
+                const sessionRaw = sessionStorage.getItem('mchess_active_match') || localStorage.getItem('mchess_active_match');
                 if (!sessionRaw) return;
 
                 const session = JSON.parse(sessionRaw);
@@ -237,10 +263,22 @@
                 this.gameActive = true;
                 this.gameSaved = false;
 
-                // Load chess position
+                // Load chess position from PGN first to preserve full moves history
                 this.chess = new Chess();
-                if (session.fen) {
+                let pgnLoaded = false;
+                if (session.pgn && typeof session.pgn === 'string' && session.pgn.trim().length > 0) {
+                    pgnLoaded = this.chess.load_pgn(session.pgn);
+                }
+                if (!pgnLoaded && session.fen) {
                     this.chess.load(session.fen);
+                }
+
+                // Restore historyFen array
+                if (Array.isArray(session.historyFen) && session.historyFen.length > 0) {
+                    this.historyFen = session.historyFen;
+                    this.currentPly = typeof session.currentPly === 'number' ? session.currentPly : Math.max(0, this.historyFen.length - 1);
+                } else {
+                    this.rebuildHistoryFenFromChess();
                 }
 
                 // Switch UI to Arena View
@@ -255,6 +293,14 @@
 
                 this.updateClockDisplays();
                 this.initChessboard(this.mySide);
+                this.renderMovesList();
+
+                // Highlight last move if history exists
+                const hist = this.chess.history({ verbose: true });
+                if (hist.length > 0) {
+                    const lastMove = hist[hist.length - 1];
+                    this.highlightLastMove(lastMove.from, lastMove.to);
+                }
 
                 if (this.isPassAndPlay) {
                     this.updateStatusBanner(`<i class="fas fa-play" style="color:#22c55e;"></i> Local Match Resumed. <strong>${this.chess.turn() === 'w' ? 'White' : 'Black'} to move</strong>.`);
@@ -267,6 +313,7 @@
             } catch (e) {
                 console.warn("[MChessP2P] Session recovery error:", e);
                 sessionStorage.removeItem('mchess_active_match');
+                localStorage.removeItem('mchess_active_match');
             }
         }
 
@@ -284,7 +331,10 @@
                     type: 'reconnect_request',
                     senderPeerId: self.peerId,
                     senderName: self.playerName,
+                    ply: self.currentPly,
                     fen: self.chess.fen(),
+                    pgn: self.chess.pgn(),
+                    historyFen: self.historyFen,
                     whiteTime: self.whiteTime,
                     blackTime: self.blackTime
                 });
@@ -308,15 +358,21 @@
                     whiteTime: this.whiteTime,
                     blackTime: this.blackTime,
                     fen: this.chess.fen(),
+                    pgn: this.chess.pgn(),
+                    historyFen: this.historyFen,
+                    currentPly: this.currentPly,
                     isPassAndPlay: this.isPassAndPlay
                 };
-                sessionStorage.setItem('mchess_active_match', JSON.stringify(data));
+                const serialized = JSON.stringify(data);
+                sessionStorage.setItem('mchess_active_match', serialized);
+                localStorage.setItem('mchess_active_match', serialized);
             } catch (e) {}
         }
 
         clearActiveMatchSession() {
             try {
                 sessionStorage.removeItem('mchess_active_match');
+                localStorage.removeItem('mchess_active_match');
             } catch (e) {}
         }
 
@@ -669,9 +725,13 @@
             console.log("[MChessP2P] Opponent reconnected to active match!", msg);
             this.stopDisconnectGraceTimer();
 
+            // Send full authoritative game state including PGN and moves history
             this.safeSend({
                 type: 'reconnect_accept',
                 fen: this.chess.fen(),
+                pgn: this.chess.pgn(),
+                historyFen: this.historyFen,
+                currentPly: this.currentPly,
                 whiteTime: this.whiteTime,
                 blackTime: this.blackTime
             });
@@ -685,14 +745,43 @@
             console.log("[MChessP2P] Reconnect accepted by opponent!", msg);
             this.stopDisconnectGraceTimer();
 
-            if (msg.fen) {
+            // Load authoritative position from PGN first to recover full move tree
+            let pgnLoaded = false;
+            if (msg.pgn && typeof msg.pgn === 'string' && msg.pgn.trim().length > 0) {
+                const tempChess = new Chess();
+                if (tempChess.load_pgn(msg.pgn)) {
+                    this.chess = tempChess;
+                    pgnLoaded = true;
+                }
+            }
+            if (!pgnLoaded && msg.fen) {
                 this.chess.load(msg.fen);
-                if (this.board) this.board.position(msg.fen, false);
+            }
+
+            // Sync historyFen and ply
+            if (Array.isArray(msg.historyFen) && msg.historyFen.length > 0) {
+                this.historyFen = msg.historyFen;
+                this.currentPly = typeof msg.currentPly === 'number' ? msg.currentPly : Math.max(0, this.historyFen.length - 1);
+            } else {
+                this.rebuildHistoryFenFromChess();
+            }
+
+            if (this.board) {
+                this.board.position(this.chess.fen(), false);
             }
             if (typeof msg.whiteTime === 'number') this.whiteTime = msg.whiteTime;
             if (typeof msg.blackTime === 'number') this.blackTime = msg.blackTime;
             this.updateClockDisplays();
             this.renderMovesList();
+
+            // Highlight last move if history exists
+            const hist = this.chess.history({ verbose: true });
+            if (hist.length > 0) {
+                const lastMove = hist[hist.length - 1];
+                this.highlightLastMove(lastMove.from, lastMove.to);
+            }
+
+            this.saveActiveMatchToSession();
 
             this.updateStatusBanner(`<i class="fas fa-check-circle" style="color:#22c55e;"></i> Reconnected! <strong>${this.chess.turn() === 'w' ? 'White' : 'Black'} to move</strong>.`);
             this.startClockTimer();
@@ -1093,6 +1182,7 @@
                     promotion: move.promotion || 'q',
                     san: move.san,
                     fen: this.chess.fen(),
+                    pgn: this.chess.pgn(),
                     ply: this.currentPly,
                     whiteTime: this.whiteTime,
                     blackTime: this.blackTime
@@ -1158,6 +1248,7 @@
             let moveSan = msg.san;
             let moveCaptured = false;
             let inCheck = false;
+            let pgnFallbackUsed = false;
 
             // 1. Attempt standard legal move in current engine state
             try {
@@ -1176,7 +1267,23 @@
                 moveSuccess = false;
             }
 
-            // 2. Smart FEN Fallback: If move failed (due to desync or stale state), load authoritative FEN
+            // 2. Smart PGN / FEN Fallback: If move failed (due to desync), load authoritative PGN first, then FEN
+            if (!moveSuccess && msg.pgn) {
+                console.warn("[MChessP2P] Standard move failed. Falling back to authoritative PGN...");
+                try {
+                    const tempChess = new Chess();
+                    if (tempChess.load_pgn(msg.pgn)) {
+                        this.chess = tempChess;
+                        moveSuccess = true;
+                        pgnFallbackUsed = true;
+                        inCheck = this.chess.in_check();
+                        this.rebuildHistoryFenFromChess();
+                    }
+                } catch (err) {
+                    console.warn("[MChessP2P] PGN fallback error:", err);
+                }
+            }
+
             if (!moveSuccess && msg.fen) {
                 console.warn("[MChessP2P] Standard move failed. Falling back to authoritative FEN:", msg.fen);
                 try {
@@ -1198,13 +1305,15 @@
                 else if (moveCaptured) this.playSound('capture');
                 else this.playSound('move');
 
-                // Update move history
-                this.historyFen.push({
-                    fen: this.chess.fen(),
-                    san: moveSan || 'Move',
-                    ply: this.historyFen.length
-                });
-                this.currentPly = this.historyFen.length - 1;
+                // Update move history if PGN fallback was not already used
+                if (!pgnFallbackUsed) {
+                    this.historyFen.push({
+                        fen: this.chess.fen(),
+                        san: moveSan || 'Move',
+                        ply: this.historyFen.length
+                    });
+                    this.currentPly = this.historyFen.length - 1;
+                }
 
                 // Sync board visually without animation glitch
                 if (this.board) {
@@ -1244,6 +1353,7 @@
                     type: 'sync_heartbeat',
                     ply: self.currentPly,
                     fen: self.chess.fen(),
+                    pgn: self.chess.pgn(),
                     whiteTime: self.whiteTime,
                     blackTime: self.blackTime
                 });
@@ -1264,12 +1374,24 @@
             if (msg.fen !== this.chess.fen()) {
                 console.log("[MChessP2P] Heartbeat detected state drift. Reconciling with remote state...");
                 try {
-                    const loaded = this.chess.load(msg.fen);
-                    if (loaded) {
+                    let synced = false;
+                    if (msg.pgn && typeof msg.pgn === 'string' && msg.pgn.trim().length > 0) {
+                        const tempChess = new Chess();
+                        if (tempChess.load_pgn(msg.pgn)) {
+                            this.chess = tempChess;
+                            this.rebuildHistoryFenFromChess();
+                            synced = true;
+                        }
+                    }
+                    if (!synced) {
+                        synced = !!this.chess.load(msg.fen);
+                    }
+                    if (synced) {
                         if (this.board) this.board.position(this.chess.fen(), false);
                         if (typeof msg.whiteTime === 'number') this.whiteTime = msg.whiteTime;
                         if (typeof msg.blackTime === 'number') this.blackTime = msg.blackTime;
                         this.updateClockDisplays();
+                        this.renderMovesList();
                         this.saveActiveMatchToSession();
                         this.checkGameOver();
                     }
@@ -1580,6 +1702,7 @@
             const $container = $('#p2pMovesList');
             $container.empty();
 
+            const rows = [];
             for (let i = 0; i < history.length; i += 2) {
                 const moveNum = Math.floor(i / 2) + 1;
                 const plyWhite = i + 1;
@@ -1595,7 +1718,12 @@
                     blackDiv = `<div class="move-cell${blackActive}" data-ply="${plyBlack}">${history[i + 1].san}</div>`;
                 }
 
-                $container.append(numDiv + whiteDiv + blackDiv);
+                rows.push(numDiv + whiteDiv + blackDiv);
+            }
+
+            // Append in reverse order so latest move is at the top
+            for (let r = rows.length - 1; r >= 0; r--) {
+                $container.append(rows[r]);
             }
 
             $('#p2pMoveCount').text(`${history.length} moves`);
