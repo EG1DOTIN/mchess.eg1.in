@@ -1,5 +1,17 @@
 [
   {
+    "id": "v3-6-1-bugfixes-move-sync-puzzles",
+    "version": "3.6.1",
+    "title": "P2P Move Sync, Dynamic Stockfish Defense & Reverse Move List",
+    "message": "Full PGN & move history sync on P2P reconnect, reverse-order move tables across all boards, instant checkmate acceptance, Stockfish Level 20 dynamic puzzle defense with strict move limits, and unjammed trainer restarts.",
+    "icon": "fa-shield-halved",
+    "badge": "Bug Fixes",
+    "badgeColor": "#10b981",
+    "link": "train.html",
+    "date": "Aug 24, 2026",
+    "pinned": true
+  },
+  {
     "id": "v3-6-0-feat-train-yourself-tactics",
     "version": "3.6.0",
     "title": "Train Yourself Fast-Paced Tactics Arena",

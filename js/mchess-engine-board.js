@@ -318,7 +318,7 @@
 
                 this.stockfishWorker = new Worker(URL.createObjectURL(workerBlob));
 
-                this.stockfishWorker.onmessage = function (event) {
+                this.defaultWorkerOnMessage = function (event) {
                     const line = event.data;
                     if (typeof line === 'string' && line.startsWith('bestmove')) {
                         const match = line.match(/^bestmove\s+([a-h][1-8][a-h][1-8][qrbn]?)/);
@@ -332,6 +332,7 @@
                         }
                     }
                 };
+                this.stockfishWorker.onmessage = this.defaultWorkerOnMessage;
 
                 this.stockfishWorker.postMessage('uci');
                 this.stockfishWorker.postMessage(`setoption name Skill Level value ${this.options.skillLevel}`);
@@ -591,6 +592,8 @@
                 const puzzleFen = data.game.tree ? data.game.tree[data.puzzle.initialPly].fen : data.puzzle.fen;
                 this.solutionMoves = data.puzzle.solution || [];
                 this.solutionIndex = 0;
+                this.maxPlayerMoves = Math.ceil(this.solutionMoves.length / 2);
+                this.playerMovesPlayed = 0;
 
                 const tempChess = new Chess();
                 tempChess.load(MChessFenParser.normalizeFen(puzzleFen));
@@ -876,10 +879,40 @@
             this.currentPly = this.historyFen.length - 1;
 
             if (this.options.mode === 'daily' || this.options.mode === 'puzzle') {
-                const playedMoveUci = `${source}${target}${promotionPiece !== 'q' ? promotionPiece : ''}`;
-                const expectedMove = this.solutionMoves[this.solutionIndex];
+                this.playerMovesPlayed = (this.playerMovesPlayed || 0) + 1;
 
-                if (expectedMove && (playedMoveUci === expectedMove || move.san === expectedMove || `${source}${target}` === expectedMove)) {
+                // 1. Immediate Checkmate Rule: Any legal checkmate move immediately solves the puzzle!
+                if (this.chess.in_checkmate()) {
+                    this.stopClockTimer();
+                    this.$container.find('#engineResultBadge').text('Solved').css({ background: 'rgba(22, 163, 74, 0.3)', color: '#4ade80' });
+                    this.scoreStreak++;
+                    this.$container.find('#puzzleStreakBadge').text(this.scoreStreak);
+                    this.updateStatusBanner(`<i class="fas fa-trophy" style="color:#d4af37;"></i> 🎉 <strong>Checkmate! Puzzle Solved!</strong>`);
+                    this.renderMovesList();
+                    this.checkGameOver();
+                    return;
+                }
+
+                // 2. Strict Move Budget: If player moves reach or exceed max allowed moves and not checkmate -> Fail!
+                if (this.maxPlayerMoves && this.playerMovesPlayed >= this.maxPlayerMoves) {
+                    this.updateStatusBanner(`<i class="fas fa-times-circle" style="color:#dc2626;"></i> <strong>Incorrect!</strong> Move limit exceeded.`);
+                    this.handleIncorrectDailyMove();
+                    return 'snapback';
+                }
+
+                const promoChar = (move.promotion || (this.isPromotionMove(source, target) ? promotionPiece : '')).toLowerCase();
+                const playedMoveUci = `${source}${target}${promoChar}`.toLowerCase();
+                const expectedMove = (this.solutionMoves[this.solutionIndex] || '').toLowerCase().trim();
+
+                const isMatch = expectedMove && (
+                    playedMoveUci === expectedMove ||
+                    `${source}${target}` === expectedMove ||
+                    `${source}${target}${promoChar || 'q'}` === expectedMove ||
+                    (move.san || '').toLowerCase() === expectedMove ||
+                    (move.san || '').toLowerCase().replace(/[^a-z0-9]/g, '') === expectedMove.replace(/[^a-z0-9]/g, '')
+                );
+
+                if (isMatch) {
                     this.solutionIndex++;
                     this.updateStatusBanner(`<i class="fas fa-check" style="color:#16a34a;"></i> Correct move!`);
 
@@ -889,7 +922,7 @@
                         const self = this;
                         setTimeout(() => {
                             self.playUciMove(counterUci);
-                            if (self.solutionIndex >= self.solutionMoves.length) {
+                            if (self.solutionIndex >= self.solutionMoves.length || self.chess.in_checkmate() || self.chess.game_over()) {
                                 self.stopClockTimer();
                                 self.$container.find('#engineResultBadge').text('Solved').css({ background: 'rgba(22, 163, 74, 0.3)', color: '#4ade80' });
                                 self.scoreStreak++;
@@ -907,11 +940,12 @@
                         this.updateStatusBanner(`<i class="fas fa-trophy" style="color:#d4af37;"></i> 🎉 <strong>Puzzle Solved! Great Job!</strong>`);
                     }
                 } else if (this.solutionMoves.length > 0) {
-                    this.updateStatusBanner(`<i class="fas fa-times-circle" style="color:#dc2626;"></i> Incorrect move, try again!`);
-                    this.chess.undo();
-                    this.historyFen.pop();
-                    this.currentPly = this.historyFen.length - 1;
-                    return 'snapback';
+                    if (this.stockfishWorker) {
+                        this.evaluateAlternativeDailyMove();
+                    } else {
+                        this.handleIncorrectDailyMove();
+                        return 'snapback';
+                    }
                 }
             } else {
                 if (!this.chess.game_over()) {
@@ -921,6 +955,108 @@
 
             this.renderMovesList();
             this.checkGameOver();
+        }
+
+        async evaluateAlternativeDailyMove() {
+            if (!this.stockfishWorker) {
+                this.handleIncorrectDailyMove();
+                return;
+            }
+
+            this.updateStatusBanner(`<i class="fas fa-robot fa-spin" style="color:#38bdf8;"></i> Checking forced mate with Stockfish...`);
+
+            try {
+                const evalResult = await this.queryStockfishEval(this.chess.fen(), 400);
+                const remainingAllowedMoves = this.maxPlayerMoves ? (this.maxPlayerMoves - this.playerMovesPlayed) : 1;
+                const isForcedMateInBudget = evalResult.isMateForPlayer && evalResult.mateVal !== null && Math.abs(evalResult.mateVal) <= remainingAllowedMoves;
+
+                if (isForcedMateInBudget && evalResult.bestMove) {
+                    this.updateStatusBanner(`<i class="fas fa-check" style="color:#16a34a;"></i> Winning line! Opponent defending...`);
+                    this.renderMovesList();
+
+                    const self = this;
+                    setTimeout(() => {
+                        self.playUciMove(evalResult.bestMove);
+                        if (self.chess.in_checkmate() || self.chess.game_over()) {
+                            self.stopClockTimer();
+                            self.$container.find('#engineResultBadge').text('Solved').css({ background: 'rgba(22, 163, 74, 0.3)', color: '#4ade80' });
+                            self.scoreStreak++;
+                            self.$container.find('#puzzleStreakBadge').text(self.scoreStreak);
+                            self.updateStatusBanner(`<i class="fas fa-trophy" style="color:#d4af37;"></i> 🎉 <strong>Checkmate! Puzzle Solved!</strong>`);
+                        } else {
+                            self.updateStatusBanner(`<i class="fas fa-crosshairs" style="color:#eab308;"></i> Opponent defended with <strong>${evalResult.bestMove}</strong>. Find the winning blow!`);
+                        }
+                    }, 400);
+                } else {
+                    this.updateStatusBanner(`<i class="fas fa-times-circle" style="color:#dc2626;"></i> <strong>Incorrect move!</strong> Does not force checkmate.`);
+                    this.handleIncorrectDailyMove();
+                }
+            } catch (err) {
+                console.warn("[MChessEngineBoard] Alternative move eval error:", err);
+                this.handleIncorrectDailyMove();
+            }
+        }
+
+        queryStockfishEval(fen, timeoutMs = 400) {
+            return new Promise((resolve) => {
+                if (!this.stockfishWorker) {
+                    resolve({ isMateForPlayer: false, mateVal: null, bestMove: null });
+                    return;
+                }
+
+                let bestMove = null;
+                let isMateForPlayer = false;
+                let mateVal = null;
+                let resolved = false;
+
+                const timer = setTimeout(() => {
+                    if (!resolved) {
+                        resolved = true;
+                        this.stockfishWorker.onmessage = this.defaultWorkerOnMessage;
+                        resolve({ isMateForPlayer, mateVal, bestMove });
+                    }
+                }, timeoutMs);
+
+                this.stockfishWorker.onmessage = (event) => {
+                    const line = typeof event.data === 'string' ? event.data : '';
+
+                    if (line.includes('score mate')) {
+                        const matchMate = line.match(/score mate (-?\d+)/);
+                        if (matchMate) {
+                            const val = parseInt(matchMate[1], 10);
+                            if (val < 0) {
+                                isMateForPlayer = true;
+                                mateVal = val;
+                            }
+                        }
+                    }
+
+                    if (line.startsWith('bestmove')) {
+                        const matchMove = line.match(/^bestmove\s+([a-h][1-8][a-h][1-8][qrbn]?)/);
+                        if (matchMove && matchMove[1]) {
+                            bestMove = matchMove[1];
+                        }
+                        if (!resolved) {
+                            resolved = true;
+                            clearTimeout(timer);
+                            this.stockfishWorker.onmessage = this.defaultWorkerOnMessage;
+                            resolve({ isMateForPlayer, mateVal, bestMove });
+                        }
+                    }
+                };
+
+                this.stockfishWorker.postMessage(`position fen ${fen}`);
+                this.stockfishWorker.postMessage('go depth 12 movetime 300');
+            });
+        }
+
+        handleIncorrectDailyMove() {
+            this.updateStatusBanner(`<i class="fas fa-times-circle" style="color:#dc2626;"></i> Incorrect move, try again!`);
+            this.chess.undo();
+            this.historyFen.pop();
+            this.currentPly = this.historyFen.length - 1;
+            if (this.playerMovesPlayed > 0) this.playerMovesPlayed--;
+            this.board.position(this.chess.fen());
         }
 
         onSnapEnd() {
@@ -1044,19 +1180,8 @@
             this.$container.find('.move-cell').removeClass('active');
             if (plyIndex > 0) {
                 const $activeCell = this.$container.find(`.move-cell[data-ply="${plyIndex}"]`);
-                $activeCell.addClass('active');
-                const movesListEl = this.$container.find('#engineMovesList')[0];
-                if (movesListEl && $activeCell.length) {
-                    const cellTop = $activeCell[0].offsetTop;
-                    const cellHeight = $activeCell[0].offsetHeight;
-                    const listScrollTop = movesListEl.scrollTop;
-                    const listHeight = movesListEl.clientHeight;
-
-                    if (cellTop < listScrollTop) {
-                        movesListEl.scrollTop = Math.max(0, cellTop - 6);
-                    } else if (cellTop + cellHeight > listScrollTop + listHeight) {
-                        movesListEl.scrollTop = cellTop + cellHeight - listHeight + 6;
-                    }
+                if ($activeCell.length) {
+                    $activeCell.addClass('active');
                 }
             }
         }
@@ -1109,6 +1234,7 @@
             const $container = this.$container.find('#engineMovesList');
             $container.empty();
 
+            const rows = [];
             for (let i = 0; i < history.length; i += 2) {
                 const moveNum = Math.floor(i / 2) + 1;
                 const plyWhite = i + 1;
@@ -1124,7 +1250,12 @@
                     blackDiv = `<div class="move-cell${blackActive}" data-ply="${plyBlack}">${history[i + 1].san}</div>`;
                 }
 
-                $container.append(numDiv + whiteDiv + blackDiv);
+                rows.push(numDiv + whiteDiv + blackDiv);
+            }
+
+            // Append in reverse order so latest move is at the top
+            for (let r = rows.length - 1; r >= 0; r--) {
+                $container.append(rows[r]);
             }
 
             this.$container.find('#engineMoveCount').text(`${history.length} moves`);
