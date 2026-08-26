@@ -16,6 +16,7 @@ function initializeComponents() {
         if (typeof window.initializeNotifications === 'function') {
             window.initializeNotifications();
         }
+        initializeHeaderRefresh();
     });
 
     // Load menu template & initialize navigation handlers directly after insertion
@@ -252,6 +253,80 @@ function initializeBackToTop() {
 
     // Initial state evaluation
     updateScrollState();
+}
+
+/**
+ * Initializes the 1-click App Refresh & Cache Purge button
+ * Detects active live games, provides safety confirmation, clears CacheStorage, and reloads with cache-busting timestamp.
+ */
+function initializeHeaderRefresh() {
+    $(document).off('click.appRefresh', '#appRefreshBtn').on('click.appRefresh', '#appRefreshBtn', function (e) {
+        e.preventDefault();
+
+        // 1. Check if an active online or engine game is currently ongoing
+        var isGameActive = false;
+
+        // Check P2P online game active
+        try {
+            var p2pSession = sessionStorage.getItem('mchess_active_match') || localStorage.getItem('mchess_active_match');
+            if (p2pSession) {
+                var parsed = JSON.parse(p2pSession);
+                if (parsed && parsed.matchActive) {
+                    isGameActive = true;
+                }
+            }
+        } catch (err) {}
+
+        // Check Engine active game
+        if (!isGameActive && window.$) {
+            var $engine = $('#mchessEngineBoardContainer, [data-mchess-engine]').first();
+            if ($engine.length > 0) {
+                var inst = $engine.data('mchess-instance');
+                if (inst && inst.chess && !inst.chess.game_over() && inst.chess.history().length > 0 && !inst.gameSaved) {
+                    isGameActive = true;
+                }
+            }
+        }
+
+        // 2. Warn the player if mid-game
+        if (isGameActive) {
+            var confirmed = window.confirm(
+                "⚠️ You have a live chess game in progress!\n\nRefreshing will reload the latest app updates and reconnect you to your match.\n\nDo you want to proceed?"
+            );
+            if (!confirmed) return;
+        }
+
+        // Animate the icon
+        var $icon = $('#appRefreshIcon');
+        if ($icon.length) {
+            $icon.addClass('fa-spin');
+        }
+
+        // 3. Purge CacheStorage API caches if supported
+        var clearCachePromise = Promise.resolve();
+        if ('caches' in window) {
+            clearCachePromise = caches.keys().then(function (names) {
+                return Promise.all(
+                    names.map(function (name) {
+                        return caches.delete(name);
+                    })
+                );
+            }).catch(function (err) {
+                console.warn("[MChess Refresh] CacheStorage clear warning:", err);
+            });
+        }
+
+        // 4. Perform cache-bypassing reload with a unique timestamp query parameter
+        clearCachePromise.finally(function () {
+            try {
+                var currentUrl = new URL(window.location.href);
+                currentUrl.searchParams.set('_r', Date.now());
+                window.location.href = currentUrl.toString();
+            } catch (urlErr) {
+                window.location.reload(true);
+            }
+        });
+    });
 }
 
 // Trigger component initialization on DOM ready

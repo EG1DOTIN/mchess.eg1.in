@@ -1399,16 +1399,7 @@
                 const side = $(this).val();
                 self.userSide = side;
                 self.options.orientation = side;
-                if (self.board) {
-                    self.board.orientation(side);
-                }
-                if (self.userSide === 'black') {
-                    self.$container.find('#engineWhitePlayer').text(`Stockfish Computer (Lv ${self.options.skillLevel})`);
-                    self.$container.find('#engineBlackPlayer').text('You (Black)');
-                } else {
-                    self.$container.find('#engineWhitePlayer').text('You (White)');
-                    self.$container.find('#engineBlackPlayer').text(`Stockfish Computer (Lv ${self.options.skillLevel})`);
-                }
+                self.setupPosition(self.options.fen, self.userSide);
             });
 
             // Time control selection (3m, 5m, 10m, 30m, Unlimited)
