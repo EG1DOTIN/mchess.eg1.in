@@ -762,6 +762,7 @@
             this.startClock();
             this.attemptsCount++;
 
+            const prevFen = this.chess.fen();
             const move = this.chess.move({
                 from: source,
                 to: target,
@@ -772,6 +773,9 @@
                 this.board.position(this.chess.fen());
                 return 'snapback';
             }
+
+            const promoChar = (move.promotion || promotionPiece || '').toLowerCase();
+            const playedMoveUci = `${source}${target}${promoChar}`;
 
             this.board.position(this.chess.fen());
             this.playerMovesPlayed++;
@@ -784,19 +788,12 @@
                 return;
             }
 
-            // 2. Strict Move Budget: If player moves reach or exceed max allowed moves and not checkmate -> Fail!
-            if (this.playerMovesPlayed >= this.maxPlayerMoves) {
-                this.updateStatusBanner(`<i class="fas fa-times-circle" style="color:#ef4444;"></i> <strong>Incorrect!</strong> Must be Mate in ${this.maxPlayerMoves}.`);
-                this.handleIncorrectMove();
-                return 'snapback';
-            }
-
             const expectedMove = this.solutionMoves[this.solutionIndex];
             const isCorrect = expectedMove && (
                 (typeof expectedMove === 'object' && source === expectedMove.from && target === expectedMove.to && (expectedMove.promotion ? expectedMove.promotion.toLowerCase() === promotionPiece.toLowerCase() : true)) ||
                 (typeof expectedMove === 'object' && move.san === expectedMove.san) ||
                 (typeof expectedMove === 'string' && (
-                    `${source}${target}${(move.promotion || promotionPiece || '').toLowerCase()}` === expectedMove.toLowerCase() ||
+                    playedMoveUci === expectedMove.toLowerCase() ||
                     `${source}${target}` === expectedMove.toLowerCase() ||
                     (move.san || '').toLowerCase() === expectedMove.toLowerCase()
                 ))
@@ -833,41 +830,73 @@
                 }
             } else if (this.stockfishWorker) {
                 // Stockfish Dynamic Defense for unscripted forced mate branches
-                this.evaluateAlternativeMove();
+                this.evaluateAlternativeMove(playedMoveUci, prevFen);
             } else {
                 this.handleIncorrectMove();
                 return 'snapback';
             }
         }
 
-        async evaluateAlternativeMove() {
+        async evaluateAlternativeMove(playedUci, prevFen) {
             if (!this.stockfishWorker) {
                 this.handleIncorrectMove();
                 return;
             }
 
-            this.updateStatusBanner(`<i class="fas fa-robot fa-spin" style="color:#38bdf8;"></i> Checking forced mate with Stockfish...`);
+            // Strict rule: If player has reached or exceeded maxPlayerMoves and position is not checkmate, fail immediately!
+            if (this.maxPlayerMoves && this.playerMovesPlayed >= this.maxPlayerMoves) {
+                this.updateStatusBanner(`<i class="fas fa-times-circle" style="color:#ef4444;"></i> <strong>Incorrect!</strong> Does not force Mate in ${this.maxPlayerMoves}.`);
+                this.handleIncorrectMove();
+                return;
+            }
+
+            this.updateStatusBanner(`<i class="fas fa-robot fa-spin" style="color:#38bdf8;"></i> Analyzing best move with Stockfish...`);
 
             try {
-                const evalResult = await this.queryStockfishEval(this.chess.fen(), 400);
-                const remainingAllowedMoves = this.maxPlayerMoves - this.playerMovesPlayed;
+                // Scaled search time: Mate in 2 = 2000ms, Mate in 3 = 4000ms, Mate in 4 = 6000ms
+                let evalTime = 2000;
+                if (this.maxPlayerMoves === 3) evalTime = 4000;
+                else if (this.maxPlayerMoves >= 4) evalTime = 6000;
 
-                // STRICT RULE: Must be a forced mate within the remaining moves budget!
-                // evalResult.mateVal < 0 means opponent is being mated in Math.abs(evalResult.mateVal) moves
-                const isForcedMateInBudget = evalResult.isMateForPlayer && evalResult.mateVal !== null && Math.abs(evalResult.mateVal) <= remainingAllowedMoves;
+                // 1. Verify if the played move matches Stockfish's top calculated bestmove from the position before the move
+                const prevEval = await this.queryStockfishEval(prevFen, evalTime);
+                const isTopMove = prevEval.bestMove && (
+                    playedUci === prevEval.bestMove ||
+                    playedUci.startsWith(prevEval.bestMove) ||
+                    prevEval.bestMove.startsWith(playedUci)
+                );
 
-                if (isForcedMateInBudget && evalResult.bestMove) {
-                    this.updateStatusBanner(`<i class="fas fa-check" style="color:#16a34a;"></i> Valid Mate in ${this.maxPlayerMoves} line! Opponent defending...`);
+                // 2. Or verify if the resulting position directly forces checkmate against the opponent within strict remaining move budget
+                let isForcedMate = false;
+                if (!isTopMove && this.maxPlayerMoves) {
+                    const postEval = await this.queryStockfishEval(this.chess.fen(), Math.min(2500, evalTime));
+                    if (postEval.mateVal !== null && postEval.mateVal < 0) {
+                        const remainingMoves = this.maxPlayerMoves - this.playerMovesPlayed;
+                        if (Math.abs(postEval.mateVal) <= remainingMoves) {
+                            isForcedMate = true;
+                        }
+                    }
+                }
+
+                if (isTopMove || isForcedMate) {
+                    this.updateStatusBanner(`<i class="fas fa-check" style="color:#16a34a;"></i> <strong>Best move!</strong> Opponent defending...`);
                     this.renderMovesList();
+
+                    // Query opponent's best defense reply
+                    const defEval = await this.queryStockfishEval(this.chess.fen(), 1200);
+                    const defMove = defEval.bestMove;
 
                     const self = this;
                     setTimeout(() => {
-                        const m = self.playUciDefenseMove(evalResult.bestMove);
+                        let m = null;
+                        if (defMove) {
+                            m = self.playUciDefenseMove(defMove);
+                        }
                         if (self.chess.in_checkmate() || self.chess.game_over()) {
                             self.onPuzzleSolved();
-                        } else {
-                            const playedSan = m ? m.san : evalResult.bestMove;
-                            self.updateStatusBanner(`<i class="fas fa-crosshairs" style="color:#eab308;"></i> Opponent defended with <strong>${playedSan}</strong>. Deliver the checkmate!`);
+                        } else if (defMove) {
+                            const playedSan = m ? m.san : defMove;
+                            self.updateStatusBanner(`<i class="fas fa-crosshairs" style="color:#eab308;"></i> Opponent defended with <strong>${playedSan}</strong>.`);
                         }
                     }, 350);
                 } else {
@@ -880,23 +909,24 @@
             }
         }
 
-        queryStockfishEval(fen, timeoutMs = 400) {
+        queryStockfishEval(fen, timeoutMs = 2000) {
             return new Promise((resolve) => {
                 if (!this.stockfishWorker) {
-                    resolve({ isMateForPlayer: false, mateVal: null, bestMove: null });
+                    resolve({ isMateForPlayer: false, mateVal: null, cpScore: null, bestMove: null });
                     return;
                 }
 
                 let bestMove = null;
                 let isMateForPlayer = false;
                 let mateVal = null;
+                let cpScore = null;
                 let resolved = false;
 
                 const timer = setTimeout(() => {
                     if (!resolved) {
                         resolved = true;
                         this.stockfishWorker.onmessage = null;
-                        resolve({ isMateForPlayer, mateVal, bestMove });
+                        resolve({ isMateForPlayer, mateVal, cpScore, bestMove });
                     }
                 }, timeoutMs);
 
@@ -907,11 +937,17 @@
                         const matchMate = line.match(/score mate (-?\d+)/);
                         if (matchMate) {
                             const val = parseInt(matchMate[1], 10);
-                            // Opponent's turn: negative mate value means opponent is being mated (player is forcing mate!)
                             if (val < 0) {
                                 isMateForPlayer = true;
                                 mateVal = val;
+                            } else {
+                                mateVal = val;
                             }
+                        }
+                    } else if (line.includes('score cp')) {
+                        const matchCp = line.match(/score cp (-?\d+)/);
+                        if (matchCp) {
+                            cpScore = parseInt(matchCp[1], 10);
                         }
                     }
 
@@ -924,13 +960,15 @@
                             resolved = true;
                             clearTimeout(timer);
                             this.stockfishWorker.onmessage = null;
-                            resolve({ isMateForPlayer, mateVal, bestMove });
+                            resolve({ isMateForPlayer, mateVal, cpScore, bestMove });
                         }
                     }
                 };
 
+                const movetime = Math.max(500, timeoutMs - 200);
+                const depth = timeoutMs >= 5000 ? 18 : (timeoutMs >= 3500 ? 16 : 14);
                 this.stockfishWorker.postMessage(`position fen ${fen}`);
-                this.stockfishWorker.postMessage('go depth 12 movetime 300');
+                this.stockfishWorker.postMessage(`go depth ${depth} movetime ${movetime}`);
             });
         }
 

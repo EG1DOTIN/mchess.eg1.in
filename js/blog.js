@@ -9,6 +9,11 @@ $(document).ready(function() {
     var totalBlogPages = 1;
     var currentSearchTerm = '';
 
+    var allCachedBlogs = null;
+    var currentLoadedBlog = null;
+    var currentEngineBoardInstance = null;
+    var nextPuzzleAutoTimer = null;
+
     loadCategories();
     loadRelatedTopics();
 
@@ -48,12 +53,6 @@ $(document).ready(function() {
     });
 
     $(document).on('click', '.blog-grid-card', function(e) {
-        // If the click landed on (or inside) a real <a>, let the browser
-        // handle that navigation natively. Without this guard, clicks on
-        // the title/image links bubble up to this handler too, and the
-        // programmatic redirect below races against the anchor's own
-        // navigation to the same URL — which is what made the link
-        // unreliable.
         if ($(e.target).closest('a').length) {
             return;
         }
@@ -78,6 +77,30 @@ $(document).ready(function() {
         }
     });
 
+    $(document).on('click', '#pagination-controls a.detail-page-btn, #pagination-controls a.detail-nav-btn', function(e) {
+        var targetId = $(this).data('id');
+        if (targetId && allCachedBlogs) {
+            var targetBlog = allCachedBlogs.find(function(b) { return String(b.id) === String(targetId); });
+            if (targetBlog) {
+                e.preventDefault();
+                if (nextPuzzleAutoTimer) clearTimeout(nextPuzzleAutoTimer);
+                transitionToBlogPuzzle(targetBlog, allCachedBlogs);
+            }
+        }
+    });
+
+    window.addEventListener('popstate', function(e) {
+        var params = new URLSearchParams(window.location.search);
+        var id = params.get('id');
+        if (id && allCachedBlogs) {
+            var targetBlog = allCachedBlogs.find(function(b) { return String(b.id) === String(id); });
+            if (targetBlog) {
+                if (nextPuzzleAutoTimer) clearTimeout(nextPuzzleAutoTimer);
+                renderSingleBlog(targetBlog, allCachedBlogs);
+            }
+        }
+    });
+
     function setHeading(text) {
         $('#blog-page-heading').text(text);
     }
@@ -94,6 +117,7 @@ $(document).ready(function() {
 
     async function fetchAllBlogsFlat(categoryFilter = null) {
         var activeBlogs = await DataCache.getBlogs();
+        allCachedBlogs = activeBlogs;
         if (categoryFilter) {
             return activeBlogs.filter(function(b) { return b.category === categoryFilter; });
         }
@@ -174,6 +198,7 @@ $(document).ready(function() {
 
         fetchAllBlogsFlat().then(function(blogs) {
             hideLoading();
+            allCachedBlogs = blogs;
             
             var blog = null;
             if (id) {
@@ -189,21 +214,7 @@ $(document).ready(function() {
                 return;
             }
 
-            setHeading(blog.title || 'Blog');
-            document.title = blog.title || document.title;
-            $('meta[name="title"]').attr('content', blog.title || '');
-            $('meta[name="description"]').attr('content', blog.metaDescription || '');
-
-            $('#blogs-container').append(renderBlogView(blog));
-
-            if (typeof MChessEngineBoard !== 'undefined') {
-                $('#mchessBlogEngineBoard').each(function() {
-                    if (!$(this).data('mchess-initialized')) {
-                        $(this).data('mchess-initialized', true);
-                        new MChessEngineBoard(this);
-                    }
-                });
-            }
+            renderSingleBlog(blog, blogs);
         })
         .catch(function(error) {
             console.error('Error getting blog document:', error);
@@ -211,6 +222,84 @@ $(document).ready(function() {
             setHeading('Error');
             renderMessage('Error loading the blog post. Please try again later.');
         });
+    }
+
+    function renderSingleBlog(blog, allBlogs) {
+        currentLoadedBlog = blog;
+        setHeading(blog.title || 'Blog');
+        document.title = blog.title || document.title;
+        $('meta[name="title"]').attr('content', blog.title || '');
+        $('meta[name="description"]').attr('content', blog.metaDescription || '');
+
+        var prevHeight = $('#blogs-container').outerHeight();
+        if (prevHeight > 0) {
+            $('#blogs-container').css('min-height', prevHeight + 'px');
+        }
+
+        $('#blogs-container').html(renderBlogView(blog, allBlogs));
+
+        var isPuzzleBlog = blog.category && (blog.category.indexOf('Mate') !== -1 || blog.category.indexOf('Puzzle') !== -1 || (blog.title && blog.title.toLowerCase().indexOf('mate in') !== -1));
+
+        if (typeof MChessEngineBoard !== 'undefined') {
+            $('#mchessBlogEngineBoard').each(function() {
+                currentEngineBoardInstance = new MChessEngineBoard(this, {
+                    mode: isPuzzleBlog ? 'puzzle' : 'engine',
+                    category: blog.category,
+                    title: blog.title,
+                    description: blog.full_description,
+                    skillLevel: 20, // Grandmaster level for puzzle defense
+                    blogId: blog.id,
+                    onPuzzleSolved: function(streak, boardInst) {
+                        handleBlogPuzzleSolved(currentLoadedBlog || blog, allCachedBlogs || allBlogs, boardInst);
+                    }
+                });
+            });
+        }
+
+        setTimeout(function() {
+            $('#blogs-container').css('min-height', '');
+        }, 350);
+    }
+
+    function handleBlogPuzzleSolved(currentBlog, allBlogs, boardInstance) {
+        if (!allBlogs || !currentBlog || !boardInstance) return;
+
+        var categoryBlogs = allBlogs.filter(function(b) {
+            return b.category === currentBlog.category;
+        });
+        if (categoryBlogs.length === 0) categoryBlogs = allBlogs.slice();
+
+        var currentIndex = categoryBlogs.findIndex(function(b) {
+            return String(b.id) === String(currentBlog.id);
+        });
+
+        if (currentIndex !== -1 && currentIndex < categoryBlogs.length - 1) {
+            var nextBlog = categoryBlogs[currentIndex + 1];
+            
+            boardInstance.updateStatusBanner(
+                '<i class="fas fa-trophy" style="color:#d4af37;"></i> 🎉 <strong>Puzzle Solved!</strong> Loading next puzzle...'
+            );
+
+            if (nextPuzzleAutoTimer) clearTimeout(nextPuzzleAutoTimer);
+            nextPuzzleAutoTimer = setTimeout(function() {
+                transitionToBlogPuzzle(nextBlog, allBlogs);
+            }, 1500);
+        } else {
+            boardInstance.updateStatusBanner(
+                '<i class="fas fa-trophy" style="color:#d4af37;"></i> 🏆 <strong>All puzzles in ' + escapeHtml(currentBlog.category || 'this category') + ' solved! Great Job!</strong>'
+            );
+        }
+    }
+
+    function transitionToBlogPuzzle(nextBlog, allBlogs) {
+        if (!nextBlog) return;
+
+        // 1. Update Browser URL & History without page reload
+        var newUrl = 'blog.html?id=' + encodeURIComponent(nextBlog.id);
+        window.history.pushState({ id: nextBlog.id }, '', newUrl);
+
+        // 2. Render Full Blog (full description, title, category, fresh board, and in-category pagination)
+        renderSingleBlog(nextBlog, allBlogs);
     }
 
     async function loadCategories() {
@@ -399,28 +488,35 @@ $(document).ready(function() {
                 '</div>' +
             '</div>';
     }
-    function renderBlogView(blog) {
+    function renderBlogView(blog, allBlogs) {
         var image_label = getBlogImageUrl(blog.output_image);
         var processedDescription = blog.full_description || '';
         
+        var hasBoard = false;
         if (typeof MChessFenParser !== 'undefined') {
+            var parsed = MChessFenParser.parseDescription(processedDescription);
+            if (parsed && parsed.fen) {
+                hasBoard = true;
+            }
             processedDescription = MChessFenParser.replaceChessbaseIframe(processedDescription);
         }
-        
-        setTimeout(function() {
-            if ($('#mchessBlogEngineBoard').length && typeof MChessEngineBoard !== 'undefined') {
-                new MChessEngineBoard('#mchessBlogEngineBoard');
-            }
-        }, 100);
+
+        // If the blog contains an interactive chessboard, omit the static thumbnail image to keep board prominently in view
+        var imageHtml = '';
+        if (!hasBoard && image_label) {
+            imageHtml = '<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">' +
+                            '<img src="' + escapeAttr(image_label) + '" loading="lazy" style="width: 100%; max-width: 640px; display: block; margin: 0 auto;" />' +
+                        '</div>';
+        }
+
+        var paginationHtml = renderDetailPagination(blog, allBlogs);
 
         return '' +
             '<div class="row blog-item-container">' +
                 '<div class="col-md-12 margin-bottom">' +
                     '<div class="our-product">' +
                         '<div class="row">' +
-                            '<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">' +
-                                '<img src="' + escapeAttr(image_label) + '" loading="lazy" style="width: 100%; max-width: 640px; display: block; margin: 0 auto;" />' +
-                            '</div>' +
+                            imageHtml +
                             '<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 left">' +
                                 '<p class="mt-3"><i class="icon icon-list-alt"></i>&nbsp;' + escapeHtml(blog.category || '') + ' | <i class="icon icon-user"></i>&nbsp;Admin</p>' +
                             '</div>' +
@@ -429,6 +525,73 @@ $(document).ready(function() {
                             '<div class="col-md-12 left" style="font-size: 16px; line-height: 1.6;">' +
                                 processedDescription +
                             '</div>' +
+                        '</div>' +
+                        paginationHtml +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+    }
+
+    function renderDetailPagination(blog, allBlogs) {
+        if (!allBlogs || allBlogs.length <= 1) return '';
+
+        var categoryBlogs = [];
+        if (blog.category) {
+            categoryBlogs = allBlogs.filter(function(b) {
+                return b.category === blog.category;
+            });
+        }
+        if (categoryBlogs.length <= 1) {
+            categoryBlogs = allBlogs.slice();
+        }
+        if (categoryBlogs.length <= 1) return '';
+
+        var currentIndex = categoryBlogs.findIndex(function(b) {
+            return String(b.id) === String(blog.id);
+        });
+        if (currentIndex === -1) {
+            currentIndex = 0;
+        }
+
+        var totalItems = categoryBlogs.length;
+        var currentNum = currentIndex + 1;
+
+        var prevBtn = currentIndex > 0
+            ? '<a href="blog.html?id=' + encodeURIComponent(categoryBlogs[currentIndex - 1].id) + '" data-id="' + escapeAttr(categoryBlogs[currentIndex - 1].id) + '" class="btn btn-default bg-pager detail-nav-btn" title="Previous">&laquo; Previous</a>'
+            : '<button class="btn btn-default bg-pager disabled" disabled>&laquo; Previous</button>';
+
+        var nextBtn = currentIndex < totalItems - 1
+            ? '<a href="blog.html?id=' + encodeURIComponent(categoryBlogs[currentIndex + 1].id) + '" data-id="' + escapeAttr(categoryBlogs[currentIndex + 1].id) + '" class="btn btn-default bg-pager detail-nav-btn" title="Next">Next &raquo;</a>'
+            : '<button class="btn btn-default bg-pager disabled" disabled>Next &raquo;</button>';
+
+        var startPage = Math.max(1, currentNum - 2);
+        var endPage = Math.min(totalItems, currentNum + 2);
+
+        if (currentNum <= 3) {
+            endPage = Math.min(totalItems, 5);
+        }
+        if (currentNum >= totalItems - 2) {
+            startPage = Math.max(1, totalItems - 4);
+        }
+
+        var pageButtons = '';
+        for (var p = startPage; p <= endPage; p++) {
+            if (p === currentNum) {
+                pageButtons += '<button class="btn btn-primary disabled" disabled>' + p + '</button>';
+            } else {
+                var targetBlog = categoryBlogs[p - 1];
+                pageButtons += '<a href="blog.html?id=' + encodeURIComponent(targetBlog.id) + '" data-id="' + escapeAttr(targetBlog.id) + '" class="btn btn-default bg-pager detail-page-btn" title="' + escapeAttr(targetBlog.title || '') + '">' + p + '</a>';
+            }
+        }
+
+        return '' +
+            '<div id="pagination-controls" class="row blog-item-container" style="margin-top: 25px; margin-bottom: 15px;">' +
+                '<div class="col-md-12">' +
+                    '<div class="text-center">' +
+                        '<div class="btn-group">' +
+                            prevBtn +
+                            pageButtons +
+                            nextBtn +
                         '</div>' +
                     '</div>' +
                 '</div>' +

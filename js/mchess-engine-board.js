@@ -18,10 +18,14 @@
                 ? MChessFenParser.normalizeFen(rawFen)
                 : (rawFen || 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');
 
+            const isPuzzleMode = (options && (options.mode === 'puzzle' || options.mode === 'daily')) ||
+                (options && options.category && (options.category.indexOf('Mate') !== -1 || options.category.indexOf('Puzzle') !== -1)) ||
+                (this.$container.data('mode') === 'puzzle' || this.$container.data('mode') === 'daily');
+
             this.options = $.extend({
-                mode: this.$container.data('mode') || 'engine', // 'engine', 'puzzle', 'daily'
+                mode: this.$container.data('mode') || (isPuzzleMode ? 'puzzle' : 'engine'),
                 fen: normalizedFen,
-                skillLevel: 10, // 0 to 20 Stockfish skill level
+                skillLevel: isPuzzleMode ? 20 : 10, // Stockfish skill level (always Level 20 / Grandmaster for puzzles)
                 orientation: 'white',
                 timeControl: 5 // Default 5 minutes clock
             }, options);
@@ -221,28 +225,28 @@
                                 <button type="button" class="btn-ctrl btn-board-theme" title="Change Board Theme">
                                     <i class="fas fa-palette"></i> Theme
                                 </button>
-                                ${!isDailyOrPuzzle ? `
-                                <button id="btnEngineResign" class="btn-ctrl" title="Resign Current Match" style="background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4);">
-                                    <i class="fas fa-flag"></i> Resign
-                                </button>
                                 <select id="userSideSelect" class="speed-select" title="Choose Side to Play">
-                                    <option value="white" selected>Play as White ♔</option>
-                                    <option value="black">Play as Black ♚</option>
-                                </select>
-                                <select id="timeControlSelect" class="speed-select" title="Game Time Control">
-                                    <option value="0">Unlimited Time</option>
-                                    <option value="3">3 Minutes (Blitz)</option>
-                                    <option value="5" selected>5 Minutes (Blitz)</option>
-                                    <option value="10">10 Minutes (Rapid)</option>
-                                    <option value="30">30 Minutes (Classical)</option>
-                                </select>
-                                ` : ''}
+                                     <option value="white" selected>Play as White ♔</option>
+                                     <option value="black">Play as Black ♚</option>
+                                 </select>
+                                 ${!isDailyOrPuzzle ? `
+                                 <button id="btnEngineResign" class="btn-ctrl" title="Resign Current Match" style="background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4);">
+                                     <i class="fas fa-flag"></i> Resign
+                                 </button>
+                                 <select id="timeControlSelect" class="speed-select" title="Game Time Control">
+                                     <option value="0">Unlimited Time</option>
+                                     <option value="3">3 Minutes (Blitz)</option>
+                                     <option value="5" selected>5 Minutes (Blitz)</option>
+                                     <option value="10">10 Minutes (Rapid)</option>
+                                     <option value="30">30 Minutes (Classical)</option>
+                                 </select>
+                                 ` : ''}
                                 <select id="engineLevelSelect" class="speed-select" title="Engine Difficulty Level">
-                                    <option value="1">Level 1 (Easy)</option>
-                                    <option value="5">Level 5 (Casual)</option>
-                                    <option value="10" selected>Level 10 (Intermediate)</option>
-                                    <option value="15">Level 15 (Advanced)</option>
-                                    <option value="20">Level 20 (Grandmaster)</option>
+                                    <option value="1" ${(this.options.skillLevel === 1) ? 'selected' : ''}>Level 1 (Easy)</option>
+                                    <option value="5" ${(this.options.skillLevel === 5) ? 'selected' : ''}>Level 5 (Casual)</option>
+                                    <option value="10" ${(this.options.skillLevel === 10) ? 'selected' : ''}>Level 10 (Intermediate)</option>
+                                    <option value="15" ${(this.options.skillLevel === 15) ? 'selected' : ''}>Level 15 (Advanced)</option>
+                                    <option value="20" ${(this.options.skillLevel === 20 || isDailyOrPuzzle) ? 'selected' : ''}>Level 20 (Grandmaster)</option>
                                 </select>
                             </div>
                             <div class="kb-hint">
@@ -375,6 +379,53 @@
 
             const turn = (success && this.chess.turn) ? this.chess.turn() : (normalizedFen.includes(' b ') ? 'b' : 'w');
             const sideText = turn === 'w' ? 'White' : 'Black';
+
+            this.playerMovesPlayed = 0;
+            this.solutionIndex = 0;
+
+            const isPuzzle = this.options.mode === 'puzzle' || this.options.mode === 'daily' ||
+                (this.options.category && (this.options.category.indexOf('Mate') !== -1 || this.options.category.indexOf('Puzzle') !== -1)) ||
+                (this.options.title && this.options.title.toLowerCase().indexOf('mate in') !== -1);
+
+            if (isPuzzle) {
+                this.options.mode = 'puzzle';
+                this.options.skillLevel = 20;
+                this.$container.find('#engineLevelSelect').val('20');
+                if (this.stockfishWorker) {
+                    this.stockfishWorker.postMessage('setoption name Skill Level value 20');
+                }
+                if (this.options.maxPlayerMoves) {
+                    this.maxPlayerMoves = this.options.maxPlayerMoves;
+                } else {
+                    const textToScan = `${this.options.category || ''} ${this.options.title || ''} ${this.options.description || ''}`;
+                    const mateMatch = textToScan.match(/(?:mate|checkmate|win)(?:[^.]*?)in\s*(\d+)/i) ||
+                                      textToScan.match(/in\s*(\d+)\s*moves/i);
+                    if (mateMatch && mateMatch[1]) {
+                        this.maxPlayerMoves = parseInt(mateMatch[1], 10);
+                    } else if (this.options.category === 'Mate in 2') {
+                        this.maxPlayerMoves = 2;
+                    } else if (this.options.category === 'Mate in 3') {
+                        this.maxPlayerMoves = 3;
+                    } else if (this.options.category === 'Mate in 4') {
+                        this.maxPlayerMoves = 4;
+                    } else if (this.options.category === 'Mate in 5') {
+                        this.maxPlayerMoves = 5;
+                    } else {
+                        this.maxPlayerMoves = null;
+                    }
+                }
+                // Auto set user side and board orientation according to turn
+                this.userSide = turn === 'w' ? 'white' : 'black';
+                this.options.orientation = this.userSide;
+                this.$container.find('#userSideSelect').val(this.userSide);
+            } else {
+                if (orientation) {
+                    this.userSide = orientation;
+                    this.options.orientation = orientation;
+                    this.$container.find('#userSideSelect').val(this.userSide);
+                }
+            }
+
             this.$container.find('#engineSideToMove').text(sideText);
             this.$container.find('#engineResultBadge').text('Active').css({ background: 'rgba(59, 130, 246, 0.2)', color: '#60a5fa' });
 
@@ -387,12 +438,17 @@
                 this.$container.find('#engineBlackPlayer').text(`Stockfish Computer (Lv ${this.options.skillLevel})`);
             }
 
-            const boardOrientation = orientation || this.userSide || (turn === 'w' ? 'white' : 'black');
+            const boardOrientation = this.userSide || (turn === 'w' ? 'white' : 'black');
             const displayFen = success ? this.chess.fen() : normalizedFen.split(' ')[0];
 
             // Reset history FEN array for move jumping
             this.historyFen = [{ fen: displayFen, san: 'Start', ply: 0 }];
             this.currentPly = 0;
+
+            if (isPuzzle) {
+                const mateDesc = this.maxPlayerMoves ? `Mate in ${this.maxPlayerMoves}` : 'Checkmate';
+                this.updateStatusBanner(`<i class="fas fa-puzzle-piece" style="color:#38bdf8;"></i> <strong>${sideText} to move.</strong> Deliver ${mateDesc}!`);
+            }
 
             if (!this.board) {
                 const self = this;
@@ -850,6 +906,7 @@
         }
 
         executePlayerMove(source, target, promotionPiece = 'q') {
+            const prevFen = this.chess.fen();
             const move = this.chess.move({
                 from: source,
                 to: target,
@@ -857,6 +914,9 @@
             });
 
             if (move === null) return 'snapback';
+
+            const promoChar = (move.promotion || (this.isPromotionMove(source, target) ? promotionPiece : '')).toLowerCase();
+            const playedMoveUci = `${source}${target}${promoChar}`.toLowerCase();
 
             this.board.position(this.chess.fen());
 
@@ -883,68 +943,66 @@
 
                 // 1. Immediate Checkmate Rule: Any legal checkmate move immediately solves the puzzle!
                 if (this.chess.in_checkmate()) {
-                    this.stopClockTimer();
-                    this.$container.find('#engineResultBadge').text('Solved').css({ background: 'rgba(22, 163, 74, 0.3)', color: '#4ade80' });
-                    this.scoreStreak++;
-                    this.$container.find('#puzzleStreakBadge').text(this.scoreStreak);
-                    this.updateStatusBanner(`<i class="fas fa-trophy" style="color:#d4af37;"></i> 🎉 <strong>Checkmate! Puzzle Solved!</strong>`);
+                    this.onPuzzleSolved();
+                    return;
+                }
+
+                // 2. If pre-scripted solutionMoves exists (like in daily puzzles)
+                if (this.solutionMoves && this.solutionMoves.length > 0) {
+                    const expectedMove = (this.solutionMoves[this.solutionIndex] || '').toLowerCase().trim();
+
+                    const isMatch = expectedMove && (
+                        playedMoveUci === expectedMove ||
+                        `${source}${target}` === expectedMove ||
+                        `${source}${target}${promoChar || 'q'}` === expectedMove ||
+                        (move.san || '').toLowerCase() === expectedMove ||
+                        (move.san || '').toLowerCase().replace(/[^a-z0-9]/g, '') === expectedMove.replace(/[^a-z0-9]/g, '')
+                    );
+
+                    if (isMatch) {
+                        this.solutionIndex++;
+                        this.updateStatusBanner(`<i class="fas fa-check" style="color:#16a34a;"></i> Correct move!`);
+
+                        if (this.solutionIndex < this.solutionMoves.length) {
+                            const counterUci = this.solutionMoves[this.solutionIndex];
+                            this.solutionIndex++;
+                            const self = this;
+                            setTimeout(() => {
+                                self.playUciMove(counterUci);
+                                if (self.solutionIndex >= self.solutionMoves.length || self.chess.in_checkmate() || self.chess.game_over()) {
+                                    self.onPuzzleSolved();
+                                } else {
+                                    self.updateStatusBanner(`<i class="fas fa-puzzle-piece" style="color:#d4af37;"></i> Continue calculation...`);
+                                }
+                            }, 400);
+                        } else {
+                            this.onPuzzleSolved();
+                        }
+                        return;
+                    } else {
+                        this.handleIncorrectDailyMove();
+                        return 'snapback';
+                    }
+                }
+
+                // 3. For mixed puzzle categories (like 'Chess Puzzles') or long combinations:
+                // Stockfish defends naturally and instant checkmate solves the puzzle!
+                const isSpecialMixed = this.options.category === 'Chess Puzzles' || !this.maxPlayerMoves || this.maxPlayerMoves >= 5;
+                if (isSpecialMixed) {
+                    if (!this.chess.game_over()) {
+                        this.requestEngineMove();
+                    }
                     this.renderMovesList();
                     this.checkGameOver();
                     return;
                 }
 
-                // 2. Strict Move Budget: If player moves reach or exceed max allowed moves and not checkmate -> Fail!
-                if (this.maxPlayerMoves && this.playerMovesPlayed >= this.maxPlayerMoves) {
-                    this.updateStatusBanner(`<i class="fas fa-times-circle" style="color:#dc2626;"></i> <strong>Incorrect!</strong> Move limit exceeded.`);
-                    this.handleIncorrectDailyMove();
-                    return 'snapback';
-                }
-
-                const promoChar = (move.promotion || (this.isPromotionMove(source, target) ? promotionPiece : '')).toLowerCase();
-                const playedMoveUci = `${source}${target}${promoChar}`.toLowerCase();
-                const expectedMove = (this.solutionMoves[this.solutionIndex] || '').toLowerCase().trim();
-
-                const isMatch = expectedMove && (
-                    playedMoveUci === expectedMove ||
-                    `${source}${target}` === expectedMove ||
-                    `${source}${target}${promoChar || 'q'}` === expectedMove ||
-                    (move.san || '').toLowerCase() === expectedMove ||
-                    (move.san || '').toLowerCase().replace(/[^a-z0-9]/g, '') === expectedMove.replace(/[^a-z0-9]/g, '')
-                );
-
-                if (isMatch) {
-                    this.solutionIndex++;
-                    this.updateStatusBanner(`<i class="fas fa-check" style="color:#16a34a;"></i> Correct move!`);
-
-                    if (this.solutionIndex < this.solutionMoves.length) {
-                        const counterUci = this.solutionMoves[this.solutionIndex];
-                        this.solutionIndex++;
-                        const self = this;
-                        setTimeout(() => {
-                            self.playUciMove(counterUci);
-                            if (self.solutionIndex >= self.solutionMoves.length || self.chess.in_checkmate() || self.chess.game_over()) {
-                                self.stopClockTimer();
-                                self.$container.find('#engineResultBadge').text('Solved').css({ background: 'rgba(22, 163, 74, 0.3)', color: '#4ade80' });
-                                self.scoreStreak++;
-                                self.$container.find('#puzzleStreakBadge').text(self.scoreStreak);
-                                self.updateStatusBanner(`<i class="fas fa-trophy" style="color:#d4af37;"></i> 🎉 <strong>Puzzle Solved! Great Job!</strong>`);
-                            } else {
-                                self.updateStatusBanner(`<i class="fas fa-puzzle-piece" style="color:#d4af37;"></i> Continue calculation...`);
-                            }
-                        }, 400);
-                    } else {
-                        this.stopClockTimer();
-                        this.$container.find('#engineResultBadge').text('Solved').css({ background: 'rgba(22, 163, 74, 0.3)', color: '#4ade80' });
-                        this.scoreStreak++;
-                        this.$container.find('#puzzleStreakBadge').text(this.scoreStreak);
-                        this.updateStatusBanner(`<i class="fas fa-trophy" style="color:#d4af37;"></i> 🎉 <strong>Puzzle Solved! Great Job!</strong>`);
-                    }
-                } else if (this.solutionMoves.length > 0) {
-                    if (this.stockfishWorker) {
-                        this.evaluateAlternativeDailyMove();
-                    } else {
-                        this.handleIncorrectDailyMove();
-                        return 'snapback';
+                // 4. For short mate drills (Mate in 2, Mate in 3, Mate in 4): Evaluate best move via Stockfish
+                if (this.stockfishWorker) {
+                    this.evaluateAlternativeDailyMove(playedMoveUci, prevFen);
+                } else {
+                    if (!this.chess.game_over()) {
+                        this.requestEngineMove();
                     }
                 }
             } else {
@@ -957,63 +1015,114 @@
             this.checkGameOver();
         }
 
-        async evaluateAlternativeDailyMove() {
+        onPuzzleSolved() {
+            this.stopClockTimer();
+            this.playSound('checkmate');
+            this.$container.find('#engineResultBadge').text('Solved').css({ background: 'rgba(22, 163, 74, 0.3)', color: '#4ade80' });
+            this.scoreStreak = (this.scoreStreak || 0) + 1;
+            this.$container.find('#puzzleStreakBadge').text(this.scoreStreak);
+
+            const isMate = this.chess.in_checkmate();
+            const victoryTitle = isMate ? 'Checkmate! Puzzle Solved!' : 'Puzzle Solved!';
+            this.updateStatusBanner(`<i class="fas fa-trophy" style="color:#d4af37;"></i> 🎉 <strong>${victoryTitle}</strong>`);
+
+            this.renderMovesList();
+            this.checkGameOver();
+            if (typeof this.options.onPuzzleSolved === 'function') {
+                this.options.onPuzzleSolved(this.scoreStreak, this);
+            }
+        }
+
+        async evaluateAlternativeDailyMove(playedUci, prevFen) {
             if (!this.stockfishWorker) {
                 this.handleIncorrectDailyMove();
                 return;
             }
 
-            this.updateStatusBanner(`<i class="fas fa-robot fa-spin" style="color:#38bdf8;"></i> Checking forced mate with Stockfish...`);
+            // Strict rule: If player has reached or exceeded maxPlayerMoves and position is not checkmate, fail immediately!
+            if (this.maxPlayerMoves && this.playerMovesPlayed >= this.maxPlayerMoves) {
+                const mateStr = `Mate in ${this.maxPlayerMoves}`;
+                this.updateStatusBanner(`<i class="fas fa-times-circle" style="color:#ef4444;"></i> <strong>Incorrect move!</strong> Does not force ${mateStr}.`);
+                this.handleIncorrectDailyMove();
+                return;
+            }
+
+            this.updateStatusBanner(`<i class="fas fa-robot fa-spin" style="color:#38bdf8;"></i> Analyzing best move with Stockfish...`);
 
             try {
-                const evalResult = await this.queryStockfishEval(this.chess.fen(), 400);
-                const remainingAllowedMoves = this.maxPlayerMoves ? (this.maxPlayerMoves - this.playerMovesPlayed) : 1;
-                const isForcedMateInBudget = evalResult.isMateForPlayer && evalResult.mateVal !== null && Math.abs(evalResult.mateVal) <= remainingAllowedMoves;
+                // Scaled search time: Mate in 2 = 2000ms, Mate in 3 = 4000ms, Mate in 4 = 6000ms
+                let evalTime = 2000;
+                if (this.maxPlayerMoves === 3) evalTime = 4000;
+                else if (this.maxPlayerMoves >= 4) evalTime = 6000;
 
-                if (isForcedMateInBudget && evalResult.bestMove) {
-                    this.updateStatusBanner(`<i class="fas fa-check" style="color:#16a34a;"></i> Winning line! Opponent defending...`);
+                // 1. Verify if the played move matches Stockfish's top calculated bestmove from the position before the move
+                const prevEval = await this.queryStockfishEval(prevFen, evalTime);
+                const isTopMove = prevEval.bestMove && (
+                    playedUci === prevEval.bestMove ||
+                    playedUci.startsWith(prevEval.bestMove) ||
+                    prevEval.bestMove.startsWith(playedUci)
+                );
+
+                // 2. Or verify if the resulting position directly forces checkmate against the opponent within strict remaining move budget
+                let isForcedMate = false;
+                if (!isTopMove && this.maxPlayerMoves) {
+                    const postEval = await this.queryStockfishEval(this.chess.fen(), Math.min(2500, evalTime));
+                    if (postEval.mateVal !== null && postEval.mateVal < 0) {
+                        const remainingMoves = this.maxPlayerMoves - this.playerMovesPlayed;
+                        if (Math.abs(postEval.mateVal) <= remainingMoves) {
+                            isForcedMate = true;
+                        }
+                    }
+                }
+
+                if (isTopMove || isForcedMate) {
+                    this.updateStatusBanner(`<i class="fas fa-check" style="color:#16a34a;"></i> <strong>Best move!</strong> Opponent defending...`);
                     this.renderMovesList();
+
+                    // Query opponent's best defense reply
+                    const defEval = await this.queryStockfishEval(this.chess.fen(), 1200);
+                    const defMove = defEval.bestMove;
 
                     const self = this;
                     setTimeout(() => {
-                        self.playUciMove(evalResult.bestMove);
+                        if (defMove) {
+                            self.playUciMove(defMove);
+                        }
                         if (self.chess.in_checkmate() || self.chess.game_over()) {
-                            self.stopClockTimer();
-                            self.$container.find('#engineResultBadge').text('Solved').css({ background: 'rgba(22, 163, 74, 0.3)', color: '#4ade80' });
-                            self.scoreStreak++;
-                            self.$container.find('#puzzleStreakBadge').text(self.scoreStreak);
-                            self.updateStatusBanner(`<i class="fas fa-trophy" style="color:#d4af37;"></i> 🎉 <strong>Checkmate! Puzzle Solved!</strong>`);
-                        } else {
-                            self.updateStatusBanner(`<i class="fas fa-crosshairs" style="color:#eab308;"></i> Opponent defended with <strong>${evalResult.bestMove}</strong>. Find the winning blow!`);
+                            self.onPuzzleSolved();
+                        } else if (defMove) {
+                            self.updateStatusBanner(`<i class="fas fa-crosshairs" style="color:#eab308;"></i> Opponent defended with <strong>${defMove}</strong>.`);
                         }
                     }, 400);
                 } else {
-                    this.updateStatusBanner(`<i class="fas fa-times-circle" style="color:#dc2626;"></i> <strong>Incorrect move!</strong> Does not force checkmate.`);
+                    const mateStr = this.maxPlayerMoves ? `Mate in ${this.maxPlayerMoves}` : 'checkmate';
+                    this.updateStatusBanner(`<i class="fas fa-times-circle" style="color:#ef4444;"></i> <strong>Incorrect move!</strong> Does not force ${mateStr}.`);
                     this.handleIncorrectDailyMove();
                 }
             } catch (err) {
-                console.warn("[MChessEngineBoard] Alternative move eval error:", err);
+                console.warn("[MChessEngineBoard] Best move eval error:", err);
                 this.handleIncorrectDailyMove();
             }
         }
 
-        queryStockfishEval(fen, timeoutMs = 400) {
+        queryStockfishEval(fen, timeoutMs = 2000) {
             return new Promise((resolve) => {
                 if (!this.stockfishWorker) {
-                    resolve({ isMateForPlayer: false, mateVal: null, bestMove: null });
+                    resolve({ isMateForPlayer: false, mateVal: null, cpScore: null, bestMove: null });
                     return;
                 }
 
                 let bestMove = null;
                 let isMateForPlayer = false;
                 let mateVal = null;
+                let cpScore = null;
                 let resolved = false;
 
                 const timer = setTimeout(() => {
                     if (!resolved) {
                         resolved = true;
                         this.stockfishWorker.onmessage = this.defaultWorkerOnMessage;
-                        resolve({ isMateForPlayer, mateVal, bestMove });
+                        resolve({ isMateForPlayer, mateVal, cpScore, bestMove });
                     }
                 }, timeoutMs);
 
@@ -1027,7 +1136,14 @@
                             if (val < 0) {
                                 isMateForPlayer = true;
                                 mateVal = val;
+                            } else {
+                                mateVal = val;
                             }
+                        }
+                    } else if (line.includes('score cp')) {
+                        const matchCp = line.match(/score cp (-?\d+)/);
+                        if (matchCp) {
+                            cpScore = parseInt(matchCp[1], 10);
                         }
                     }
 
@@ -1040,18 +1156,22 @@
                             resolved = true;
                             clearTimeout(timer);
                             this.stockfishWorker.onmessage = this.defaultWorkerOnMessage;
-                            resolve({ isMateForPlayer, mateVal, bestMove });
+                            resolve({ isMateForPlayer, mateVal, cpScore, bestMove });
                         }
                     }
                 };
 
+                const movetime = Math.max(500, timeoutMs - 200);
+                const depth = timeoutMs >= 5000 ? 18 : (timeoutMs >= 3500 ? 16 : 14);
                 this.stockfishWorker.postMessage(`position fen ${fen}`);
-                this.stockfishWorker.postMessage('go depth 12 movetime 300');
+                this.stockfishWorker.postMessage(`go depth ${depth} movetime ${movetime}`);
             });
         }
 
         handleIncorrectDailyMove() {
-            this.updateStatusBanner(`<i class="fas fa-times-circle" style="color:#dc2626;"></i> Incorrect move, try again!`);
+            const mateStr = this.maxPlayerMoves ? `Must be Mate in ${this.maxPlayerMoves}` : 'Try again';
+            this.updateStatusBanner(`<i class="fas fa-times-circle" style="color:#ef4444;"></i> <strong>Incorrect move!</strong> ${mateStr}.`);
+            this.playSound('stalemate');
             this.chess.undo();
             this.historyFen.pop();
             this.currentPly = this.historyFen.length - 1;
@@ -1105,7 +1225,11 @@
             this.playUciMove(uciMove);
             if (!this.chess.game_over()) {
                 this.startClockTimer();
-                this.updateStatusBanner(`<i class="fas fa-robot"></i> Stockfish played ${uciMove}. Your turn!`);
+                if (this.options.mode === 'puzzle' || this.options.mode === 'daily') {
+                    this.updateStatusBanner(`<i class="fas fa-crosshairs" style="color:#eab308;"></i> Opponent defended with <strong>${uciMove}</strong>.`);
+                } else {
+                    this.updateStatusBanner(`<i class="fas fa-robot"></i> Stockfish played ${uciMove}. Your turn!`);
+                }
             }
         }
 
@@ -1195,7 +1319,9 @@
                 const winner = this.chess.turn() === 'w' ? 'Black' : 'White';
                 resultText = winner === 'White' ? '1-0' : '0-1';
                 this.$container.find('#engineResultBadge').text(resultText).css({ background: 'rgba(22, 163, 74, 0.3)', color: '#4ade80' });
-                this.updateStatusBanner(`<i class="fas fa-crown" style="color:#d4af37;"></i> <strong>Checkmate! ${winner} wins!</strong> (Saved to History)`);
+                if (this.options.mode !== 'puzzle' && this.options.mode !== 'daily') {
+                    this.updateStatusBanner(`<i class="fas fa-crown" style="color:#d4af37;"></i> <strong>Checkmate! ${winner} wins!</strong> (Saved to History)`);
+                }
             } else if (this.chess.in_draw() || this.chess.in_stalemate() || this.chess.in_threefold_repetition() || this.chess.insufficient_material()) {
                 isGameOver = true;
                 resultText = '1/2-1/2';
@@ -1272,7 +1398,17 @@
             this.$container.find('#userSideSelect').on('change', function () {
                 const side = $(this).val();
                 self.userSide = side;
-                self.setupPosition(self.options.fen, side);
+                self.options.orientation = side;
+                if (self.board) {
+                    self.board.orientation(side);
+                }
+                if (self.userSide === 'black') {
+                    self.$container.find('#engineWhitePlayer').text(`Stockfish Computer (Lv ${self.options.skillLevel})`);
+                    self.$container.find('#engineBlackPlayer').text('You (Black)');
+                } else {
+                    self.$container.find('#engineWhitePlayer').text('You (White)');
+                    self.$container.find('#engineBlackPlayer').text(`Stockfish Computer (Lv ${self.options.skillLevel})`);
+                }
             });
 
             // Time control selection (3m, 5m, 10m, 30m, Unlimited)
@@ -1347,7 +1483,20 @@
             });
 
             this.$container.find('#btnEngineFlip').on('click', () => {
-                if (self.board) self.board.flip();
+                if (self.board) {
+                    self.board.flip();
+                    const newOrientation = self.board.orientation();
+                    self.userSide = newOrientation;
+                    self.options.orientation = newOrientation;
+                    self.$container.find('#userSideSelect').val(newOrientation);
+                    if (self.userSide === 'black') {
+                        self.$container.find('#engineWhitePlayer').text(`Stockfish Computer (Lv ${self.options.skillLevel})`);
+                        self.$container.find('#engineBlackPlayer').text('You (Black)');
+                    } else {
+                        self.$container.find('#engineWhitePlayer').text('You (White)');
+                        self.$container.find('#engineBlackPlayer').text(`Stockfish Computer (Lv ${self.options.skillLevel})`);
+                    }
+                }
             });
 
             this.$container.find('#engineLevelSelect').on('change', function () {

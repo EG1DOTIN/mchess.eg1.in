@@ -523,15 +523,16 @@ img.dragged-piece-4d2e8,
 /* Mode Banner & Analysis Status */
 .mode-banner {
     border-radius: 10px;
-    padding: 12px 16px;
-    font-size: 14px;
+    padding: 10px 14px;
+    font-size: 13.5px;
     font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
-    flex-wrap: wrap;
-    transition: all 0.2s ease;
+    gap: 8px;
+    min-height: 44px;
+    box-sizing: border-box;
+    transition: background 0.2s ease, border-color 0.2s ease;
 }
 
 .mode-banner i {
