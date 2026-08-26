@@ -47,9 +47,9 @@ body.dark-theme .pgn-viewer-container {
 
 @media (max-width: 600px) {
     .pgn-viewer-container {
-        padding: 8px 4px !important;
-        margin: 6px auto 20px auto !important;
-        border-radius: 10px !important;
+        padding: 6px 2px !important;
+        margin: 4px auto 16px auto !important;
+        border-radius: 6px !important;
         width: 100% !important;
         max-width: 100% !important;
         box-sizing: border-box !important;
@@ -60,15 +60,24 @@ body.dark-theme .pgn-viewer-container {
         width: 100% !important;
         padding: 0 !important;
         margin: 0 auto !important;
+        box-sizing: border-box !important;
     }
 
     .board-wrapper {
-        width: 100% !important;
+        width: calc(100% - 4px) !important;
         max-width: 100% !important;
-        border-width: 3px !important;
-        outline-width: 1.5px !important;
-        border-radius: 8px !important;
+        border: 1px solid var(--mchess-board-border, #475569) !important;
+        outline: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
         margin: 0 auto !important;
+        box-sizing: border-box !important;
+    }
+
+    .chessboard-63f37 {
+        width: 100% !important;
+        margin: 0 auto !important;
+        border-radius: 0 !important;
     }
 
     .viewer-grid {
@@ -523,15 +532,16 @@ img.dragged-piece-4d2e8,
 /* Mode Banner & Analysis Status */
 .mode-banner {
     border-radius: 10px;
-    padding: 12px 16px;
-    font-size: 14px;
+    padding: 10px 14px;
+    font-size: 13.5px;
     font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
-    flex-wrap: wrap;
-    transition: all 0.2s ease;
+    gap: 8px;
+    min-height: 44px;
+    box-sizing: border-box;
+    transition: background 0.2s ease, border-color 0.2s ease;
 }
 
 .mode-banner i {

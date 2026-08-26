@@ -1,5 +1,17 @@
 [
   {
+    "id": "v3-6-2-engine-eval-explore-menu-blog-transitions",
+    "version": "3.6.2",
+    "title": "Tactical Bestmove Engine, EXPLORE Navigation & Dynamic Blog Transitions",
+    "message": "Pre-move Stockfish bestmove verification for forced checkmates, strict Mate-in-N move budgeting, scaled calculation depth, centered header layout with updated menu, mobile full-scale chessboard, and seamless in-place blog description rendering.",
+    "icon": "fa-chess-king",
+    "badge": "Enhancement",
+    "badgeColor": "#3b82f6",
+    "link": "dailypuzzles.html",
+    "date": "Aug 26, 2026",
+    "pinned": true
+  },
+  {
     "id": "v3-6-1-bugfixes-move-sync-puzzles",
     "version": "3.6.1",
     "title": "P2P Move Sync, Dynamic Stockfish Defense & Reverse Move List",

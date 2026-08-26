@@ -155,6 +155,7 @@ function initializeNavigation() {
             var hrefClean = href.split('?')[0].split('#')[0];
             if (hrefClean === rawFilename) {
                 $(this).closest("li").addClass("active");
+                $(this).parents(".nav > li").addClass("active");
             }
         }
     });
