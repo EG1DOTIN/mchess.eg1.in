@@ -1,5 +1,17 @@
 [
   {
+    "id": "v3-6-3-playcomp-black-p2p-sync-refresh",
+    "version": "3.6.3",
+    "title": "Play as Black Auto-Start, P2P Move Tree Recovery & 1-Click Refresh",
+    "message": "Instant Stockfish White opening moves when playing as Black without manual resets, full sequential move tree recovery on P2P reconnects, guaranteed LocalStorage game archiving, standardized 4-line homepage cards, and a 1-click header App Refresh tool.",
+    "icon": "fa-sync-alt",
+    "badge": "Bug Fixes",
+    "badgeColor": "#10b981",
+    "link": "playcomp.html",
+    "date": "Aug 26, 2026",
+    "pinned": true
+  },
+  {
     "id": "v3-6-2-engine-eval-explore-menu-blog-transitions",
     "version": "3.6.2",
     "title": "Tactical Bestmove Engine, EXPLORE Navigation & Dynamic Blog Transitions",

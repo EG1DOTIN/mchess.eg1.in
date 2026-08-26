@@ -767,12 +767,17 @@ p {
 
 #welcome .item_list p {
     text-align: center;
-    line-height: 1.45em;
+    line-height: 1.45;
     min-height: 5.8em;
     max-height: 5.8em;
     overflow: hidden;
     margin: 8px 0 0 0;
     font-size: 13.5px;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    word-break: normal;
+    overflow-wrap: break-word;
 }
 
 #welcome .item_list:hover {
@@ -1566,6 +1571,52 @@ p {
 [data-theme="dark"] .cta-theme:hover {
     background-color: #475569;
     color: #ffffff !important;
+}
+
+.cta-refresh {
+    position: relative;
+    background: #f1f5f9;
+    color: #1e293b;
+    border: 1px solid #cbd5e1;
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 38px;
+    transition: all 0.2s ease;
+}
+
+.cta-refresh:hover {
+    background: #e2e8f0;
+    color: #b45309;
+    border-color: #d4af37;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.25);
+}
+
+.cta-refresh:hover #appRefreshIcon {
+    transform: rotate(180deg);
+}
+
+#appRefreshIcon {
+    font-size: 14px;
+    transition: transform 0.35s ease;
+}
+
+[data-theme="dark"] .cta-refresh {
+    background: #334155;
+    color: #cbd5e1;
+    border: 1px solid #475569;
+}
+
+[data-theme="dark"] .cta-refresh:hover {
+    background: #475569;
+    color: #fbbf24;
+    border-color: #fbbf24;
+    box-shadow: 0 2px 8px rgba(251, 191, 36, 0.2);
 }
 
 /* Footer Styling */

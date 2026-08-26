@@ -216,6 +216,31 @@
         }
 
         /**
+         * Reconstruct a clean Chess instance with complete move history from an array of SAN moves or historyFen
+         */
+        buildChessFromMovesArray(movesArray) {
+            if (!Array.isArray(movesArray) || movesArray.length === 0) return null;
+            try {
+                const tempChess = new Chess();
+                for (let i = 0; i < movesArray.length; i++) {
+                    const san = (typeof movesArray[i] === 'string')
+                        ? movesArray[i]
+                        : (movesArray[i] && movesArray[i].san);
+                    if (!san || san === 'Start') continue;
+                    const res = tempChess.move(san);
+                    if (!res) {
+                        console.warn("[MChessP2P] Failed to replay move:", san, "at index", i);
+                        return null;
+                    }
+                }
+                return tempChess;
+            } catch (e) {
+                console.warn("[MChessP2P] Error building chess from moves array:", e);
+                return null;
+            }
+        }
+
+        /**
          * Rebuild this.historyFen and currentPly cleanly from chess engine's move history
          */
         rebuildHistoryFenFromChess() {
@@ -263,22 +288,39 @@
                 this.gameActive = true;
                 this.gameSaved = false;
 
-                // Load chess position from PGN first to preserve full moves history
-                this.chess = new Chess();
-                let pgnLoaded = false;
-                if (session.pgn && typeof session.pgn === 'string' && session.pgn.trim().length > 0) {
-                    pgnLoaded = this.chess.load_pgn(session.pgn);
-                }
-                if (!pgnLoaded && session.fen) {
-                    this.chess.load(session.fen);
+                // 1. First attempt to reconstruct full chess move history from historyFen array
+                let restoredChess = null;
+                if (Array.isArray(session.historyFen) && session.historyFen.length > 1) {
+                    restoredChess = this.buildChessFromMovesArray(session.historyFen);
                 }
 
-                // Restore historyFen array
-                if (Array.isArray(session.historyFen) && session.historyFen.length > 0) {
-                    this.historyFen = session.historyFen;
-                    this.currentPly = typeof session.currentPly === 'number' ? session.currentPly : Math.max(0, this.historyFen.length - 1);
-                } else {
+                // 2. If historyFen replay succeeded, use restored chess instance
+                if (restoredChess) {
+                    this.chess = restoredChess;
                     this.rebuildHistoryFenFromChess();
+                } else {
+                    // 3. Fallback: try loading PGN
+                    this.chess = new Chess();
+                    let pgnLoaded = false;
+                    if (session.pgn && typeof session.pgn === 'string' && session.pgn.trim().length > 0) {
+                        pgnLoaded = this.chess.load_pgn(session.pgn);
+                        if (pgnLoaded) {
+                            this.rebuildHistoryFenFromChess();
+                        }
+                    }
+                    // 4. Ultimate fallback: load FEN but retain saved historyFen for rendering
+                    if (!pgnLoaded && session.fen) {
+                        this.chess.load(session.fen);
+                        if (Array.isArray(session.historyFen) && session.historyFen.length > 0) {
+                            this.historyFen = session.historyFen;
+                        }
+                    }
+                }
+
+                if (typeof session.currentPly === 'number') {
+                    this.currentPly = session.currentPly;
+                } else {
+                    this.currentPly = Math.max(0, this.historyFen.length - 1);
                 }
 
                 // Switch UI to Arena View
@@ -335,6 +377,7 @@
                     fen: self.chess.fen(),
                     pgn: self.chess.pgn(),
                     historyFen: self.historyFen,
+                    moves: (self.historyFen && self.historyFen.length > 1) ? self.historyFen.slice(1).map(h => h.san) : self.chess.history(),
                     whiteTime: self.whiteTime,
                     blackTime: self.blackTime
                 });
@@ -725,12 +768,17 @@
             console.log("[MChessP2P] Opponent reconnected to active match!", msg);
             this.stopDisconnectGraceTimer();
 
+            const moveSanList = (this.historyFen && this.historyFen.length > 1)
+                ? this.historyFen.slice(1).map(h => h.san)
+                : this.chess.history();
+
             // Send full authoritative game state including PGN and moves history
             this.safeSend({
                 type: 'reconnect_accept',
                 fen: this.chess.fen(),
                 pgn: this.chess.pgn(),
                 historyFen: this.historyFen,
+                moves: moveSanList,
                 currentPly: this.currentPly,
                 whiteTime: this.whiteTime,
                 blackTime: this.blackTime
@@ -745,25 +793,41 @@
             console.log("[MChessP2P] Reconnect accepted by opponent!", msg);
             this.stopDisconnectGraceTimer();
 
-            // Load authoritative position from PGN first to recover full move tree
-            let pgnLoaded = false;
-            if (msg.pgn && typeof msg.pgn === 'string' && msg.pgn.trim().length > 0) {
-                const tempChess = new Chess();
-                if (tempChess.load_pgn(msg.pgn)) {
-                    this.chess = tempChess;
-                    pgnLoaded = true;
-                }
-            }
-            if (!pgnLoaded && msg.fen) {
-                this.chess.load(msg.fen);
+            // 1. Reconstruct full chess move history from msg.moves or msg.historyFen
+            let restoredChess = null;
+            const sourceMoves = (Array.isArray(msg.moves) && msg.moves.length > 0)
+                ? msg.moves
+                : ((Array.isArray(msg.historyFen) && msg.historyFen.length > 1) ? msg.historyFen : null);
+
+            if (sourceMoves) {
+                restoredChess = this.buildChessFromMovesArray(sourceMoves);
             }
 
-            // Sync historyFen and ply
-            if (Array.isArray(msg.historyFen) && msg.historyFen.length > 0) {
-                this.historyFen = msg.historyFen;
-                this.currentPly = typeof msg.currentPly === 'number' ? msg.currentPly : Math.max(0, this.historyFen.length - 1);
-            } else {
+            if (restoredChess) {
+                this.chess = restoredChess;
                 this.rebuildHistoryFenFromChess();
+            } else {
+                let pgnLoaded = false;
+                if (msg.pgn && typeof msg.pgn === 'string' && msg.pgn.trim().length > 0) {
+                    const tempChess = new Chess();
+                    if (tempChess.load_pgn(msg.pgn)) {
+                        this.chess = tempChess;
+                        this.rebuildHistoryFenFromChess();
+                        pgnLoaded = true;
+                    }
+                }
+                if (!pgnLoaded && msg.fen) {
+                    this.chess.load(msg.fen);
+                    if (Array.isArray(msg.historyFen) && msg.historyFen.length > 0) {
+                        this.historyFen = msg.historyFen;
+                    }
+                }
+            }
+
+            if (typeof msg.currentPly === 'number') {
+                this.currentPly = msg.currentPly;
+            } else {
+                this.currentPly = Math.max(0, this.historyFen.length - 1);
             }
 
             if (this.board) {
@@ -1183,6 +1247,8 @@
                     san: move.san,
                     fen: this.chess.fen(),
                     pgn: this.chess.pgn(),
+                    historyFen: this.historyFen,
+                    moves: (this.historyFen && this.historyFen.length > 1) ? this.historyFen.slice(1).map(h => h.san) : this.chess.history(),
                     ply: this.currentPly,
                     whiteTime: this.whiteTime,
                     blackTime: this.blackTime
@@ -1267,7 +1333,25 @@
                 moveSuccess = false;
             }
 
-            // 2. Smart PGN / FEN Fallback: If move failed (due to desync), load authoritative PGN first, then FEN
+            // 2. Smart Replay Fallback: Reconstruct full move tree from msg.moves or msg.historyFen
+            if (!moveSuccess) {
+                const sourceMoves = (Array.isArray(msg.moves) && msg.moves.length > 0)
+                    ? msg.moves
+                    : ((Array.isArray(msg.historyFen) && msg.historyFen.length > 1) ? msg.historyFen : null);
+
+                if (sourceMoves) {
+                    const restored = this.buildChessFromMovesArray(sourceMoves);
+                    if (restored) {
+                        this.chess = restored;
+                        moveSuccess = true;
+                        pgnFallbackUsed = true;
+                        inCheck = this.chess.in_check();
+                        this.rebuildHistoryFenFromChess();
+                    }
+                }
+            }
+
+            // 3. Smart PGN / FEN Fallback: If move failed (due to desync), load authoritative PGN first, then FEN
             if (!moveSuccess && msg.pgn) {
                 console.warn("[MChessP2P] Standard move failed. Falling back to authoritative PGN...");
                 try {
@@ -1354,6 +1438,8 @@
                     ply: self.currentPly,
                     fen: self.chess.fen(),
                     pgn: self.chess.pgn(),
+                    historyFen: self.historyFen,
+                    moves: (self.historyFen && self.historyFen.length > 1) ? self.historyFen.slice(1).map(h => h.san) : self.chess.history(),
                     whiteTime: self.whiteTime,
                     blackTime: self.blackTime
                 });
@@ -1375,7 +1461,20 @@
                 console.log("[MChessP2P] Heartbeat detected state drift. Reconciling with remote state...");
                 try {
                     let synced = false;
-                    if (msg.pgn && typeof msg.pgn === 'string' && msg.pgn.trim().length > 0) {
+                    const sourceMoves = (Array.isArray(msg.moves) && msg.moves.length > 0)
+                        ? msg.moves
+                        : ((Array.isArray(msg.historyFen) && msg.historyFen.length > 1) ? msg.historyFen : null);
+
+                    if (sourceMoves) {
+                        const restored = this.buildChessFromMovesArray(sourceMoves);
+                        if (restored && restored.fen() === msg.fen) {
+                            this.chess = restored;
+                            this.rebuildHistoryFenFromChess();
+                            synced = true;
+                        }
+                    }
+
+                    if (!synced && msg.pgn && typeof msg.pgn === 'string' && msg.pgn.trim().length > 0) {
                         const tempChess = new Chess();
                         if (tempChess.load_pgn(msg.pgn)) {
                             this.chess = tempChess;
@@ -1385,6 +1484,9 @@
                     }
                     if (!synced) {
                         synced = !!this.chess.load(msg.fen);
+                        if (Array.isArray(msg.historyFen) && msg.historyFen.length > 0) {
+                            this.historyFen = msg.historyFen;
+                        }
                     }
                     if (synced) {
                         if (this.board) this.board.position(this.chess.fen(), false);
@@ -1674,6 +1776,13 @@
         }
 
         leaveMatch() {
+            // If match was active and had moves played, save game history before exiting
+            if (!this.gameSaved && this.gameActive && this.historyFen && this.historyFen.length > 1) {
+                const winner = this.mySide === 'white' ? 'Black' : 'White';
+                const resultText = winner === 'White' ? '1-0' : '0-1';
+                this.onGameCompleted(resultText + ' (Left Match)', `Player left match. ${winner} wins.`);
+            }
+
             this.gameActive = false;
             this.stopClockTimer();
             this.stopDisconnectGraceTimer();
@@ -1698,24 +1807,37 @@
         }
 
         renderMovesList() {
+            // Determine moves to display: prefer chess.history, but if historyFen has more moves (e.g. during sync/reconnect), use historyFen
             const history = this.chess.history({ verbose: true });
+            const fenMoves = (this.historyFen && this.historyFen.length > 1) ? this.historyFen.slice(1) : [];
+
+            // Use the richer source of move SANs
+            const movesCount = Math.max(history.length, fenMoves.length);
+            const getSan = (index) => {
+                if (history[index] && history[index].san) return history[index].san;
+                if (fenMoves[index] && fenMoves[index].san) return fenMoves[index].san;
+                return '';
+            };
+
             const $container = $('#p2pMovesList');
             $container.empty();
 
             const rows = [];
-            for (let i = 0; i < history.length; i += 2) {
+            for (let i = 0; i < movesCount; i += 2) {
                 const moveNum = Math.floor(i / 2) + 1;
                 const plyWhite = i + 1;
                 const plyBlack = i + 2;
 
                 const numDiv = `<div class="move-num">${moveNum}.</div>`;
                 const whiteActive = (this.currentPly === plyWhite) ? ' active' : '';
-                const whiteDiv = `<div class="move-cell${whiteActive}" data-ply="${plyWhite}">${history[i].san}</div>`;
+                const whiteSan = getSan(i);
+                const whiteDiv = `<div class="move-cell${whiteActive}" data-ply="${plyWhite}">${whiteSan}</div>`;
 
                 let blackDiv = `<div></div>`;
-                if (i + 1 < history.length) {
+                if (i + 1 < movesCount) {
                     const blackActive = (this.currentPly === plyBlack) ? ' active' : '';
-                    blackDiv = `<div class="move-cell${blackActive}" data-ply="${plyBlack}">${history[i + 1].san}</div>`;
+                    const blackSan = getSan(i + 1);
+                    blackDiv = `<div class="move-cell${blackActive}" data-ply="${plyBlack}">${blackSan}</div>`;
                 }
 
                 rows.push(numDiv + whiteDiv + blackDiv);
@@ -1726,7 +1848,7 @@
                 $container.append(rows[r]);
             }
 
-            $('#p2pMoveCount').text(`${history.length} moves`);
+            $('#p2pMoveCount').text(`${movesCount} moves`);
         }
 
         updateStatusBanner(html) {
