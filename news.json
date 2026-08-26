@@ -3,7 +3,7 @@
     "id": "v3-6-2-engine-eval-explore-menu-blog-transitions",
     "version": "3.6.2",
     "title": "Tactical Bestmove Engine, EXPLORE Navigation & Dynamic Blog Transitions",
-    "message": "Pre-move Stockfish bestmove verification for forced checkmates, strict Mate-in-N move budgeting, scaled calculation depth, centered header layout with the new EXPLORE menu, and seamless in-place blog description rendering.",
+    "message": "Pre-move Stockfish bestmove verification for forced checkmates, strict Mate-in-N move budgeting, scaled calculation depth, centered header layout with updated menu, mobile full-scale chessboard, and seamless in-place blog description rendering.",
     "icon": "fa-chess-king",
     "badge": "Enhancement",
     "badgeColor": "#3b82f6",

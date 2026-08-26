@@ -244,7 +244,9 @@
     }
 
     #reviewBoardContainer {
-        padding: 12px 6px;
+        padding: 6px 2px;
+        width: 100% !important;
+        box-sizing: border-box !important;
     }
 
     .history-table th, .history-table td {
