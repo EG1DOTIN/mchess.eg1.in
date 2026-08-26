@@ -36,7 +36,7 @@
             this.board = null;
             this.stockfishWorker = null;
             this.isEngineThinking = false;
-            
+
             // Clock & Game Timer State
             this.timeControlMinutes = parseInt(this.options.timeControl, 10) || 5;
             this.whiteTime = this.timeControlMinutes * 60;
@@ -168,7 +168,7 @@
 
             const isDailyOrPuzzle = (this.options.mode === 'daily' || this.options.mode === 'puzzle');
             const headerTitle = isDailyOrPuzzle ? 'Daily Chess Puzzle & Tactics Trainer' : 'Play vs Stockfish Computer Engine';
-            const techPill = isDailyOrPuzzle ? 'Official Lichess Daily API & Stockfish' : 'Stockfish #1 Open-Source Engine';
+            const techPill = (this.options.mode === 'daily') ? 'Official Lichess Daily API & Stockfish' : 'Stockfish #1 Open-Source Engine';
 
             const html = `
                 <div class="pgn-viewer-container">
@@ -399,7 +399,7 @@
                 } else {
                     const textToScan = `${this.options.category || ''} ${this.options.title || ''} ${this.options.description || ''}`;
                     const mateMatch = textToScan.match(/(?:mate|checkmate|win)(?:[^.]*?)in\s*(\d+)/i) ||
-                                      textToScan.match(/in\s*(\d+)\s*moves/i);
+                        textToScan.match(/in\s*(\d+)\s*moves/i);
                     if (mateMatch && mateMatch[1]) {
                         this.maxPlayerMoves = parseInt(mateMatch[1], 10);
                     } else if (this.options.category === 'Mate in 2') {
@@ -657,7 +657,7 @@
 
                 this.$container.find('#puzzleActionBtns').css('display', 'inline-flex');
                 this.$container.find('#engineWhitePlayer').text(`Puzzle #${data.puzzle.id} (Rating: ${data.puzzle.rating})`);
-                this.$container.find('#engineBlackPlayer').text(`Themes: ${(data.puzzle.themes || []).slice(0,2).join(', ')}`);
+                this.$container.find('#engineBlackPlayer').text(`Themes: ${(data.puzzle.themes || []).slice(0, 2).join(', ')}`);
 
                 this.setupPosition(tempChess.fen(), puzzleTurn);
                 this.updateStatusBanner(`<i class="fas fa-puzzle-piece" style="color:#d4af37;"></i> Daily Puzzle: <strong>${puzzleTurn.toUpperCase()} to move</strong>. Find the best move!`);
@@ -695,7 +695,7 @@
                 if (pieceOnSquare) {
                     if (self.options.mode === 'engine') {
                         isMyPiece = (self.userSide === 'white' && pieceOnSquare.color === 'w') ||
-                                    (self.userSide === 'black' && pieceOnSquare.color === 'b');
+                            (self.userSide === 'black' && pieceOnSquare.color === 'b');
                     } else {
                         // Daily puzzle mode
                         const currentTurn = self.chess.turn();
@@ -707,7 +707,7 @@
                 let isMyTurn = true;
                 if (self.options.mode === 'engine') {
                     isMyTurn = (self.chess.turn() === 'w' && self.userSide === 'white') ||
-                               (self.chess.turn() === 'b' && self.userSide === 'black');
+                        (self.chess.turn() === 'b' && self.userSide === 'black');
                 }
 
                 if (!isMyTurn && !self.selectedSquare) return;

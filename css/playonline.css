@@ -326,12 +326,13 @@ html[data-theme="dark"] .game-meta-card .player-name {
     }
 
     .board-wrapper {
-        width: calc(100% - 4px) !important;
+        width: 100% !important;
         max-width: 100% !important;
-        border: 1px solid var(--mchess-board-border, #475569) !important;
+        border: none !important;
         outline: none !important;
         box-shadow: none !important;
         border-radius: 0 !important;
+        background: transparent !important;
         margin: 0 auto !important;
     }
 
