@@ -343,8 +343,8 @@ body.dark-theme #related-topics-list a:hover .lnkbtnsidebar h6 {
 .board-container img,
 .square-55d63 img,
 .piece-417db,
-body > img.piece-417db,
-body > img[class*="piece-"],
+body>img.piece-417db,
+body>img[class*="piece-"],
 .dragged-piece-4d2e8,
 [class*="piece-"],
 [class*="dragged-piece"] {
@@ -360,8 +360,8 @@ body > img[class*="piece-"],
     touch-action: none !important;
 }
 
-body > img.piece-417db,
-body > img[class*="piece-"],
+body>img.piece-417db,
+body>img[class*="piece-"],
 .dragged-piece-4d2e8,
 img.dragged-piece-4d2e8,
 [class*="dragged-piece"] {
@@ -1807,6 +1807,7 @@ p {
 
 /* Mobile Responsiveness Adjustments */
 @media (max-width: 768px) {
+
     /* Ensure Navigation is Static & Full Width Edge-to-Edge on Mobile */
     .navbar.f-nav,
     .f-nav {
@@ -1816,7 +1817,7 @@ p {
     }
 
     .navbar,
-    .navbar > div,
+    .navbar>div,
     .navbar .box-90,
     .navbar .box-100,
     .navbar .toggleMenu,
@@ -1965,12 +1966,26 @@ p {
 
     /* Mobile Board & Controls Alignment */
     .pgn-viewer-container,
-    .live-board-container,
+    .live-board-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 8px 0 !important;
+        margin: 4px 0 16px 0 !important;
+        border-left: none !important;
+        border-right: none !important;
+        border-radius: 0 !important;
+        box-sizing: border-box !important;
+        overflow: visible !important;
+    }
+
     .content,
     .box-90 {
         width: 100% !important;
         max-width: 100% !important;
-        padding: 4px 2px !important;
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
         box-sizing: border-box !important;
         overflow: visible !important;
     }
@@ -1986,15 +2001,26 @@ p {
     }
 
     .body .col-md-12,
+    .body .col-md-8,
     .body .col-md-9 {
-        padding-left: 2px !important;
-        padding-right: 2px !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
         width: 100% !important;
         box-sizing: border-box !important;
     }
 
     .board-column,
-    .board-wrapper-col,
+    .board-wrapper-col {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
     #mchessEngineBoardContainer,
     #mchessPuzzleContainer,
     #mchessLiveContainer,
@@ -2004,9 +2030,9 @@ p {
     #boardViewerContainer {
         padding-left: 0 !important;
         padding-right: 0 !important;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-        width: 100% !important;
+        margin-left: -5px !important;
+        margin-right: -5px !important;
+        width: calc(100% + 10px) !important;
         box-sizing: border-box !important;
     }
 
@@ -2018,21 +2044,63 @@ p {
         max-width: 100% !important;
         margin: 0 auto !important;
         box-sizing: border-box !important;
-        border: 1px solid var(--mchess-board-border, #475569) !important;
+        border: none !important;
         outline: none !important;
         box-shadow: none !important;
         border-radius: 0 !important;
+        background: transparent !important;
+    }
+
+    .chessboard-63f37 {
+        border: none !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+        width: 100% !important;
+        height: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    .row-5277c {
+        width: 100% !important;
+        height: 12.5% !important;
+        display: flex !important;
+        flex-direction: row !important;
+        box-sizing: border-box !important;
+    }
+
+    .square-55d63 {
+        flex: 1 1 12.5% !important;
+        width: 12.5% !important;
+        max-width: 12.5% !important;
+        height: 100% !important;
+        aspect-ratio: 1 / 1 !important;
+        float: none !important;
+        position: relative !important;
+        box-sizing: border-box !important;
+        overflow: visible !important;
+    }
+
+    .square-55d63 img.piece-417db {
+        width: 100% !important;
+        height: 100% !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
     }
 
     /* Mobile Single Blog View with Board */
     #mchessBlogEngineBoard .pgn-viewer-container {
         width: 100% !important;
-        padding: 6px 2px !important;
-        margin: 4px auto 16px auto !important;
+        padding: 8px 0 !important;
+        margin: 4px 0 16px 0 !important;
+        border-left: none !important;
+        border-right: none !important;
+        border-radius: 0 !important;
     }
 
     .blog-item-container .our-product {
-        padding: 8px 2px !important;
+        padding: 0 0 16px 0 !important;
     }
 
     /* Mobile Blog Grid Cards: Display full chessboard thumbnail without vertical cropping */
@@ -2092,12 +2160,14 @@ p {
     }
 
     .our-product {
-        padding: 10px 4px !important;
+        padding: 8px 6px 16px 6px !important;
         margin: 0 0 16px 0 !important;
         width: 100% !important;
         max-width: 100% !important;
         box-sizing: border-box !important;
-        border-radius: 8px !important;
+        border-left: none !important;
+        border-right: none !important;
+        border-radius: 0 !important;
     }
 
     .our-product .row {
@@ -2111,9 +2181,16 @@ p {
     .our-product .col-lg-12,
     .our-product .col-sm-12,
     .our-product .col-xs-12 {
-        padding-left: 4px !important;
-        padding-right: 4px !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
         width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    #mchessBlogEngineBoard {
+        margin-left: -6px !important;
+        margin-right: -6px !important;
+        width: calc(100% + 12px) !important;
         box-sizing: border-box !important;
     }
 
@@ -2121,13 +2198,15 @@ p {
     #blogs-container .pgn-viewer-container,
     .blog-item-container .pgn-viewer-container,
     #mchessBlogEngineBoard .pgn-viewer-container {
-        padding: 6px 2px !important;
-        margin: 8px auto !important;
+        padding: 6px 0 !important;
+        margin: 0 auto 12px auto !important;
         width: 100% !important;
         max-width: 100% !important;
         box-sizing: border-box !important;
-        border-radius: 8px !important;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+        border-left: none !important;
+        border-right: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
     }
 
     .our-product .board-wrapper,
@@ -2136,10 +2215,11 @@ p {
         width: 100% !important;
         max-width: 100% !important;
         margin: 0 auto !important;
-        border: 1px solid var(--mchess-board-border, #475569) !important;
+        border: none !important;
         outline: none !important;
         box-shadow: none !important;
         border-radius: 0 !important;
+        background: transparent !important;
         box-sizing: border-box !important;
     }
 
@@ -2254,7 +2334,7 @@ p {
         gap: 10px !important;
     }
 
-    .about-feature-list > li {
+    .about-feature-list>li {
         padding: 12px 14px !important;
         font-size: 14px !important;
         line-height: 1.65 !important;
@@ -2338,7 +2418,7 @@ p {
     gap: 12px;
 }
 
-.about-feature-list > li {
+.about-feature-list>li {
     background: #ffffff;
     border: 1px solid #e2e8f0;
     border-left: 4px solid #d4af37;
@@ -2348,7 +2428,7 @@ p {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.about-feature-list > li:hover {
+.about-feature-list>li:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
@@ -2442,7 +2522,7 @@ p {
     color: #cbd5e1;
 }
 
-[data-theme="dark"] .about-feature-list > li {
+[data-theme="dark"] .about-feature-list>li {
     background: #1e293b;
     border-color: #334155;
     border-left-color: #fbbf24;
@@ -2450,7 +2530,7 @@ p {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
-[data-theme="dark"] .about-feature-list > li:hover {
+[data-theme="dark"] .about-feature-list>li:hover {
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
     background: #243044;
 }
@@ -2619,9 +2699,20 @@ p {
 }
 
 @keyframes pulseBadge {
-    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-    70% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
-    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+    }
+
+    70% {
+        transform: scale(1.1);
+        box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
+    }
+
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    }
 }
 
 .notify-dropdown {
@@ -2641,8 +2732,15 @@ p {
 }
 
 @keyframes dropdownFadeIn {
-    from { opacity: 0; transform: translateY(-8px) scale(0.98); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
+    from {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
 
 .notify-header {
@@ -2915,17 +3013,49 @@ p {
 
 /* Bell Ringing Animation */
 @keyframes bellRing {
-    0% { transform: rotate(0); }
-    5% { transform: rotate(18deg); }
-    10% { transform: rotate(-18deg); }
-    15% { transform: rotate(14deg); }
-    20% { transform: rotate(-14deg); }
-    25% { transform: rotate(10deg); }
-    30% { transform: rotate(-10deg); }
-    35% { transform: rotate(6deg); }
-    40% { transform: rotate(-6deg); }
-    45% { transform: rotate(0); }
-    100% { transform: rotate(0); }
+    0% {
+        transform: rotate(0);
+    }
+
+    5% {
+        transform: rotate(18deg);
+    }
+
+    10% {
+        transform: rotate(-18deg);
+    }
+
+    15% {
+        transform: rotate(14deg);
+    }
+
+    20% {
+        transform: rotate(-14deg);
+    }
+
+    25% {
+        transform: rotate(10deg);
+    }
+
+    30% {
+        transform: rotate(-10deg);
+    }
+
+    35% {
+        transform: rotate(6deg);
+    }
+
+    40% {
+        transform: rotate(-6deg);
+    }
+
+    45% {
+        transform: rotate(0);
+    }
+
+    100% {
+        transform: rotate(0);
+    }
 }
 
 .header-cta-btn.cta-notify.is-ringing i.fa-bell {
@@ -2960,11 +3090,9 @@ p {
         right: 10px;
         max-width: calc(100vw - 20px);
     }
-    
+
     .notify-card {
         padding: 10px 12px;
         gap: 10px;
     }
 }
-
-
