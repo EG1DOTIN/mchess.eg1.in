@@ -1,5 +1,17 @@
 [
   {
+    "id": "v3-7-1-refresh-cache-purge-license-audit",
+    "version": "3.7.1",
+    "title": "1-Click App Refresh Cache Purge & License Audit",
+    "message": "Enhanced 1-click header App Refresh to deeply purge localStorage and hosting caches, eliminated stale deployment cache trapping, and updated Third-Party Notices & Acknowledgments.",
+    "icon": "fa-sync-alt",
+    "badge": "Bug Fixes",
+    "badgeColor": "#10b981",
+    "link": "news.html",
+    "date": "Aug 27, 2026",
+    "pinned": true
+  },
+  {
     "id": "v3-7-0-open-datasets-zero-cost-quote-protection",
     "version": "3.7.0",
     "title": "Open Datasets Architecture, Zero Cloud Reads",

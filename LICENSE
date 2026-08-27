@@ -37,48 +37,75 @@ endorsements, or promotions without prior written consent.
 THIRD-PARTY NOTICES & ACKNOWLEDGMENTS
 ========================================================================
 
-This application incorporates or links to the following third-party components 
-and open-source libraries:
+This application incorporates, builds upon, or links to the following 
+third-party open-source libraries, APIs, and creative assets:
 
-- chess.js (https://github.com/jhlywa/chess.js) - BSD-2-Clause / MIT License
-  Chess rule validation, legal move generation, FEN/SAN parsing, and game state.
+---
+ACTIVE RUNTIME LIBRARIES & APIS
+---
+
+- chess.js (https://github.com/jhlywa/chess.js) - BSD-2-Clause License
+  Powers complete chess rule validation, legal move generation, FEN/PGN 
+  parsing, and game state calculation across all training, game review, 
+  and multiplayer interfaces.
 
 - Chessboard.js (https://chessboardjs.com/ - Chris Oakman) - MIT License
-  Interactive JavaScript chessboard interface and piece drag-and-drop mechanics.
+  Interactive JavaScript chessboard UI component and piece drag-and-drop mechanics.
 
-- Stockfish Chess Engine (https://stockfishchess.org/ & https://github.com/niklasf/stockfish.js) - GPLv3 / Open Source
-  Client-side Web Worker AI chess engine integration for analysis and AI play.
+- Stockfish Chess Engine & stockfish.js (https://stockfishchess.org/ & https://github.com/niklasf/stockfish.js) - GPLv3
+  Client-side Web Worker AI chess engine powering single-player Practice vs Computer 
+  (Levels 1–20), dynamic tactical puzzle validation, and dynamic engine defense.
 
-- Standard Chess Piece Vectors (Wikimedia Commons / cburnett / standard SVG piece set) - CC BY-SA 3.0
-  High-resolution SVG chess piece graphical vectors.
+- Standard Chess Piece Artwork (Wikimedia Commons / Colin M.L. Burnett "cburnett") - CC BY-SA 3.0
+  High-resolution SVG vector chess piece graphics utilized across board themes 
+  and pawn promotion dialogs.
 
-- Lichess API & Live Embeds (https://lichess.org/) - AGPLv3 / Open API
-  Interactive spectator broadcasts, Lichess TV embeds, and community team hub.
-  All trademarks belong to their respective owners.
+- Lichess API & Broadcast Streams (https://lichess.org/) - AGPLv3 / Open API
+  Powers real-time Lichess TV live grandmaster broadcasts across 6 channels and 
+  daily tactical puzzle feeds via official Lichess open APIs. 
+  Lichess is an open-source project and all trademarks belong to their respective owners.
 
-- ChessBase & Playchess Room (https://play.chessbase.com/) - Proprietary / Embeds
-  External interactive chess club room and game services. All rights and 
-  trademarks belong to ChessBase GmbH.
-
-- Google Firebase SDK (https://firebase.google.com/) - Apache License 2.0
-  Cloud Firestore NoSQL database and Firebase Web SDK client libraries. 
+- Google Firebase Web SDK & Cloud Firestore (https://firebase.google.com/) - Apache License 2.0
+  Cloud Firestore NoSQL database for real-time multiplayer matchmaking session 
+  signaling, game lobby coordination, and client telemetry. 
   Firebase is a trademark of Google LLC.
 
 - PeerJS (https://peerjs.com/) - MIT License
-  WebRTC Peer-to-Peer data connection wrapper for live browser-to-browser multiplayer.
+  WebRTC Peer-to-Peer data connection wrapper enabling direct browser-to-browser 
+  live multiplayer gameplay without intermediate game server relays.
 
 - jQuery (https://jquery.com/) - MIT License
-  DOM manipulation, event delegation, and asynchronous component loading.
+  DOM manipulation, event delegation, dynamic template component loading, and animations.
 
-- Bootstrap (https://getbootstrap.com/) - MIT License
-  Responsive grid system and core UI styling components.
-
-- FontAwesome Free (https://fontawesome.com/) - SIL OFL 1.1 / MIT License
-  Iconography across UI panels, control headers, buttons, and navigation.
+- FontAwesome Free (https://fontawesome.com/) - SIL OFL 1.1 / MIT License / CC BY 4.0
+  Vector iconography across navigation bars, modal dialogs, status badges, and UI controls.
 
 - Slick Carousel (https://kenwheeler.github.io/slick/) - MIT License
-  Responsive carousel slider components.
+  Responsive carousel slider component powering the homepage banner showcase.
+
+- Open Sans Font (https://fonts.google.com/specimen/Open+Sans - Steve Matteson) - SIL OFL 1.1 / Apache 2.0
+  Clean modern typography applied across typography stylesheets.
+
+---
+EXTERNAL AFFILIATED SERVICES & COMMUNITY HUBS
+---
+
+- ChessBase & Playchess Room (https://play.chessbase.com/) - Proprietary / External Links
+  External interactive chess club room and game services. All rights and trademarks 
+  belong to ChessBase GmbH. (Note: Legacy ChessBase iframe embeds have been replaced 
+  with native MChess Stockfish engine boards).
+
+---
+RETIRED & HISTORICAL DEPENDENCIES
+---
+
+- Bootstrap Framework (https://getbootstrap.com/)
+  Formerly utilized in early UI scaffolding; completely removed and replaced with 
+  custom Vanilla CSS3 architecture (CSS Grid, Flexbox, and CSS Custom Properties).
 
 - Legacy Cinnamon Chess Engine & Chess Strategy Online (http://cinnamonchess.altervista.org/)
-  Historically utilized in early iterations; transitioned to native MChess custom board 
+  Historically utilized in early prototypes; transitioned to native MChess custom boards 
   and Stockfish Web Worker engine architecture.
+
+- Legacy Plugins (MooTools, Pirobox, TotemTicker, Parallax, SelectFx)
+  Retired and superseded by modern ES6+ vanilla JavaScript components.

@@ -257,7 +257,8 @@ function initializeBackToTop() {
 
 /**
  * Initializes the 1-click App Refresh & Cache Purge button
- * Detects active live games, provides safety confirmation, clears CacheStorage, and reloads with cache-busting timestamp.
+ * Detects active live games, provides safety confirmation, thoroughly purges DataCache,
+ * localStorage data caches, CacheStorage API, and reloads with cache-busting timestamp.
  */
 function initializeHeaderRefresh() {
     $(document).off('click.appRefresh', '#appRefreshBtn').on('click.appRefresh', '#appRefreshBtn', function (e) {
@@ -302,7 +303,42 @@ function initializeHeaderRefresh() {
             $icon.addClass('fa-spin');
         }
 
-        // 3. Purge CacheStorage API caches if supported
+        // 3. Purge DataCache memory & persistent localStorage data caches
+        try {
+            if (window.DataCache && typeof window.DataCache.clearCache === 'function') {
+                window.DataCache.clearCache();
+            }
+
+            // Keys to safely preserve:
+            var preservedKeys = [
+                'mchess_theme',
+                'mchess_board_theme',
+                'mchess_player_name',
+                'mchess_saved_games',
+                'mchess_session_peer_id',
+                'mchess_active_match',
+                'mchess_read_notifications_v1'
+            ];
+
+            // Selective purge of data cache keys
+            var keysToRemove = [];
+            for (var i = 0; i < localStorage.length; i++) {
+                var key = localStorage.key(i);
+                if (key && !preservedKeys.includes(key)) {
+                    if (key.indexOf('cache') !== -1 || key.indexOf('blog') !== -1 || key.indexOf('mchess_data') !== -1) {
+                        keysToRemove.push(key);
+                    }
+                }
+            }
+            keysToRemove.forEach(function (k) {
+                try { localStorage.removeItem(k); } catch (e) {}
+            });
+            console.log("[MChess Refresh] Cleared localStorage data caches:", keysToRemove);
+        } catch (storageErr) {
+            console.warn("[MChess Refresh] LocalStorage cache purge warning:", storageErr);
+        }
+
+        // 4. Purge CacheStorage API caches if supported
         var clearCachePromise = Promise.resolve();
         if ('caches' in window) {
             clearCachePromise = caches.keys().then(function (names) {
@@ -316,7 +352,7 @@ function initializeHeaderRefresh() {
             });
         }
 
-        // 4. Perform cache-bypassing reload with a unique timestamp query parameter
+        // 5. Perform cache-bypassing reload with a unique timestamp query parameter
         clearCachePromise.finally(function () {
             try {
                 var currentUrl = new URL(window.location.href);
