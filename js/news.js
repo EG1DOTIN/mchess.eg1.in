@@ -30,7 +30,7 @@
     }
 
     /**
-     * Fetch news.json feed from root
+     * Fetch news.json feed from data/news.json
      */
     async function loadNewsData() {
         const $container = $('#newsFeedContainer');
@@ -42,14 +42,14 @@
         `);
 
         try {
-            const res = await fetch('news.json?_t=' + Date.now());
+            const res = await fetch('data/news.json?_t=' + Date.now());
             if (!res.ok) throw new Error('HTTP ' + res.status);
             const data = await res.json();
             allNews = Array.isArray(data) ? data : [];
             updateStats();
             renderFeed();
         } catch (err) {
-            console.error('[MChessNews] Could not load news.json:', err);
+            console.error('[MChessNews] Could not load data/news.json:', err);
             $container.html(`
                 <div class="news-empty-state">
                     <i class="fas fa-exclamation-triangle" style="font-size:28px; color:#f87171; margin-bottom:10px;"></i>

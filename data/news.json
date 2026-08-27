@@ -1,5 +1,17 @@
 [
   {
+    "id": "v3-7-0-open-datasets-zero-cost-quote-protection",
+    "version": "3.7.0",
+    "title": "Open Datasets Architecture, Zero Cloud Reads",
+    "message": "Unified 1,221-record master open chess dataset (data/mchess-data.json) with client-side caching (0 Firestore reads), instant FEN engine board mounting, centralized PGN archives (data/pgn/), and copy-protection for curated Chess Quotes.",
+    "icon": "fa-database",
+    "badge": "Optimization",
+    "badgeColor": "#3b82f6",
+    "link": "blog.html?cat=Chess%20Quotes",
+    "date": "Aug 27, 2026",
+    "pinned": true
+  },
+  {
     "id": "v3-6-3-playcomp-black-p2p-sync-refresh",
     "version": "3.6.3",
     "title": "Play as Black Auto-Start, P2P Move Tree Recovery & 1-Click Refresh",
