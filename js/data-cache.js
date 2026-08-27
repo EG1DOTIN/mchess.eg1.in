@@ -1,7 +1,7 @@
 /**
  * DataCache for MCHESS
- * Provides persistent localStorage caching for mchess_blog and related Firestore collections.
- * Protects Firestore usage limits by caching data with a 1-hour TTL.
+ * Provides persistent localStorage caching for mchess_blog and master dataset (data/mchess-data.json).
+ * Supports instant cache invalidation via 1-click header App Refresh (_r URL parameter) and safe TTL expiry.
  */
 var DataCache = {
     blogs: null,
@@ -10,12 +10,29 @@ var DataCache = {
     CACHE_TTL: 3600000, // 1 hour TTL
     lastFetchSource: {},
 
+    /**
+     * Checks whether the current URL contains a refresh query parameter (_r)
+     */
+    _hasUrlRefreshParam: function () {
+        try {
+            return typeof window !== 'undefined' && 
+                   window.location && 
+                   new URLSearchParams(window.location.search).has('_r');
+        } catch (e) {
+            return false;
+        }
+    },
+
     _getPersistentCache: function(key) {
         try {
             var data = localStorage.getItem(key);
             var time = localStorage.getItem(key + '_time');
             if (data && time && (Date.now() - parseInt(time, 10) < this.CACHE_TTL)) {
-                return JSON.parse(data);
+                var parsed = JSON.parse(data);
+                // Ensure cached array is valid and non-empty
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    return parsed;
+                }
             }
         } catch (e) {
             console.warn("LocalStorage read error for " + key + ":", e);
@@ -51,19 +68,25 @@ var DataCache = {
     },
 
     getBlogs: async function (forceRefresh) {
-        if (this.blogs && !forceRefresh) {
+        var isForced = Boolean(forceRefresh || this._hasUrlRefreshParam());
+
+        if (isForced) {
+            this.clearCache('blogs');
+        }
+
+        if (this.blogs && Array.isArray(this.blogs) && this.blogs.length > 0 && !isForced) {
             this.lastFetchSource.blogs = 'memory (0 reads)';
             return (this.blogs || []).filter(function(b) {
                 return b.active === "1" || b.active === 1 || b.active === true || !b.hasOwnProperty('active');
             });
         }
 
-        if (!forceRefresh) {
+        if (!isForced) {
             var cached = this._getPersistentCache('mchess_blogs_cache');
-            if (cached) {
+            if (cached && Array.isArray(cached) && cached.length > 0) {
                 this.blogs = cached;
                 this.lastFetchSource.blogs = 'localStorage (0 reads)';
-                console.log("[DataCache-MCHESS] Using cached blogs from localStorage (0 Firestore reads)");
+                console.log("[DataCache-MCHESS] Using cached blogs from localStorage (" + cached.length + " items, 0 Firestore reads)");
                 return (this.blogs || []).filter(function(b) {
                     return b.active === "1" || b.active === 1 || b.active === true || !b.hasOwnProperty('active');
                 });
@@ -71,15 +94,22 @@ var DataCache = {
         }
 
         try {
-            console.log("[DataCache-MCHESS] Fetching blogs from local dataset (data/mchess-data.json)...");
+            console.log("[DataCache-MCHESS] Fetching fresh dataset (data/mchess-data.json, forced=" + isForced + ")...");
 
-            var resp = await fetch('data/mchess-data.json');
+            var fetchUrl = 'data/mchess-data.json' + (isForced ? '?_v=' + Date.now() : '');
+            var resp = await fetch(fetchUrl, {
+                cache: isForced ? 'reload' : 'no-cache'
+            });
             if (!resp.ok) {
                 throw new Error("HTTP error " + resp.status + " fetching data/mchess-data.json");
             }
 
             var dataset = await resp.json();
             var rawBlogs = dataset.blogs || dataset;
+
+            if (!Array.isArray(rawBlogs)) {
+                throw new Error("Invalid dataset format: expected array of blogs");
+            }
 
             this.blogs = rawBlogs.map(function(item) {
                 var blogData = Object.assign({}, item);
@@ -102,8 +132,10 @@ var DataCache = {
                 return 0;
             });
 
-            this._setPersistentCache('mchess_blogs_cache', this.blogs);
-            this.lastFetchSource.blogs = 'local dataset (data/blogs.json, 0 Firestore reads)';
+            if (this.blogs.length > 0) {
+                this._setPersistentCache('mchess_blogs_cache', this.blogs);
+            }
+            this.lastFetchSource.blogs = 'local dataset (data/mchess-data.json, 0 Firestore reads)';
             this.lastError = null;
         } catch (e) {
             console.warn("[DataCache-MCHESS] Local dataset fetch failed, attempting Firestore fallback:", e.message);
@@ -142,7 +174,9 @@ var DataCache = {
                         return 0;
                     });
 
-                    this._setPersistentCache('mchess_blogs_cache', this.blogs);
+                    if (this.blogs.length > 0) {
+                        this._setPersistentCache('mchess_blogs_cache', this.blogs);
+                    }
                     this.lastFetchSource.blogs = 'network (' + snap.docs.length + ' doc reads)';
                     this.lastError = null;
                 } else {
@@ -161,14 +195,20 @@ var DataCache = {
     },
 
     getCategories: async function (forceRefresh) {
-        if (this.categories && !forceRefresh) {
+        var isForced = Boolean(forceRefresh || this._hasUrlRefreshParam());
+
+        if (isForced) {
+            this.clearCache('categories');
+        }
+
+        if (this.categories && Array.isArray(this.categories) && this.categories.length > 0 && !isForced) {
             this.lastFetchSource.categories = 'memory (0 reads)';
             return this.categories;
         }
 
-        if (!forceRefresh) {
+        if (!isForced) {
             var cached = this._getPersistentCache('mchess_categories_cache');
-            if (cached) {
+            if (cached && Array.isArray(cached) && cached.length > 0) {
                 this.categories = cached;
                 this.lastFetchSource.categories = 'localStorage (0 reads)';
                 return this.categories;
@@ -176,13 +216,15 @@ var DataCache = {
         }
 
         try {
-            var blogs = await this.getBlogs(forceRefresh);
+            var blogs = await this.getBlogs(isForced);
             var catSet = new Set();
             blogs.forEach(function(b) {
                 if (b.category) catSet.add(b.category);
             });
             this.categories = Array.from(catSet);
-            this._setPersistentCache('mchess_categories_cache', this.categories);
+            if (this.categories.length > 0) {
+                this._setPersistentCache('mchess_categories_cache', this.categories);
+            }
             this.lastFetchSource.categories = 'derived from blogs (0 extra reads)';
         } catch (e) {
             console.error("Error loading categories:", e);
