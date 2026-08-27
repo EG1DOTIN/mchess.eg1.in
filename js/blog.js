@@ -52,6 +52,12 @@ $(document).ready(function() {
         }
     });
 
+    // Prevent copying, selecting, or dragging text for Chess Quotes (in both category and detail views)
+    $(document).on('copy cut selectstart dragstart', '.no-copy-quote, .quote-item, .quote-card, .quote-detail, .quote-text, .blogs[data-category="Chess Quotes"], .blog-grid-card[data-category="Chess Quotes"]', function(e) {
+        e.preventDefault();
+        return false;
+    });
+
     $(document).on('click', '.blog-grid-card', function(e) {
         if ($(e.target).closest('a').length) {
             return;
@@ -428,10 +434,11 @@ $(document).ready(function() {
 
     function renderListBlog(blog) {
         var image_path = getBlogImageUrl(blog.output_image);
+        var isQuote = blog.category === 'Chess Quotes';
         return '' +
-            '<div class="row blog-item-container">' +
+            '<div class="row blog-item-container' + (isQuote ? ' quote-item' : '') + '">' +
                 '<div class="col-md-12 margin-bottom">' +
-                    '<div class="our-product">' +
+                    '<div class="our-product' + (isQuote ? ' quote-card' : '') + '">' +
                         '<div class="row">' +
                             '<div class="col-md-12">' +
                                 '<div class="row">' +
@@ -448,8 +455,8 @@ $(document).ready(function() {
                                     '</div>' +
                                 '</div>' +
                                 '<div class="row mrgin-top20">' +
-                                    '<div class="col-md-12 left">' +
-                                        (typeof MChessFenParser !== 'undefined' ? MChessFenParser.replaceChessbaseIframe(blog.full_description || '') : (blog.full_description || '')) +
+                                    '<div class="col-md-12 left' + (isQuote ? ' no-copy-quote' : '') + '"' + (isQuote ? ' unselectable="on"' : '') + '>' +
+                                        (typeof MChessFenParser !== 'undefined' ? MChessFenParser.replaceChessbaseIframe(blog.full_description || '', blog.fen) : (blog.full_description || '')) +
                                         '<br/>' +
                                         '<a href="blog.html?id=' + encodeURIComponent(blog.id) + '" class="btn btn-primary btn-sm mt-2">Read More</a>' +
                                     '</div>' +
@@ -463,11 +470,12 @@ $(document).ready(function() {
 
     function renderGridBlog(blog) {
         var image_path = getBlogImageUrl(blog.output_image);
-
         var blogUrl = 'blog.html?id=' + encodeURIComponent(blog.id);
+        var isQuote = blog.category === 'Chess Quotes';
+
         return '' +
-            '<div class="col-md-4 margin-bottom blog-item-container">' +
-                '<div class="our-product blogs blog-grid-card" data-url="' + escapeAttr(blogUrl) + '" role="link" tabindex="0" style="cursor:pointer;">' +
+            '<div class="col-md-4 margin-bottom blog-item-container' + (isQuote ? ' quote-item' : '') + '">' +
+                '<div class="our-product blogs blog-grid-card' + (isQuote ? ' quote-card' : '') + '" data-url="' + escapeAttr(blogUrl) + '" data-category="' + escapeAttr(blog.category || '') + '" role="link" tabindex="0" style="cursor:pointer;">' +
                     '<div class="row">' +
                         '<div class="col-md-12 left">' +
                             '<div class="blogimg">' +
@@ -475,11 +483,11 @@ $(document).ready(function() {
                                 '<img src="' + escapeAttr(image_path) + '" loading="lazy" width="100%" />' +
                             '</a>' +
                             '</div>' +
-                            '<div class="blogbody">' +
+                            '<div class="blogbody' + (isQuote ? ' no-copy-quote' : '') + '">' +
                             '<a href="' + escapeAttr(blogUrl) + '">' +
                                 '<h3 class="text-black">' + escapeHtml(blog.title || '') + '</h3>' +
                                 '<p><small><i class="icon icon-list-alt"></i>&nbsp;' + escapeHtml(blog.category || '') + ' | <i class="icon icon-user"></i>&nbsp;Admin</small></p>' +
-                                '<div class="shortcontent">' + escapeHtml(blog.metaDescription || '') + '</div>' +
+                                '<div class="shortcontent' + (isQuote ? ' no-copy-quote' : '') + '"' + (isQuote ? ' unselectable="on"' : '') + '>' + escapeHtml(blog.metaDescription || '') + '</div>' +
                                 // '<span class="btn btn-primary btn-sm blog-read-btn">Read More</span>' +
                             '</a>' +
                             '</div>' +
@@ -489,16 +497,19 @@ $(document).ready(function() {
             '</div>';
     }
     function renderBlogView(blog, allBlogs) {
+        var isQuote = blog.category === 'Chess Quotes';
         var image_label = getBlogImageUrl(blog.output_image);
-        var processedDescription = blog.full_description || '';
+        var rawDescription = blog.full_description || '';
         
-        var hasBoard = false;
+        var parsedFen = typeof MChessFenParser !== 'undefined' ? (MChessFenParser.parseDescription(rawDescription) || {}).fen : null;
+        var fen = blog.fen || parsedFen;
+        var hasBoard = !!fen;
+
+        var processedDescription = rawDescription;
         if (typeof MChessFenParser !== 'undefined') {
-            var parsed = MChessFenParser.parseDescription(processedDescription);
-            if (parsed && parsed.fen) {
-                hasBoard = true;
-            }
-            processedDescription = MChessFenParser.replaceChessbaseIframe(processedDescription);
+            processedDescription = MChessFenParser.replaceChessbaseIframe(rawDescription, fen);
+        } else if (hasBoard && processedDescription.indexOf('mchessBlogEngineBoard') === -1) {
+            processedDescription += '<br/><div id="mchessBlogEngineBoard" data-fen="' + escapeAttr(fen) + '"></div>';
         }
 
         // If the blog contains an interactive chessboard, omit the static thumbnail image to keep board prominently in view
@@ -512,9 +523,9 @@ $(document).ready(function() {
         var paginationHtml = renderDetailPagination(blog, allBlogs);
 
         return '' +
-            '<div class="row blog-item-container">' +
+            '<div class="row blog-item-container' + (isQuote ? ' quote-item quote-detail' : '') + '">' +
                 '<div class="col-md-12 margin-bottom">' +
-                    '<div class="our-product">' +
+                    '<div class="our-product' + (isQuote ? ' quote-detail' : '') + '">' +
                         '<div class="row">' +
                             imageHtml +
                             '<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 left">' +
@@ -522,7 +533,7 @@ $(document).ready(function() {
                             '</div>' +
                         '</div>' +
                         '<div class="row mrgin-top20">' +
-                            '<div class="col-md-12 left" style="font-size: 16px; line-height: 1.6;">' +
+                            '<div class="col-md-12 left' + (isQuote ? ' no-copy-quote' : '') + '" style="font-size: 16px; line-height: 1.6;"' + (isQuote ? ' unselectable="on"' : '') + '>' +
                                 processedDescription +
                             '</div>' +
                         '</div>' +

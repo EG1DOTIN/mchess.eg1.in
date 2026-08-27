@@ -71,34 +71,26 @@ var DataCache = {
         }
 
         try {
-            if (typeof db === 'undefined' || !db) {
-                throw new Error("Firebase not ready. db object is undefined");
-            }
-            console.log("[DataCache-MCHESS] Fetching blogs from Firestore (Network Read)...");
+            console.log("[DataCache-MCHESS] Fetching blogs from local dataset (data/mchess-data.json)...");
 
-            var snap = await db.collection('mchess_blog').get();
-            this.blogs = [];
-            snap.docs.forEach(function(doc) {
-                var catData = doc.data();
-                var catName = doc.id;
-                for (var [key, value] of Object.entries(catData)) {
-                    if (key.startsWith('page') && value && typeof value === 'object') {
-                        for (var [blogId, blogData] of Object.entries(value)) {
-                            if (blogData && typeof blogData === 'object') {
-                                if (blogData.release_date && typeof blogData.release_date.toDate === 'function') {
-                                    blogData.release_date_ms = blogData.release_date.toDate().getTime();
-                                } else if (blogData.release_date) {
-                                    var parsedDateMs = new Date(blogData.release_date).getTime();
-                                    if (!isNaN(parsedDateMs)) {
-                                        blogData.release_date_ms = parsedDateMs;
-                                    }
-                                }
-                                this.blogs.push({ id: blogId, category: catName, ...blogData });
-                            }
-                        }
+            var resp = await fetch('data/mchess-data.json');
+            if (!resp.ok) {
+                throw new Error("HTTP error " + resp.status + " fetching data/mchess-data.json");
+            }
+
+            var dataset = await resp.json();
+            var rawBlogs = dataset.blogs || dataset;
+
+            this.blogs = rawBlogs.map(function(item) {
+                var blogData = Object.assign({}, item);
+                if (blogData.release_date && !blogData.release_date_ms) {
+                    var parsedDateMs = new Date(blogData.release_date).getTime();
+                    if (!isNaN(parsedDateMs)) {
+                        blogData.release_date_ms = parsedDateMs;
                     }
                 }
-            }.bind(this));
+                return blogData;
+            });
 
             this.blogs.sort(function(a, b) {
                 var valA = parseInt(a.id, 10);
@@ -111,12 +103,56 @@ var DataCache = {
             });
 
             this._setPersistentCache('mchess_blogs_cache', this.blogs);
-            this.lastFetchSource.blogs = 'network (' + snap.docs.length + ' doc reads)';
+            this.lastFetchSource.blogs = 'local dataset (data/blogs.json, 0 Firestore reads)';
             this.lastError = null;
         } catch (e) {
-            this.lastError = e;
-            console.error("Error fetching mchess blogs [" + e.code + "]:", e.message);
-            this.blogs = [];
+            console.warn("[DataCache-MCHESS] Local dataset fetch failed, attempting Firestore fallback:", e.message);
+            // Fallback to Firestore if local dataset is unavailable
+            try {
+                if (typeof db !== 'undefined' && db) {
+                    var snap = await db.collection('mchess_blog').get();
+                    this.blogs = [];
+                    snap.docs.forEach(function(doc) {
+                        var catData = doc.data();
+                        var catName = doc.id;
+                        for (var [key, value] of Object.entries(catData)) {
+                            if (key.startsWith('page') && value && typeof value === 'object') {
+                                for (var [blogId, blogData] of Object.entries(value)) {
+                                    if (blogData && typeof blogData === 'object') {
+                                        if (blogData.release_date && typeof blogData.release_date.toDate === 'function') {
+                                            blogData.release_date_ms = blogData.release_date.toDate().getTime();
+                                        } else if (blogData.release_date) {
+                                            var parsedMs = new Date(blogData.release_date).getTime();
+                                            if (!isNaN(parsedMs)) blogData.release_date_ms = parsedMs;
+                                        }
+                                        this.blogs.push({ id: blogId, category: catName, ...blogData });
+                                    }
+                                }
+                            }
+                        }
+                    }.bind(this));
+
+                    this.blogs.sort(function(a, b) {
+                        var valA = parseInt(a.id, 10);
+                        var valB = parseInt(b.id, 10);
+                        if (isNaN(valA)) valA = a.id;
+                        if (isNaN(valB)) valB = b.id;
+                        if (valA < valB) return 1;
+                        if (valA > valB) return -1;
+                        return 0;
+                    });
+
+                    this._setPersistentCache('mchess_blogs_cache', this.blogs);
+                    this.lastFetchSource.blogs = 'network (' + snap.docs.length + ' doc reads)';
+                    this.lastError = null;
+                } else {
+                    throw e;
+                }
+            } catch (fallbackErr) {
+                this.lastError = fallbackErr;
+                console.error("Error fetching mchess blogs:", fallbackErr);
+                this.blogs = [];
+            }
         }
 
         return (this.blogs || []).filter(function(b) {

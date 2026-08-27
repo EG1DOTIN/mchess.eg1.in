@@ -923,6 +923,26 @@ p {
     height: 97px;
 }
 
+/* Chess Quotes: Text Selection & Copy Prevention */
+.no-copy-quote,
+.quote-item,
+.quote-card,
+.quote-detail,
+.quote-text,
+.blogs[data-category="Chess Quotes"] .shortcontent,
+.blogs[data-category="Chess Quotes"] .blogbody,
+.blog-grid-card[data-category="Chess Quotes"] .shortcontent,
+.blog-grid-card[data-category="Chess Quotes"] .blogbody,
+.quote-item .shortcontent,
+.quote-item .quote-text,
+.quote-detail .quote-text {
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+    -webkit-touch-callout: none !important;
+}
+
 .product-list {
     max-height: 580px;
     overflow-y: auto;

@@ -381,6 +381,17 @@ Marwadi Chess is fully responsive and optimized across all screen sizes:
 
 ---
 
+## 📦 Open Datasets & Curated Chess Studies ([`data/`](./data/README.md))
+
+Marwadi Chess publishes its curated tactical checkmate datasets, FEN problem collections, Marwadi Chess quotes, and chess study articles as an open-access JSON dataset under the [MIT License](./data/LICENSE):
+
+- **[`mchess-data.json`](./data/mchess-data.json)**: Master dataset with 1,221 verified tactical puzzles (Mate-in-2/3/4), Grandmaster quotes, and instructional articles.
+
+Read the [Dataset Documentation & Schema Guide](./data/README.md) for full schema details, JavaScript/Python usage examples, and citation info.
+
+---
+
 ## 📜 License
 
 This project is open source and available under the [MIT License](LICENSE).
+

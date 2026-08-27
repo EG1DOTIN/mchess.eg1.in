@@ -12,7 +12,7 @@
         constructor(containerEl, options) {
             this.$container = $(containerEl);
             this.options = $.extend({
-                pgnPath: 'pgn/train.pgn',
+                pgnPath: 'data/pgn/train.pgn',
                 mode: 'mateIn2', // 'mateIn2', 'mateIn3', 'mateIn4', 'mateIn5', 'sprint', 'all'
                 timeControl: 180 // Default 3 minutes (180 seconds)
             }, options);

@@ -43,11 +43,20 @@ var MChessFenParser = (function () {
         },
 
         /**
-         * Extracts FEN string from an HTML content string (e.g. from full_description)
+         * Extracts FEN string from an HTML content string or uses explicit FEN
          * @param {string} htmlContent - The HTML string from blog description
+         * @param {string} [explicitFen] - Direct FEN string if available in data
          * @returns {Object|null} { fen, turn }
          */
-        parseDescription: function (htmlContent) {
+        parseDescription: function (htmlContent, explicitFen) {
+            if (explicitFen && typeof explicitFen === 'string' && explicitFen.trim()) {
+                var normalized = this.normalizeFen(explicitFen);
+                return {
+                    fen: normalized,
+                    turn: normalized.includes(' b ') ? 'b' : 'w'
+                };
+            }
+
             if (!htmlContent || typeof htmlContent !== 'string') return null;
 
             // 1. Try to extract fen parameter from iframe src or URL (allowing spaces/%20/+ inside quotes)
@@ -79,31 +88,41 @@ var MChessFenParser = (function () {
         },
 
         /**
-         * Replaces ChessBase iframe elements inside HTML content with a placeholder element for Stockfish engine board
-         * @param {string} htmlContent - The raw HTML content from Firestore
-         * @returns {string} Processed HTML with iframe replaced by #mchessStockfishContainer
+         * Replaces ChessBase iframe elements inside HTML content with a placeholder element for Stockfish engine board,
+         * or appends the board placeholder if clean HTML is used without legacy iframes.
+         * @param {string} htmlContent - The raw or cleaned HTML content
+         * @param {string} [explicitFen] - Direct FEN string
+         * @returns {string} Processed HTML with #mchessBlogEngineBoard placeholder
          */
-        replaceChessbaseIframe: function (htmlContent) {
-            if (!htmlContent || typeof htmlContent !== 'string') return htmlContent;
-
-            var parsed = this.parseDescription(htmlContent);
-            if (!parsed || !parsed.fen) return htmlContent;
+        replaceChessbaseIframe: function (htmlContent, explicitFen) {
+            var parsed = this.parseDescription(htmlContent, explicitFen);
+            if (!parsed || !parsed.fen) return htmlContent || '';
 
             var placeholder = '<div id="mchessBlogEngineBoard" data-fen="' + escapeAttr(parsed.fen) + '"></div>';
 
-            // Replace ANY <iframe ... chessbase ...></iframe> OR <iframe ... fen= ...></iframe> with placeholder
-            var processed = htmlContent.replace(
-                /<iframe[^>]*src=["'][^"']*(?:chessbase\.com|\?fen=)[^"']*["'][^>]*>[\s\S]*?<\/iframe>/gi,
-                placeholder
-            );
+            if (htmlContent && /<iframe[^>]*>/i.test(htmlContent)) {
+                // Replace ANY <iframe ... chessbase ...></iframe> OR <iframe ... fen= ...></iframe> with placeholder
+                var processed = htmlContent.replace(
+                    /<iframe[^>]*src=["'][^"']*(?:chessbase\.com|\?fen=)[^"']*["'][^>]*>[\s\S]*?<\/iframe>/gi,
+                    placeholder
+                );
 
-            // Handle single / unclosed iframe tags if present
-            processed = processed.replace(
-                /<iframe[^>]*src=["'][^"']*(?:chessbase\.com|\?fen=)[^"']*["'][^>]*\/?>/gi,
-                placeholder
-            );
+                // Handle single / unclosed iframe tags if present
+                processed = processed.replace(
+                    /<iframe[^>]*src=["'][^"']*(?:chessbase\.com|\?fen=)[^"']*["'][^>]*\/?>/gi,
+                    placeholder
+                );
 
-            return processed;
+                return processed;
+            }
+
+            // If no iframe is present in HTML (clean data), append placeholder
+            var baseHtml = htmlContent || '';
+            if (baseHtml.indexOf('mchessBlogEngineBoard') === -1) {
+                return baseHtml + '<br/>' + placeholder;
+            }
+
+            return baseHtml;
         }
     };
 })();

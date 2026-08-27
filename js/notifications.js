@@ -151,18 +151,18 @@
     }
 
     /**
-     * Fetches the news.json feed from root
+     * Fetches the news.json feed from data/news.json
      */
     async function fetchNewsFeed() {
         try {
-            const response = await fetch('news.json?_t=' + Date.now());
+            const response = await fetch('data/news.json?_t=' + Date.now());
             if (!response.ok) throw new Error('HTTP ' + response.status);
             const data = await response.json();
             activeNews = Array.isArray(data) ? data : [];
             renderNewsList(activeNews);
             updateBadgeState();
         } catch (err) {
-            console.warn('[MChessNotifications] Could not fetch news.json feed:', err);
+            console.warn('[MChessNotifications] Could not fetch data/news.json feed:', err);
         }
     }
 

@@ -13,7 +13,7 @@
             this.$container = $(containerEl);
             this.options = Object.assign({
                 pgn: null,
-                pgnUrl: this.$container.data('pgn') || './pgn/pgn_games.pgn',
+                pgnUrl: this.$container.data('pgn') || './data/pgn/pgn_games.pgn',
                 showSelect: true,
                 autoPlay: false
             }, options);
