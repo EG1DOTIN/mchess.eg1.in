@@ -4,12 +4,12 @@ if (typeof getBlogImageUrl !== 'function') {
         try {
             var parsed = new URL(imageUrl, window.location.href);
             var pathname = parsed.pathname;
-            var match = pathname.match(/\/(mi2|mi3|mi4)\/(.+)$/i);
+            var match = pathname.match(/\/(?:img\/)?(mi2|mi3|mi4|cpcq)\/(.+)$/i);
             if (match) {
                 var folder = match[1].toLowerCase();
                 var filename = match[2];
                 filename = filename.replace(/\.(png|jpg|jpeg)$/i, '.webp');
-                return folder + '/' + filename;
+                return 'img/' + folder + '/' + filename;
             }
             return imageUrl;
         } catch (e) {

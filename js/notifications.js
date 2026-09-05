@@ -1,7 +1,7 @@
 /**
  * @file notifications.js
  * @description In-Site "What's New" Bell Notification System for Marwadi Chess.
- * Fetches news.json feed, tracks read/unread status in localStorage, and manages dropdown UI.
+ * Fetches updates.json feed, tracks read/unread status in localStorage, and manages dropdown UI.
  * @project Marwadi Chess (mchess.eg1.in)
  */
 
@@ -151,18 +151,18 @@
     }
 
     /**
-     * Fetches the news.json feed from data/news.json
+     * Fetches the updates.json feed from data/updates.json
      */
     async function fetchNewsFeed() {
         try {
-            const response = await fetch('data/news.json?_t=' + Date.now());
+            const response = await fetch('data/updates.json?_t=' + Date.now());
             if (!response.ok) throw new Error('HTTP ' + response.status);
             const data = await response.json();
             activeNews = Array.isArray(data) ? data : [];
             renderNewsList(activeNews);
             updateBadgeState();
         } catch (err) {
-            console.warn('[MChessNotifications] Could not fetch data/news.json feed:', err);
+            console.warn('[MChessNotifications] Could not fetch data/updates.json feed:', err);
         }
     }
 

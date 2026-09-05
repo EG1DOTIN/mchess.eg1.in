@@ -1,7 +1,7 @@
 /**
- * @file news.js
- * @description Client-side controller for Marwadi Chess What's New & Product Updates feed (news.html).
- * Loads news.json (latest first), manages category filter tabs and search query.
+ * @file updates.js
+ * @description Client-side controller for Marwadi Chess What's New & Product Updates feed (updates.html).
+ * Loads updates.json (latest first), manages category filter tabs and search query.
  * @project Marwadi Chess (mchess.eg1.in)
  */
 
@@ -17,6 +17,7 @@
      */
     function getCtaLabel(link, title) {
         if (!link) return 'View Update →';
+        if (link.includes('updates')) return 'View Release Notes →';
         if (link.includes('playonline')) return 'Explore on Play Online →';
         if (link.includes('playcomp')) return 'Try on Play vs Computer →';
         if (link.includes('dailypuzzles')) return 'Solve Daily Puzzles →';
@@ -30,7 +31,7 @@
     }
 
     /**
-     * Fetch news.json feed from data/news.json
+     * Fetch updates.json feed from data/updates.json
      */
     async function loadNewsData() {
         const $container = $('#newsFeedContainer');
@@ -42,14 +43,14 @@
         `);
 
         try {
-            const res = await fetch('data/news.json?_t=' + Date.now());
+            const res = await fetch('data/updates.json?_t=' + Date.now());
             if (!res.ok) throw new Error('HTTP ' + res.status);
             const data = await res.json();
             allNews = Array.isArray(data) ? data : [];
             updateStats();
             renderFeed();
         } catch (err) {
-            console.error('[MChessNews] Could not load data/news.json:', err);
+            console.error('[MChessNews] Could not load data/updates.json:', err);
             $container.html(`
                 <div class="news-empty-state">
                     <i class="fas fa-exclamation-triangle" style="font-size:28px; color:#f87171; margin-bottom:10px;"></i>

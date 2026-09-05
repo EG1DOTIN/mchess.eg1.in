@@ -3167,3 +3167,23 @@ p {
         gap: 10px;
     }
 }
+
+/* Backward-compatible icon mappings for Font Awesome 5 */
+.icon {
+    display: inline-block;
+    font-family: 'Font Awesome 5 Free', 'FontAwesome', sans-serif;
+    font-weight: 900;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+.icon-list-alt:before { content: "\f022"; }
+.icon-user:before { content: "\f007"; }
+.icon-navicon:before, .icon-bars:before { content: "\f0c9"; }
+.icon-angle-down:before { content: "\f107"; }
+.icon-angle-left:before { content: "\f104"; }
+.icon-angle-right:before { content: "\f105"; }
+.icon-angle-up:before { content: "\f106"; }

@@ -1,36 +1,38 @@
-#scrlbar::-webkit-scrollbar{
-width:8px;
-background-color:tranparent;
+#scrlbar::-webkit-scrollbar {
+    width: 8px;
+    background-color: transparent;
 }
-#scrlbar::-webkit-scrollbar-thumb{
-background-color:tranparent;
+#scrlbar::-webkit-scrollbar-thumb {
+    background-color: transparent;
 }
-#scrlbar::-webkit-scrollbar-thumb:hover{
-background-color:tranparent;
-border:1px solid tranparent;
+#scrlbar::-webkit-scrollbar-thumb:hover {
+    background-color: transparent;
+    border: 1px solid transparent;
 }
-#scrlbar::-webkit-scrollbar-thumb:active{
-background-color:tranparent;
-border:1px solid tranparent;
+#scrlbar::-webkit-scrollbar-thumb:active {
+    background-color: transparent;
+    border: 1px solid transparent;
 }
-#scrlbar::-webkit-scrollbar-track{
+#scrlbar::-webkit-scrollbar-track {
+    background-color: transparent;
 }
-#scrlbar::-moz-scrollbar{
-width:8px;
-background-color:tranparent;
+#scrlbar::-moz-scrollbar {
+    width: 8px;
+    background-color: transparent;
 }
-#scrlbar::-moz-scrollbar-thumb{
-background-color:tranparent;
-border:1px solid tranparent;
+#scrlbar::-moz-scrollbar-thumb {
+    background-color: transparent;
+    border: 1px solid transparent;
 }
-#scrlbar::-moz-scrollbar-thumb:hover{
-background-color:tranparent;
-border:1px solid tranparent;
+#scrlbar::-moz-scrollbar-thumb:hover {
+    background-color: transparent;
+    border: 1px solid transparent;
 }
-#scrlbar::-moz-scrollbar-thumb:active{
-background-color:tranparent;
-border:1px solid tranparent;
+#scrlbar::-moz-scrollbar-thumb:active {
+    background-color: transparent;
+    border: 1px solid transparent;
 }
-#scrlbar::-moz-scrollbar-track{
+#scrlbar::-moz-scrollbar-track {
+    background-color: transparent;
 }
 
