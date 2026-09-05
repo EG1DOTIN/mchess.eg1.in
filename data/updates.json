@@ -1,5 +1,17 @@
 [
   {
+    "id": "v3-8-0-modern-about-ecosystem-core-optimizations",
+    "version": "3.8.0",
+    "title": "Modern About Ecosystem & Core Code Optimizations",
+    "message": "Redesigned About page with an interactive 480px Quote Studio, 4,500-year heritage timeline, feature grid, and FAQ. Upgraded navigation to Font Awesome 5, removed blocking CSS font cascades, added sessionStorage component caching, throttled scrolling to 60fps, and resolved Schema.org crawler 404s.",
+    "icon": "fa-sparkles",
+    "badge": "Feature",
+    "badgeColor": "#3b82f6",
+    "link": "about.html",
+    "date": "Sep 05, 2026",
+    "pinned": true
+  },
+  {
     "id": "v3-7-1-refresh-cache-purge-license-audit",
     "version": "3.7.1",
     "title": "1-Click App Refresh Cache Purge & License Audit",
