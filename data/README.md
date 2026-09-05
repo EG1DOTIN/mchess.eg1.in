@@ -55,7 +55,7 @@ The dataset begins with a standardized `_metadata` header embedding licensing, c
       "category": "Mate in 2",
       "title": "MI2-1",
       "full_description": "<h2>White to move</h2><h3>Game Details: Henry Buckle vs NN, London, 1840</h3>",
-      "output_image": "mi2/MI2_1.webp",
+      "output_image": "img/mi2/MI2_1.webp",
       "release_date": "2026-01-01T00:00:00Z",
       "release_date_ms": 1767225600000,
       "metaDescription": "Henry Buckle vs NN, London, 1840",

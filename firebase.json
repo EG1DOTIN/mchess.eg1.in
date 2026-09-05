@@ -13,6 +13,28 @@
     ],
     "cleanUrls": true,
     "trailingSlash": false,
+    "redirects": [
+      {
+        "source": "/mi2/:path*",
+        "destination": "/img/mi2/:path*",
+        "type": 301
+      },
+      {
+        "source": "/mi3/:path*",
+        "destination": "/img/mi3/:path*",
+        "type": 301
+      },
+      {
+        "source": "/mi4/:path*",
+        "destination": "/img/mi4/:path*",
+        "type": 301
+      },
+      {
+        "source": "/cpcq/:path*",
+        "destination": "/img/cpcq/:path*",
+        "type": 301
+      }
+    ],
     "headers": [
       {
         "source": "**/*.@(jpg|jpeg|gif|png|svg|webp|pgn|woff|woff2|ttf|eot)",
