@@ -6,13 +6,47 @@
  */
 
 /**
- * Loads HTML templates (header, menu, footer) via AJAX and appends them into DOM placeholders.
+ * Helper to load HTML templates with instant sessionStorage cache retrieval
+ * Eliminates Cumulative Layout Shift (CLS) on repeat navigation.
+ */
+function loadComponentWithCache(key, url, placeholderSelector, onReady) {
+    var cached = null;
+    try {
+        cached = sessionStorage.getItem('mchess_comp_' + key);
+    } catch (e) {}
+
+    var alreadyRendered = false;
+    if (cached && $(placeholderSelector).length) {
+        $(placeholderSelector).html(cached);
+        alreadyRendered = true;
+        if (typeof onReady === 'function') {
+            onReady(false);
+        }
+    }
+
+    $.get(url, function (data) {
+        var cleanData = typeof data === 'string' ? data.replace(/<script[\s\S]*?<\/script>/gi, '') : data;
+        if (cleanData) {
+            try {
+                sessionStorage.setItem('mchess_comp_' + key, cleanData);
+            } catch (e) {}
+
+            if (!alreadyRendered || cleanData !== cached) {
+                $(placeholderSelector).html(cleanData);
+                if (typeof onReady === 'function') {
+                    onReady(true);
+                }
+            }
+        }
+    });
+}
+
+/**
+ * Loads HTML templates (header, menu, footer) via cached AJAX and appends them into DOM placeholders.
  */
 function initializeComponents() {
-    // Load header template
-    $.get('components/header.html', function (data) {
-        var cleanData = typeof data === 'string' ? data.replace(/<script[\s\S]*?<\/script>/gi, '') : data;
-        $('#header-placeholder').html(cleanData);
+    // Load header template with cache
+    loadComponentWithCache('header', 'components/header.html', '#header-placeholder', function () {
         if (typeof window.initializeNotifications === 'function') {
             window.initializeNotifications();
         }
@@ -20,18 +54,14 @@ function initializeComponents() {
     });
 
     // Load menu template & initialize navigation handlers directly after insertion
-    $.get('components/menu.html', function (data) {
-        var cleanData = typeof data === 'string' ? data.replace(/<script[\s\S]*?<\/script>/gi, '') : data;
-        $('#menu-placeholder').html(cleanData);
+    loadComponentWithCache('menu', 'components/menu.html', '#menu-placeholder', function () {
         initializeResponsiveMenu();
         initializeNavigation();
         initializeFixedNav();
     });
 
     // Load footer template
-    $.get('components/footer.html', function (data) {
-        var cleanData = typeof data === 'string' ? data.replace(/<script[\s\S]*?<\/script>/gi, '') : data;
-        $('#footer-placeholder').html(cleanData);
+    loadComponentWithCache('footer', 'components/footer.html', '#footer-placeholder', function () {
         initializeBackToTop();
     });
 
@@ -45,19 +75,23 @@ function initializeComponents() {
         document.body.appendChild(themeScript);
     }
 
-    // Dynamically load board theme stylesheet
-    if (!document.querySelector('link[href*="mchess-board-theme.css"]')) {
-        var boardThemeCss = document.createElement('link');
-        boardThemeCss.rel = 'stylesheet';
-        boardThemeCss.href = 'css/mchess-board-theme.css';
-        document.head.appendChild(boardThemeCss);
-    }
+    // Only load board theme assets if a chessboard exists on the page
+    var hasBoard = document.querySelector('[data-mchess-engine], #board, #mchessBoard, #playBoard, .chess-board, [id*="board"], [id*="Board"], .board-container');
+    if (hasBoard) {
+        // Dynamically load board theme stylesheet
+        if (!document.querySelector('link[href*="mchess-board-theme.css"]')) {
+            var boardThemeCss = document.createElement('link');
+            boardThemeCss.rel = 'stylesheet';
+            boardThemeCss.href = 'css/mchess-board-theme.css';
+            document.head.appendChild(boardThemeCss);
+        }
 
-    // Dynamically load board theme engine
-    if (!document.querySelector('script[src*="mchess-board-theme.js"]')) {
-        var boardThemeScript = document.createElement('script');
-        boardThemeScript.src = 'js/mchess-board-theme.js';
-        document.body.appendChild(boardThemeScript);
+        // Dynamically load board theme engine
+        if (!document.querySelector('script[src*="mchess-board-theme.js"]')) {
+            var boardThemeScript = document.createElement('script');
+            boardThemeScript.src = 'js/mchess-board-theme.js';
+            document.body.appendChild(boardThemeScript);
+        }
     }
 
     // Dynamically load in-site notification engine
@@ -180,7 +214,18 @@ function initializeFixedNav() {
         }
     }
 
-    $(window).on('scroll.fixedNav resize.fixedNav orientationchange.fixedNav', updateFixedNav);
+    var tickingNav = false;
+    function requestNavUpdate() {
+        if (!tickingNav) {
+            window.requestAnimationFrame(function () {
+                updateFixedNav();
+                tickingNav = false;
+            });
+            tickingNav = true;
+        }
+    }
+
+    $(window).on('scroll.fixedNav resize.fixedNav orientationchange.fixedNav', requestNavUpdate);
     updateFixedNav();
 }
 
@@ -245,11 +290,20 @@ function initializeBackToTop() {
         }
     });
 
-    // Window scroll and resize listeners
+    // Window scroll and resize listeners with requestAnimationFrame throttling
+    var tickingScroll = false;
+    function requestScrollStateUpdate() {
+        if (!tickingScroll) {
+            window.requestAnimationFrame(function () {
+                updateScrollState();
+                tickingScroll = false;
+            });
+            tickingScroll = true;
+        }
+    }
+
     $(window).off('scroll.smartScroll resize.smartScroll orientationchange.smartScroll')
-             .on('scroll.smartScroll resize.smartScroll orientationchange.smartScroll', function () {
-                 updateScrollState();
-             });
+             .on('scroll.smartScroll resize.smartScroll orientationchange.smartScroll', requestScrollStateUpdate);
 
     // Initial state evaluation
     updateScrollState();
@@ -333,6 +387,12 @@ function initializeHeaderRefresh() {
             keysToRemove.forEach(function (k) {
                 try { localStorage.removeItem(k); } catch (e) {}
             });
+            // Purge sessionStorage component templates
+            try {
+                sessionStorage.removeItem('mchess_comp_header');
+                sessionStorage.removeItem('mchess_comp_menu');
+                sessionStorage.removeItem('mchess_comp_footer');
+            } catch (e) {}
             console.log("[MChess Refresh] Cleared localStorage data caches:", keysToRemove);
         } catch (storageErr) {
             console.warn("[MChess Refresh] LocalStorage cache purge warning:", storageErr);
