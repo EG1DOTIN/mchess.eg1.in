@@ -7,13 +7,23 @@
       "**/node_modules/**",
       "docs/**",
       "unused-old-files/**",
-      "useful-python-scripts/**",
+      "automation-scripts/**",
       "Firestore/*.py",
       "Firestore/*.json"
     ],
     "cleanUrls": true,
     "trailingSlash": false,
     "redirects": [
+      {
+        "source": "/news.html",
+        "destination": "/updates.html",
+        "type": 301
+      },
+      {
+        "source": "/news",
+        "destination": "/updates",
+        "type": 301
+      },
       {
         "source": "/mi2/:path*",
         "destination": "/img/mi2/:path*",

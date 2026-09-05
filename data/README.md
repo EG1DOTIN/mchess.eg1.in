@@ -9,7 +9,7 @@ Welcome to the **Marwadi Chess Open Datasets** repository. This directory contai
 | Dataset File / Directory | Records / Games | Categories Included | Description |
 | :--- | :---: | :--- | :--- |
 | **[`mchess-data.json`](./mchess-data.json)** | **1,221** | All 6 Categories | Master dataset containing all tactical checkmate puzzles (Mate-in-2, Mate-in-3, Mate-in-4, Chess Puzzles), Grandmaster quotes, and instructional chess articles (~664 KB). |
-| **[`news.json`](./news.json)** | **Feed Items** | News & Updates | Structured feed containing platform updates, chess tournament announcements, and new feature logs. |
+| **[`updates.json`](./updates.json)** | **Feed Items** | News & Updates | Structured feed containing platform updates, chess tournament announcements, and new feature logs. |
 | **[`pgn/opening_traps.pgn`](./pgn/opening_traps.pgn)** | **15 Traps** | Opening Repertoire | Interactive master opening traps and common blunder refutations in standard PGN format. |
 | **[`pgn/pgn_games.pgn`](./pgn/pgn_games.pgn)** | **Historical Games** | Grandmaster Games | Historic classical games played by World Champions and Grandmasters with move annotations. |
 | **[`pgn/train.pgn`](./pgn/train.pgn)** | **500+ Puzzles** | Tactics Arena | Multi-game tactical checkmate puzzles library (Mate in 2/3/4/5 and Sprint) powering `train.html`. |

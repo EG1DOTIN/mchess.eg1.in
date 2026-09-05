@@ -7,7 +7,7 @@
     "icon": "fa-sync-alt",
     "badge": "Bug Fixes",
     "badgeColor": "#10b981",
-    "link": "news.html",
+    "link": "updates.html",
     "date": "Aug 27, 2026",
     "pinned": true
   },
@@ -91,7 +91,7 @@
     "icon": "fa-bullhorn",
     "badge": "New Feature",
     "badgeColor": "#38bdf8",
-    "link": "news.html",
+    "link": "updates.html",
     "date": "Aug 24, 2026",
     "pinned": true
   },
