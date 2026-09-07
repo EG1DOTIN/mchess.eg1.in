@@ -19,7 +19,7 @@
     <meta name="twitter:creator" content="@ChessMarwadi" />
     <meta name="twitter:title" content="Chess Opening Traps & Tricks | Marwadi Chess" />
     <meta name="twitter:description" content="Master popular chess opening traps and tactical tricks. Learn how to surprise your opponents and avoid common opening traps." />
-    <meta name="twitter:image" content="https://mchess.eg1.in/img/mchesshome.webp" />
+    <meta name="twitter:image" content="https://mchess.eg1.in/img/mchesslogo.png" />
     <meta name="twitter:image:alt" content="Chess Opening Traps & Tricks | Marwadi Chess" />
 
     <!-- Open Graph Data (Facebook, WhatsApp, LinkedIn, Discord) -->
@@ -28,7 +28,7 @@
     <meta property="og:title" content="Chess Opening Traps & Tricks | Marwadi Chess" />
     <meta property="og:description" content="Master popular chess opening traps and tactical tricks. Learn how to surprise your opponents and avoid common opening traps." />
     <meta property="og:url" content="https://mchess.eg1.in/chesstraps.html" />
-    <meta property="og:image" content="https://mchess.eg1.in/img/mchesshome.webp" />
+    <meta property="og:image" content="https://mchess.eg1.in/img/mchesslogo.png" />
     <meta property="og:image:alt" content="Chess Opening Traps & Tricks | Marwadi Chess" />
 
     <!-- Schema.org JSON-LD Structured Data for Google Search -->
@@ -39,7 +39,7 @@
     "name": "Chess Opening Traps & Tricks | Marwadi Chess",
     "description": "Master popular chess opening traps and tactical tricks. Learn how to surprise your opponents and avoid common opening traps.",
     "url": "https://mchess.eg1.in/chesstraps.html",
-    "image": "https://mchess.eg1.in/img/mchesshome.webp",
+    "image": "https://mchess.eg1.in/img/mchesslogo.png",
     "publisher": {
         "@type": "Organization",
         "name": "Marwadi Chess",
@@ -75,27 +75,13 @@
         <div>
             <div id="header-placeholder"></div>
             <div id="menu-placeholder"></div>
-            <div class="box-100 bg-E3 main-master">
-                <div class="row mainContentHeader">
-                    <div id="scrlbar" class="box-90 overflow">
-                        <div id="Content3Header" class="col-md-12">
-                            <p style="font-size:25px">
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="row body">
-                    <div class="box-90 content">
+            <div class="box-100 bg-E3 main-master snug-top" style="margin-top: 0 !important; padding-top: 0 !important;">
+                <div class="row body snug-top" style="padding-top: 0 !important; margin-top: 0 !important;">
+                    <div class="box-90 content snug-top" style="padding-top: 0 !important; margin-top: 0 !important;">
                         <div class="row">
                             <div class="col-md-12">
-                                <h3 id="appSoft">
-                                    Chess Traps - Select an opening trap from the database below to study move-by-move or analyze custom variations.
-                                </h3>
-                                <br />
-
-                                <!-- Centralized MCHESS Board Container -->
-                                <div id="mchessBoardContainer" data-pgn="./data/pgn/opening_traps.pgn"></div>
-
+                                <!-- Centralized MCHESS Board Container with Traps Mode -->
+                                <div id="mchessBoardContainer" data-pgn="./data/pgn/opening_traps.pgn" data-mode="traps"></div>
                             </div>
                         </div>
                     </div>
@@ -111,6 +97,7 @@
     <!-- Chess Engines & Centralized MCHESS Board Controller -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+    <script src="js/chesstraps-data.js" type="text/javascript"></script>
     <script src="js/mchess-board-theme.js" type="text/javascript"></script>
     <script src="js/mchess-board.js" type="text/javascript"></script>
 </body>

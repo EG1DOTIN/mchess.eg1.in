@@ -119,7 +119,7 @@ var MChessFenParser = (function () {
             // If no iframe is present in HTML (clean data), append placeholder
             var baseHtml = htmlContent || '';
             if (baseHtml.indexOf('mchessBlogEngineBoard') === -1) {
-                return baseHtml + '<br/>' + placeholder;
+                return baseHtml + placeholder;
             }
 
             return baseHtml;

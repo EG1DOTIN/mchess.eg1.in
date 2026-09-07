@@ -3,105 +3,110 @@
  * @description Page-specific styles for Marwadi Chess "Train Yourself" Tactics Arena & Focused Zen Mode.
  */
 
-.trainer-container {
+.trainer-container,
+#mchessTrainerContainer {
     max-width: 1120px;
-    margin: 0 auto 40px auto;
+    margin: 0 auto;
     box-sizing: border-box;
+    width: 100%;
 }
 
-/* Header & Stats Banner */
-.trainer-header-card {
-    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-    border: 1px solid rgba(56, 189, 248, 0.35);
-    border-radius: 16px;
-    padding: 24px 28px;
-    margin-bottom: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+.trainer-viewer-container {
+    margin: 4px auto 14px auto !important;
+    max-width: 1120px !important;
+}
+
+/* Unified Card Header */
+.trainer-badge-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 16px;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-color, #e2e8f0);
 }
 
-.trainer-title {
-    font-size: clamp(20px, 4vw, 26px);
-    font-weight: 800;
-    color: #f8fafc;
-    margin: 0 0 6px 0;
+[data-theme="dark"] .trainer-badge-header,
+body.dark-theme .trainer-badge-header {
+    border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.trainer-header-left {
     display: flex;
     align-items: center;
-    gap: 10px;
-}
-
-.trainer-subtitle {
-    color: #94a3b8;
-    font-size: 13.5px;
-    margin: 0;
-    line-height: 1.5;
-}
-
-.trainer-stats-row {
-    display: flex;
-    align-items: center;
-    gap: 14px;
+    gap: 12px;
     flex-wrap: wrap;
 }
 
-.trainer-stat-badge {
-    background: #0f172a;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    padding: 8px 16px;
-    border-radius: 10px;
+.trainer-tech-pill {
+    background: rgba(56, 189, 248, 0.15);
+    color: #0284c7;
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+[data-theme="dark"] .trainer-tech-pill,
+body.dark-theme .trainer-tech-pill {
+    color: #38bdf8 !important;
+    background: rgba(56, 189, 248, 0.15) !important;
+    border-color: rgba(56, 189, 248, 0.35) !important;
+}
+
+/* Mode Selector & Action Buttons Toolbar */
+.trainer-modes-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 14px;
+    width: 100%;
+}
+
+.trainer-modes-left {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 13px;
-    font-weight: 700;
-    color: #f8fafc;
-}
-
-.trainer-stat-badge i {
-    color: #fbbf24;
-}
-
-/* Mode & Settings Toolbar */
-.trainer-controls-panel {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 14px;
-    padding: 16px 20px;
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     flex-wrap: wrap;
-    gap: 14px;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
 }
 
-[data-theme="dark"] .trainer-controls-panel,
-body.dark-theme .trainer-controls-panel,
-html[data-theme="dark"] .trainer-controls-panel {
-    background: #1e293b !important;
-    border-color: rgba(255, 255, 255, 0.1) !important;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3) !important;
+.trainer-modes-label {
+    color: var(--text-secondary, #475569);
+    font-size: 12.5px;
+    font-weight: 700;
+    margin-right: 2px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+[data-theme="dark"] .trainer-modes-label,
+body.dark-theme .trainer-modes-label {
+    color: #cbd5e1 !important;
 }
 
 .mode-selector-group {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     flex-wrap: wrap;
 }
 
 .mode-chip-btn {
-    background: #f1f5f9;
+    background: #f8fafc;
     border: 1px solid #cbd5e1;
-    color: #475569;
-    padding: 8px 14px;
+    color: #334155;
+    padding: 6px 12px;
     border-radius: 8px;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.15s ease;
@@ -110,30 +115,106 @@ html[data-theme="dark"] .trainer-controls-panel {
     gap: 6px;
 }
 
+[data-theme="dark"] .mode-chip-btn,
+body.dark-theme .mode-chip-btn {
+    background: #0f172a !important;
+    border-color: rgba(255, 255, 255, 0.18) !important;
+    color: #cbd5e1 !important;
+}
+
 .mode-chip-btn:hover {
-    background: #e2e8f0;
-    color: #1e293b;
+    background: #f1f5f9;
+    color: #0284c7;
+    border-color: #0284c7;
+    transform: translateY(-1px);
+}
+
+[data-theme="dark"] .mode-chip-btn:hover,
+body.dark-theme .mode-chip-btn:hover {
+    background: #1e293b !important;
+    color: #38bdf8 !important;
+    border-color: #38bdf8 !important;
 }
 
 .mode-chip-btn.active {
     background: linear-gradient(135deg, #d97706 0%, #b45309 100%) !important;
     color: #ffffff !important;
     border-color: #d97706 !important;
-    box-shadow: 0 2px 8px rgba(217, 119, 6, 0.35);
+    box-shadow: 0 2px 8px rgba(217, 119, 6, 0.35) !important;
 }
 
-[data-theme="dark"] .mode-chip-btn,
-body.dark-theme .mode-chip-btn,
-html[data-theme="dark"] .mode-chip-btn {
-    background: #0f172a !important;
-    border-color: rgba(255, 255, 255, 0.15) !important;
-    color: #cbd5e1 !important;
+/* Action Control Buttons Group */
+.trainer-action-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
 }
 
-[data-theme="dark"] .mode-chip-btn:hover,
-body.dark-theme .mode-chip-btn:hover {
-    background: #334155 !important;
-    color: #f8fafc !important;
+.btn-trainer-act {
+    border: none;
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #ffffff;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.15s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.btn-trainer-act:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+.btn-trainer-act:active {
+    transform: translateY(0);
+}
+
+.btn-act-restart {
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+}
+
+.btn-act-hint {
+    background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+}
+
+.btn-act-solution {
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+}
+
+.btn-act-skip {
+    background: linear-gradient(135deg, #475569 0%, #334155 100%);
+}
+
+/* Dynamic Feedback Pill (Toast for hints/errors/solved) */
+.trainer-feedback-pill {
+    margin: 2px auto 12px auto;
+    padding: 6px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    color: #0284c7;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+[data-theme="dark"] .trainer-feedback-pill,
+body.dark-theme .trainer-feedback-pill {
+    background: rgba(56, 189, 248, 0.15) !important;
+    border-color: rgba(56, 189, 248, 0.4) !important;
+    color: #38bdf8 !important;
 }
 
 /* Strikes / Lives Indicator */
@@ -300,25 +381,63 @@ body.dark-theme .mode-chip-btn:hover {
     margin-top: 2px;
 }
 
-@media (max-width: 640px) {
-    .trainer-header-card {
-        padding: 18px 14px;
+@media (max-width: 860px) {
+    .trainer-modes-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
     }
 
-    .trainer-controls-panel {
-        padding: 12px 10px;
+    .trainer-modes-left {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .trainer-action-group {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .btn-trainer-act {
+        flex: 1 1 auto;
+        justify-content: center;
+        padding: 9px 8px;
+        min-height: 44px;
+        box-sizing: border-box;
+    }
+}
+
+@media (max-width: 640px) {
+    .trainer-badge-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .trainer-header-actions {
+        width: 100%;
+    }
+
+    .btn-zen-mode {
+        width: 100%;
+        justify-content: center;
+        min-height: 44px;
+        box-sizing: border-box;
     }
 
     .mode-selector-group {
         width: 100%;
-        justify-content: center;
+        justify-content: flex-start;
+        gap: 6px;
     }
 
     .mode-chip-btn {
         flex: 1 1 auto;
         justify-content: center;
-        padding: 7px 10px;
+        padding: 8px 10px;
         font-size: 12px;
+        min-height: 44px;
+        box-sizing: border-box;
     }
 
     .zen-modal-overlay {
@@ -334,13 +453,8 @@ body.dark-theme .mode-chip-btn:hover {
         font-size: 12px;
     }
 
-    .btn-zen-mode {
-        width: 100%;
-        justify-content: center;
-    }
-
     .trainer-container,
-    #trainBoardContainer {
+    #mchessTrainerContainer {
         width: 100% !important;
         max-width: 100% !important;
         padding-left: 0 !important;

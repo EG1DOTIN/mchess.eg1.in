@@ -1,5 +1,17 @@
 [
   {
+    "id": "v3-9-0-academies-theater-mode-performance",
+    "version": "3.9.0",
+    "title": "Interactive Learning Academies, Live Theater Mode & Platform Performance",
+    "message": "Launched interactive Basic Chess Rules Academy and Opening Traps Academy with pedagogical lesson cards. Added Theater Mode and 6-channel selector for live broadcasts with on-demand iframe lazy loading. Optimized blog study boards with Web Share API Level 2 and Stockfish board-proportioned thumbnails, streamlined DOM padding across 12 core pages, and pruned master puzzle dataset boilerplate HTML.",
+    "icon": "fa-graduation-cap",
+    "badge": "Feature",
+    "badgeColor": "#3b82f6",
+    "link": "updates.html",
+    "date": "Sep 07, 2026",
+    "pinned": true
+  },
+  {
     "id": "v3-8-0-modern-about-ecosystem-core-optimizations",
     "version": "3.8.0",
     "title": "Modern About Ecosystem & Core Code Optimizations",

@@ -167,19 +167,25 @@
             if (this.$container.children().length > 0) return;
 
             const isDailyOrPuzzle = (this.options.mode === 'daily' || this.options.mode === 'puzzle');
-            const headerTitle = isDailyOrPuzzle ? 'Daily Chess Puzzle & Tactics Trainer' : 'Play vs Stockfish Computer Engine';
+            const headerTitle = (this.options.mode === 'daily') ? 'Daily Interactive Chess Puzzle & Tactics Trainer' : (isDailyOrPuzzle ? 'Daily Chess Puzzle & Tactics Trainer' : 'Play vs Stockfish Computer Engine');
             const techPill = (this.options.mode === 'daily') ? 'Official Lichess Daily API & Stockfish' : 'Stockfish #1 Open-Source Engine';
 
             const html = `
                 <div class="pgn-viewer-container">
                     <div class="demo-badge-header">
-                        <h2 class="demo-title">
+                        <h1 class="demo-title" id="appSoft">
                             <i class="fas ${isDailyOrPuzzle ? 'fa-puzzle-piece' : 'fa-robot'}"></i>
                             ${headerTitle}
-                        </h2>
-                        <span class="tech-pill">
-                            <i class="fas fa-microscope"></i> ${techPill}
-                        </span>
+                        </h1>
+                        <div class="engine-header-actions">
+                            ${!isDailyOrPuzzle ? `
+                            <a href="mygames.html" class="engine-archive-link" title="My Played Games Archive">
+                                <i class="fas fa-history"></i> My Played Games Archive
+                            </a>` : ''}
+                            <span class="tech-pill">
+                                <i class="fas fa-microscope"></i> ${techPill}
+                            </span>
+                        </div>
                     </div>
 
                     <div id="engineStatusBanner" class="mode-banner game-line" style="margin-bottom: 16px;">
@@ -469,6 +475,8 @@
                     onSnapEnd: () => self.onSnapEnd()
                 });
 
+                self.handleResponsiveResize();
+
                 // Clean up previous observer if any
                 if (this.resizeObserver) {
                     this.resizeObserver.disconnect();
@@ -477,19 +485,20 @@
                 // Dynamic ResizeObserver for responsive resizing on mobile & container changes
                 if (window.ResizeObserver && boardEl) {
                     this.resizeObserver = new ResizeObserver(() => {
-                        if (self.board) self.board.resize();
+                        self.handleResponsiveResize();
                     });
                     this.resizeObserver.observe(boardEl);
                 }
 
                 $(window).off(`resize.engine_${this.uid} orientationchange.engine_${this.uid}`).on(`resize.engine_${this.uid} orientationchange.engine_${this.uid}`, () => {
                     setTimeout(() => {
-                        if (self.board) self.board.resize();
+                        self.handleResponsiveResize();
                     }, 50);
                 });
             } else {
                 this.board.orientation(boardOrientation);
                 this.board.position(displayFen, true);
+                this.handleResponsiveResize();
             }
 
             this.renderMovesList();
@@ -501,6 +510,21 @@
                 const self = this;
                 setTimeout(() => self.requestEngineMove(), 300);
             }
+        }
+
+        /**
+         * Dynamic responsive resize calculation for mobile & desktop
+         */
+        handleResponsiveResize() {
+            if (!this.board) return;
+            const isMobile = (window.innerWidth || document.documentElement.clientWidth) <= 860;
+            if (isMobile) {
+                const $wrapper = this.$container.find('.board-wrapper');
+                if ($wrapper.length) {
+                    $wrapper.css({ 'width': '100%', 'max-width': '100%' });
+                }
+            }
+            this.board.resize();
         }
 
         /**
