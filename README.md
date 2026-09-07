@@ -13,12 +13,12 @@ Welcome to the official user guide for **Marwadi Chess** ([mchess.eg1.in](https:
 | **Play vs Computer** | [`playcomp.html`](playcomp.html) | Play & AI | Browser chess against Stockfish engine across 20 difficulty levels with instant side selection. |
 | **Daily Chess Puzzles** | [`dailypuzzles.html`](dailypuzzles.html) | Training | Daily tactical puzzles with dynamic hints, solution viewer, and streak counter. |
 | **Train Yourself** | [`train.html`](train.html) | Tactics & Training | Checkmate drills across Mate in 2 to Mate in 5, speed sprint challenges, and zen practice. |
-| **Basic Chess Rules** | [`chessrules.html`](chessrules.html) | Learn | Beginner-friendly visual guide covering piece movements, castling, en passant, and checkmates. |
-| **Learn Chess Traps** | [`chesstraps.html`](chesstraps.html) | Learn & Tactics | Interactive move-by-move viewer for famous opening traps and counter-tactics. |
+| **Basic Chess Rules** | [`chessrules.html`](chessrules.html) | Learn | Interactive Academy with playable Piece Explorer, Castling & En Passant demos, and rules quiz. |
+| **Learn Chess Traps** | [`chesstraps.html`](chesstraps.html) | Learn & Tactics | Interactive traps viewer with dynamic lesson cards (Bait, Blunder, Refutation) and stepper pills. |
 | **PGN Games Database** | [`pgngames.html`](pgngames.html) | Study & Masters | Grandmaster game database with move notation tree, autoplay, and game-by-game analysis. |
-| **Watch Top Live Games** | [`watchlive.html`](watchlive.html) | Broadcasts | 6-channel live broadcast center (Top GM, Blitz, Rapid, Bullet, Classical) with fullscreen mode. |
-| **Chess Blog** | [`blog.html`](blog.html) | Articles & Reading | Categorized articles covering opening strategies, chess history, mate-in-N puzzles, and tactical studies. |
-| **Website Updates** | [`news.html`](news.html) | Platform & News | Release notes, engine updates, feature announcements, and platform changelog. |
+| **Watch Top Live Games** | [`watchlive.html`](watchlive.html) | Broadcasts | 6-channel broadcast center with Theater Mode, Grid Mode, channel pills, and fullscreen modal. |
+| **Chess Blog** | [`blog.html`](blog.html) | Articles & Reading | Categorized articles, tactical studies, in-place puzzle solving, and Web Share API image sharing. |
+| **Website Updates** | [`updates.html`](updates.html) | Platform & News | Release notes, engine updates, feature announcements, and platform changelog. |
 | **My Played Games Archive** | [`mygames.html`](mygames.html) | Play & History | Personal match history dashboard with victory stats, win rate %, search, replay board, and PGN export. |
 | **About Us** | [`about.html`](about.html) | Information | Mission statement, learning philosophy, and platform background. |
 | **Privacy Policy** | [`privacypolicy.html`](privacypolicy.html) | Legal | User privacy terms, cookie information, and website usage policies. |
@@ -33,7 +33,7 @@ The following diagram illustrates how visitors navigate across the Marwadi Chess
 flowchart TD
     Start(["Visitor Enters mchess.eg1.in"]) --> Home["🏠 Homepage / Portal Hub"]
 
-    Home --> HeaderBar["Global Header: [🔔 News] [♟️ Play] [🌙 Theme] [🔄 Refresh]"]
+    Home --> HeaderBar["Global Header: [🔔 Updates] [♟️ Play] [🌙 Theme] [🔄 Refresh]"]
     Home --> NavMenu["Global Navigation Menu: [HOME] [LEARN] [PUZZLES] [PLAY] [EXPLORE] [ABOUT]"]
     Home --> FeatureCards["12 Feature Portal Cards"]
 
@@ -56,7 +56,7 @@ flowchart TD
         Quotes["💬 Inspiring Chess Quotes (blog.html?cat=Chess%20Quotes)"]
         History["📜 Chess History (blog.html?cat=Chess%20History)"]
         PGN["📊 Grandmaster PGN Replays (pgngames.html)"]
-        News["🔔 Platform Updates & News (news.html)"]
+        News["🔔 Platform Updates & News (updates.html)"]
     end
 
     subgraph Info_And_Community ["ℹ️ Information & Legal"]
@@ -223,22 +223,141 @@ All pages share a consistent, responsive layout structure:
 ```
 ┌───────────────────────────────────────────────────────────────────────────────┐
 │ Page Title: Live Multi-Channel Chess Broadcasts (6 Channels)                  │
+│ View Mode: [ 🎬 Theater Mode (Active) ]               [ ⊞ 6-Board Grid ]       │
 ├───────────────────────────────────────────────────────────────────────────────┤
-│ [ All 6 Channels ] [ 🏆 TOP GM ] [ ⚡ BLITZ ] [ ⏱ RAPID ] [ 🔥 BULLET ]        │
+│ [ 🏆 TOP GM ] [ ⚡ BLITZ ] [ ⏱ RAPID ] [ 🔥 BULLET ] [ 👑 CLASSICAL ] [ 🚀 ULTRA ]│
 ├───────────────────────────────────────────────────────────────────────────────┤
+│ THEATER MODE STAGE (Default View)                                             │
+│ ┌──────────────────────────────────────────────┬────────────────────────────┐ │
+│ │ 🏆 Top GM Broadcast                          │ Broadcast Details:         │ │
+│ │ ┌──────────────────────────────────────────┐ │ Channel: Top Grandmaster   │ │
+│ │ │                                          │ │ Feed: Lichess Open TV      │ │
+│ │ │          LIVE CHESSBOARD FRAME           │ │ Quality: Real-Time Stream  │ │
+│ │ │                                          │ │                            │ │
+│ │ │   (Click board mask opens isolated       │ │ [ ⛶ Isolated Fullscreen ]  │ │
+│ │ │    fullscreen modal overlay)             │ │ [ ↗ Open on Lichess ]      │ │
+│ │ └──────────────────────────────────────────┘ └────────────────────────────┘ │
+├───────────────────────────────────────────────────────────────────────────────┤
+│ GRID MODE (Available via [ ⊞ 6-Board Grid ] toggle)                           │
 │ ┌────────────────────────┐ ┌────────────────────────┐ ┌─────────────────────┐ │
 │ │ 🏆 Top GM Broadcast    │ │ ⚡ Blitz Championship  │ │ ⏱ Rapid Stream      │ │
-│ │ [ LIVE ] [ ⛶ Fullscreen]│ │ [ LIVE ] [ ⛶ Fullscreen]│ │ [ LIVE ] [ ⛶ ]    │ │
-│ │ [ Live Board 1 ]       │ │ [ Live Board 2 ]       │ │ [ Live Board 3 ]    │ │
-│ └────────────────────────┘ └────────────────────────┘ └─────────────────────┘ │
-│ ┌────────────────────────┐ ┌────────────────────────┐ ┌─────────────────────┐ │
+│ ├────────────────────────┤ ├────────────────────────┤ ├─────────────────────┤ │
 │ │ 🔥 Bullet Speed Channel│ │ 👑 Classical Tournament│ │ 🚀 UltraBullet      │ │
-│ │ [ LIVE ] [ ⛶ Fullscreen]│ │ [ LIVE ] [ ⛶ Fullscreen]│ │ [ LIVE ] [ ⛶ ]    │ │
-│ │ [ Live Board 4 ]       │ │ [ Live Board 5 ]       │ │ [ Live Board 6 ]    │ │
 │ └────────────────────────┘ └────────────────────────┘ └─────────────────────┘ │
-├───────────────────────────────────────────────────────────────────────────────┤
-│ FULLSCREEN MODAL OVERLAY (Click any board to view in edge-to-edge mode)       │
 └───────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+### 7. Basic Chess Rules Academy Wireframe (`chessrules.html`)
+
+```
+┌───────────────────────────────────────────────────────────────────────────────┐
+│ Hero Banner: Learn Chess Rules - Complete Beginner to Master Guide           │
+│ Badges: [ 6 Piece Types ]       [ Special Moves ]       [ Interactive Quiz ]  │
+├──────────────────────────┬────────────────────────────────────────────────────┤
+│ STICKY TABLE OF CONTENTS │ MAIN ACADEMY CONTENT                               │
+│                          │                                                    │
+│ 1. Chessboard & Setup    │ 1. CHESSBOARD GEOMETRY & INITIAL PIECE SETUP       │
+│ 2. Piece Movements       │ - 8x8 Grid, 64 squares, Files a-h, Ranks 1-8       │
+│ 3. Special Moves         │ - Initial setup interactive board                  │
+│ 4. Check & Checkmate     │                                                    │
+│ 5. Draw Regulations      │ 2. PIECE MOVEMENT EXPLORER                         │
+│ 6. Interactive Quiz      │ [ Pawn ] [ Knight ] [ Bishop ] [ Rook ] [ Queen ]  │
+│                          │ ┌──────────────────────┐ ┌───────────────────────┐ │
+│                          │ │                      │ │ The Knight (3 Pts)    │ │
+│                          │ │ INTERACTIVE BOARD    │ │ Moves in "L-shape"    │ │
+│                          │ │ (Legal dots & capture│ │ Jumps over pieces!    │ │
+│                          │ │  rings highlighted)  │ │ Tips & tactical advice│ │
+│                          │ └──────────────────────┘ └───────────────────────┘ │
+│                          │                                                    │
+│                          │ 3. SPECIAL CHESS MOVES DEMONSTRATORS               │
+│                          │ A. Castling: [ 0-0 Kingside ] [ 0-0-0 Queenside ]  │
+│                          │ B. En Passant: [ Step 1 Advance ] [ Step 2 Capture]│
+│                          │ C. Pawn Promotion Breakdown                        │
+│                          │                                                    │
+│                          │ 4. CHECK, CHECKMATE & STALEMATE                    │
+│                          │                                                    │
+│                          │ 5. INTERACTIVE RULES QUIZ                          │
+│                          │ Q1: Can a King castle through check?               │
+│                          │ ( ) Yes   (•) No                                   │
+│                          │ [ ✅ Correct! The King cannot castle out of check ]│
+└──────────────────────────┴────────────────────────────────────────────────────┘
+```
+
+---
+
+### 8. Learn Chess Traps Wireframe (`chesstraps.html`)
+
+```
+┌───────────────────────────────────────────────────────────────────────────────┐
+│ Page Title: Chess Opening Traps & Tricks (Interactive Traps Academy)          │
+├───────────────────────────────────────────────────────────────────────────────┤
+│ Active Trap: Fishing Pole Trap | ECO: C65 | ⚫ Played by Black                │
+├────────────────────────────────────────────┬──────────────────────────────────┤
+│                                            │ Filters: [All] [White] [Black]   │
+│          INTERACTIVE CHESSBOARD            │ [ Dropdown: Select Opening Trap] │
+│                                            ├──────────────────────────────────┤
+│ - Dynamic Blunder & Refutation Highlighting│ DYNAMIC LESSON CARD              │
+│ - Flip Board to Setter's Perspective       │ [#trapDynamicCard: state-bait]   │
+│                                            │ [Tag: The Bait (The Hook)]       │
+│                                            │ "Black plays 4...Ng4 & 5...h5,   │
+│                                            │  dangling the knight as bait..." │
+│                                            ├──────────────────────────────────┤
+│                                            │ STEPPER PILLS                    │
+│                                            │ [Intro] [Bait] [Blunder] [Refute]│
+│                                            ├──────────────────────────────────┤
+│                                            │ Move Notation History:           │
+│                                            │ 1. e4 e5   2. Nf3 Nc6            │
+│                                            │ 3. Bb5 Nf6 4. O-O Ng4            │
+│                                            │ 5. h3 h5   6. hxg4?? [Blunder!]  │
+│                                            │ 6... hxg4! [Refutation!]         │
+├────────────────────────────────────────────┴──────────────────────────────────┤
+│ Toolbar: [ |◀ First ]  [ ◀ Prev ]  [ Next ▶ ]  [ Last ▶| ]  [ ⏯ Auto ] [ 🔄 Flip ]│
+└───────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+### 9. Train Yourself Tactics Arena Wireframe (`train.html`)
+
+```
+┌───────────────────────────────────────────────────────────────────────────────┐
+│ Header: 🎯 Train Yourself Tactics Arena                                       │
+│ Mode: [ ⚡ Mate in 2 ]  [ ♞ Mate in 3 ]  [ ♜ Mate in 4 ]  [ ♛ Mate in 5 ]  [ 🔥 Sprint ]│
+├───────────────────────────────────────────────────────────────────────────────┤
+│ Status Banner: "White to move — Mate in 2"             [ ❤️❤️❤️ ]  [ ⏱ 02:45 ]│
+├────────────────────────────────────────────┬──────────────────────────────────┤
+│                                            │ Target: Forced Checkmate in N    │
+│          INTERACTIVE CHESSBOARD            │ Streak: 12 Solved (PB: 28)       │
+│                                            ├──────────────────────────────────┤
+│ - Glassmorphic Pawn Promotion Modal        │ Action Controls:                 │
+│ - Board Shake on Mistake (1 Heart Lost)    │ [ ⏭ Skip ]      [ 💡 Hint ]      │
+│ - Mobile Edge-to-Edge Responsive Resize    │ [ 🔄 Flip Board ][ 🔲 Zen Mode ] │
+└────────────────────────────────────────────┴──────────────────────────────────┘
+```
+
+---
+
+### 10. Chess Blog & Tactical Studies Wireframe (`blog.html`)
+
+```
+┌───────────────────────────────────────────────────────────────────────────────┐
+│ Page Heading: <category> | <title>                                            │
+├────────────────────────────────────────────┬──────────────────────────────────┤
+│ SINGLE PUZZLE & STUDY VIEW                 │ CATEGORY SIDEBAR                 │
+│ (Thumbnails omitted for live boards)       │                                  │
+│                                            │ Categories:                      │
+│          INTERACTIVE ENGINE BOARD          │ - Learn Chess                    │
+│          (MChessEngineBoard)               │ - Chess Quotes                   │
+│                                            │ - Chess Puzzles                  │
+│ Status Banner: Turn / Solved / Engine Move │ - Chess History                  │
+│                                            │ - Mate in 2 / 3 / 4 / 5          │
+│ Detail In-Category Pagination & Share Bar: │                                  │
+│ [ « Prev ]  [ 1 ]  [ 2 ]  [ 3 ]  [ Next » ]│ Related Topics:                  │
+│ [ 📤 Share Puzzle (Web Share API / Copy) ] │ - Article Link 1                 │
+│                                            │ - Article Link 2                 │
+└────────────────────────────────────────────┴──────────────────────────────────┘
 ```
 
 ---
@@ -249,7 +368,7 @@ All pages share a consistent, responsive layout structure:
 - **Purpose**: The primary central lobby connecting users to all tools, games, puzzles, and articles.
 - **Key Features**:
   - **Top Interactive Header**: Quick access buttons (`Notifications 🔔`, `Play Online ♟️`, `Theme Toggle 🌙/☀️`, and `Refresh 🔄`).
-  - **12 Feature Cards**: Clean 4-line uniform feature cards with direct navigation to all portals.
+  - **12 Feature Cards**: Clean uniform feature cards with direct navigation to all portals.
   - **Social Links**: Quick access to Facebook Club, X (Twitter), YouTube, and Instagram.
 
 ---
@@ -287,27 +406,30 @@ All pages share a consistent, responsive layout structure:
 ### 5. 🎯 Train Yourself ([train.html](train.html))
 - **Purpose**: Dedicated tactical training center for mastering forced checkmates.
 - **Key Features**:
-  - **500+ Curated Puzzles**: Categorized by Mate in 2, Mate in 3, Mate in 4, and Mate in 5.
-  - **Speed Sprint Drills**: Timed puzzle solving sprints to test calculation speed under pressure.
-  - **Zen Practice**: Calm, untimed puzzle solving for deep calculation and positional mastery.
+  - **500+ Curated Puzzles**: Categorized by Mate in 2, Mate in 3, Mate in 4, Mate in 5, and Mixed Sprint.
+  - **Dynamic Status Feedback**: Smooth animated banner displaying solving instructions and move accuracy feedback.
+  - **3-Strikes Survival Rule**: Start with 3 hearts; mistakes shake the board and deduct 1 heart.
+  - **Unified Action Controls**: Skip, Hint, Flip Board, and focused Zen Mode practice.
 
 ---
 
 ### 6. ♟️ Basic Chess Rules ([chessrules.html](chessrules.html))
-- **Purpose**: Educational guide for beginners learning fundamental chess rules.
-- **Topics Covered**:
-  - Board Setup and Coordinates (Files `a-h`, Ranks `1-8`).
-  - Individual Piece Movements: Pawn, Knight, Bishop, Rook, Queen, and King.
-  - Special Moves: Castling (Kingside & Queenside), En Passant, and Pawn Promotion.
-  - Check, Checkmate, and Stalemate / Draw conditions.
+- **Purpose**: Interactive academy guide for beginners and intermediate players mastering chess rules.
+- **Key Features**:
+  - **Sticky Table of Contents**: Smooth scroll-spy navigation tracking reading progress.
+  - **Piece Movement Explorer**: Playable chessboard with legal destination dots and capture rings for Pawn, Knight, Bishop, Rook, Queen, and King.
+  - **Special Moves Demonstrators**: Step-by-step playable boards illustrating Kingside Castling (`0-0`), Queenside Castling (`0-0-0`), and En Passant captures.
+  - **Interactive Rules Quiz**: Instant feedback testing understanding of castling conditions, en passant timing, and stalemate.
 
 ---
 
 ### 7. 🪤 Learn Chess Traps ([chesstraps.html](chesstraps.html))
 - **Purpose**: Tactical study tool focusing on famous opening pitfalls and counter-strategies.
 - **Key Features**:
-  - Interactive board with step-by-step move stepping and autoplay mode.
-  - Famous traps covered: Scholar's Mate, Fried Liver Attack, Legal's Trap, Elephant Trap, Blackburne Shilling Gambit, and more.
+  - **Traps Mode Engine**: Move-by-move synchronization between PGN games and educational lessons.
+  - **Dynamic Lesson Cards**: Cycles through Opening Setup, The Bait (The Hook), Fatal Blunder, Decisive Refutation, and Proper Defense.
+  - **Move Highlighting**: Distinct visual markers for blunder moves and tactical refutations.
+  - **Interactive Stepper Pills**: Jump directly to pivotal trap moments with 1 click.
 
 ---
 
@@ -322,23 +444,24 @@ All pages share a consistent, responsive layout structure:
 ### 9. 📺 Watch Top Live Games ([watchlive.html](watchlive.html))
 - **Purpose**: Live spectator portal for following international grandmaster tournaments.
 - **Key Features**:
+  - **Dual View Modes**: Switch between focused single-board **Theater Mode** and multi-board **6-Board Grid Mode**.
   - **6 Dedicated Channels**: Top GM, Blitz Championship, Rapid Stream, Bullet Speed, Classical Tournament, and UltraBullet.
-  - **Category Filter Tabs**: Filter and view specific time-control broadcasts instantly.
-  - **Click-to-Expand Fullscreen Mode**: Click any live board to view in an edge-to-edge high-definition view.
+  - **Channel Selection Pills**: Switch active livestreams instantly with responsive pills.
+  - **Click-to-Fullscreen Isolation**: Clicking any board opens an edge-to-edge modal overlay, preventing external redirects.
 
 ---
 
 ### 10. 📰 Chess Blog & Quotes ([blog.html](blog.html))
 - **Purpose**: Multi-category publication hub with articles, game breakdowns, and motivational quotes.
-- **Categories**:
-  - **Tactical Studies**: In-depth explanations of tactical motifs and middlegame strategies.
-  - **Chess Quotes**: Inspiring quotes from Marwadi Chess and legendary World Champions.
-  - **Mate in 2 / 3 / 4 Puzzles**: Interactive FEN puzzle solving directly inside blog articles.
-  - **Chess History**: Fascinating stories, famous historical games, and the origins of chess.
+- **Key Features**:
+  - **Structured Breadcrumbs**: Clean `<category> | <title>` headers replacing outdated subtitle tags.
+  - **Embedded Puzzle Boards**: Live `MChessEngineBoard` with auto-turn perspective flip and Stockfish defense.
+  - **Web Share API Level 2**: Direct WebP image file sharing on mobile devices, with canonical link copying on desktop.
+  - **In-Category Detail Pagination**: Browse consecutive puzzles and articles in-place without page reloads.
 
 ---
 
-### 11. 🔔 Website Updates ([news.html](news.html))
+### 11. 🔔 Website Updates ([updates.html](updates.html))
 - **Purpose**: Platform announcements, release notes, and feature changelogs.
 - **Key Features**:
   - Chronological updates feed detailing engine improvements, new puzzles, UI updates, and bug fixes.
@@ -394,4 +517,3 @@ Read the [Dataset Documentation & Schema Guide](./data/README.md) for full schem
 ## 📜 License
 
 This project is open source and available under the [MIT License](LICENSE).
-

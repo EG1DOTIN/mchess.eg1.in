@@ -942,6 +942,8 @@
                 onSnapEnd: () => self.onSnapEnd()
             });
 
+            self.handleResponsiveResize();
+
             // Clean up previous observers
             if (this.resizeObserver) {
                 this.resizeObserver.disconnect();
@@ -952,9 +954,7 @@
                 const domContainer = document.getElementById(this.options.boardContainerId);
                 if (domContainer) {
                     this.resizeObserver = new ResizeObserver(() => {
-                        if (self.board) {
-                            self.board.resize();
-                        }
+                        self.handleResponsiveResize();
                     });
                     this.resizeObserver.observe(domContainer);
                 }
@@ -962,12 +962,24 @@
 
             $(window).off('resize.p2p orientationchange.p2p').on('resize.p2p orientationchange.p2p', () => {
                 setTimeout(() => {
-                    if (self.board) self.board.resize();
+                    self.handleResponsiveResize();
                 }, 100);
             });
 
             this.renderMovesList();
             this.bindTapToMove();
+        }
+
+        handleResponsiveResize() {
+            if (!this.board) return;
+            const isMobile = (window.innerWidth || document.documentElement.clientWidth) <= 860;
+            if (isMobile) {
+                const $wrapper = $('#' + this.options.boardContainerId).closest('.board-wrapper');
+                if ($wrapper.length) {
+                    $wrapper.css({ 'width': '100%', 'max-width': '100%' });
+                }
+            }
+            this.board.resize();
         }
 
         /**

@@ -169,35 +169,67 @@
             if (this.$container.children().length > 0) return;
 
             const html = `
-                <div class="pgn-viewer-container" style="max-width: 100%;">
-                    <div class="demo-badge-header" style="flex-wrap:wrap; gap:12px; justify-content:space-between; align-items:center;">
-                        <h2 class="demo-title" style="margin:0;">
-                            <i class="fas fa-bolt" style="color:#eab308;"></i>
-                            Tactics Trainer & Fast-Paced Puzzle Rush
-                        </h2>
-                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                            <button id="btnEnterZenMode" class="btn-zen-mode" title="Enter Distraction-Free Focused Board">
+                <div class="pgn-viewer-container trainer-viewer-container">
+                    <div class="demo-badge-header trainer-badge-header">
+                        <div class="trainer-header-left">
+                            <h1 class="demo-title" id="appSoft">
+                                <i class="fas fa-brain" style="color: #38bdf8;"></i>
+                                Train Yourself Tactics Arena
+                            </h1>
+                            <span class="tech-pill trainer-tech-pill">
+                                <i class="fas fa-bolt" style="color: #eab308;"></i>
+                                Tactics Rush
+                            </span>
+                        </div>
+                        <div class="trainer-header-actions">
+                            <button type="button" id="btnEnterZenMode" class="btn-zen-mode" title="Enter Distraction-Free Focused Board">
                                 <i class="fas fa-expand"></i> Focused Board Mode
                             </button>
                         </div>
                     </div>
 
-                    <div id="trainerStatusBanner" class="mode-banner game-line" style="margin-bottom: 16px;">
-                        <span id="trainerStatusText"><i class="fas fa-spinner fa-spin"></i> Loading tactical puzzle library...</span>
-                        <div style="display:inline-flex; gap:8px; align-items:center; flex-wrap:wrap;">
-                            <button id="btnTrainerRestartTop" class="btn-reset-analysis" style="background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);" title="Restart Training Session">
+                    <!-- Mode Selector & Action Buttons Bar -->
+                    <div class="trainer-modes-row">
+                        <div class="trainer-modes-left">
+                            <span class="trainer-modes-label"><i class="fas fa-sliders-h"></i> Mode:</span>
+                            <div class="mode-selector-group">
+                                <button type="button" class="mode-chip-btn ${this.options.mode === 'mateIn2' ? 'active' : ''}" data-mode="mateIn2">
+                                    <i class="fas fa-bolt"></i> Mate in 2
+                                </button>
+                                <button type="button" class="mode-chip-btn ${this.options.mode === 'mateIn3' ? 'active' : ''}" data-mode="mateIn3">
+                                    <i class="fas fa-chess-knight"></i> Mate in 3
+                                </button>
+                                <button type="button" class="mode-chip-btn ${this.options.mode === 'mateIn4' ? 'active' : ''}" data-mode="mateIn4">
+                                    <i class="fas fa-chess-rook"></i> Mate in 4
+                                </button>
+                                <button type="button" class="mode-chip-btn ${this.options.mode === 'mateIn5' ? 'active' : ''}" data-mode="mateIn5">
+                                    <i class="fas fa-chess-queen"></i> Mate in 5
+                                </button>
+                                <button type="button" class="mode-chip-btn ${this.options.mode === 'all' ? 'active' : ''}" data-mode="all">
+                                    <i class="fas fa-fire" style="color:#ef4444;"></i> Mixed Sprint
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="trainer-action-group">
+                            <button type="button" id="btnTrainerRestartTop" class="btn-trainer-act btn-act-restart" title="Restart Training Session">
                                 <i class="fas fa-redo"></i> Restart
                             </button>
-                            <button id="btnTrainerHint" class="btn-reset-analysis" style="background: linear-gradient(135deg, #d97706 0%, #b45309 100%);">
+                            <button type="button" id="btnTrainerHint" class="btn-trainer-act btn-act-hint" title="Get Move Hint">
                                 <i class="far fa-lightbulb"></i> Hint
                             </button>
-                            <button id="btnTrainerSolution" class="btn-reset-analysis" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
+                            <button type="button" id="btnTrainerSolution" class="btn-trainer-act btn-act-solution" title="Show Solution">
                                 <i class="fas fa-eye"></i> Solution
                             </button>
-                            <button id="btnTrainerSkip" class="btn-reset-analysis" style="background: linear-gradient(135deg, #475569 0%, #334155 100%);" title="Skip to Next Puzzle">
+                            <button type="button" id="btnTrainerSkip" class="btn-trainer-act btn-act-skip" title="Skip to Next Puzzle">
                                 <i class="fas fa-forward"></i> Skip
                             </button>
                         </div>
+                    </div>
+
+                    <!-- Dynamic Feedback Banner for hints, errors, solved (hidden by default) -->
+                    <div id="trainerStatusBanner" class="trainer-feedback-pill" style="display: none;">
+                        <span id="trainerStatusText"></span>
                     </div>
 
                     <div class="viewer-grid">
@@ -207,13 +239,13 @@
                             </div>
 
                             <div class="controls-bar">
-                                <button id="btnTrainerRestartBottom" class="btn-ctrl" style="border-color: rgba(34,197,94,0.4); color:#4ade80;" title="Restart Training Session">
+                                <button type="button" id="btnTrainerRestartBottom" class="btn-ctrl" style="border-color: rgba(34,197,94,0.4); color:#4ade80;" title="Restart Training Session">
                                     <i class="fas fa-redo"></i> Restart
                                 </button>
-                                <button id="btnTrainerResetPuzzle" class="btn-ctrl" title="Reset Current Position">
+                                <button type="button" id="btnTrainerResetPuzzle" class="btn-ctrl" title="Reset Current Position">
                                     <i class="fas fa-undo"></i> Reset
                                 </button>
-                                <button id="btnTrainerFlip" class="btn-ctrl" title="Flip Board">
+                                <button type="button" id="btnTrainerFlip" class="btn-ctrl" title="Flip Board">
                                     <i class="fas fa-sync-alt"></i> Flip
                                 </button>
                                 <button type="button" class="btn-ctrl btn-board-theme" title="Change Board Theme">
@@ -231,7 +263,7 @@
                             <div class="game-meta-card">
                                 <div class="players-header" style="flex-wrap: wrap; gap: 8px;">
                                     <div class="player-box">
-                                        <span class="player-badge white"></span>
+                                        <span class="player-badge white" id="trainerPlayerColorBadge"></span>
                                         <span id="lblTrainerSideToMove">White to Move</span>
                                         <span id="trainerClockDisplay" class="tech-pill" style="margin-left: 6px; font-family: monospace; font-size: 14px; font-weight: bold; background: #0f172a; color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4);">03:00</span>
                                     </div>
@@ -452,6 +484,11 @@
             this.playerMovesPlayed = 0;
 
             // UI updates
+            const isWhite = this.playerTurnColor === 'w';
+            const $turnBadge = this.$container.find('#trainerPlayerColorBadge');
+            if ($turnBadge.length) {
+                $turnBadge.removeClass('white black').addClass(isWhite ? 'white' : 'black');
+            }
             this.$container.find('#lblTrainerSideToMove, #zenSideLabel').text(`${playerColorText} to Move`);
             this.$container.find('#lblPuzzleEventTitle').html(`<i class="fas fa-puzzle-piece"></i> ${this.currentPuzzle.event}`);
             this.$container.find('#lblPuzzleThemeTag').text((this.currentPuzzle.theme || 'TACTICS').toUpperCase());
@@ -459,7 +496,8 @@
             const themeColor = this.currentPuzzle.theme === 'mateIn2' ? '#38bdf8' : (this.currentPuzzle.theme === 'mateIn3' ? '#a855f7' : '#eab308');
             this.$container.find('#lblPuzzleThemeTag').css({ background: `${themeColor}22`, color: themeColor, border: `1px solid ${themeColor}55` });
 
-            this.updateStatusBanner(`<i class="fas fa-bolt" style="color:#eab308;"></i> <strong>${playerColorText} to move.</strong> Find the tactical sequence!`);
+            // Clear feedback banner so board sits cleanly without redundant move text
+            this.updateStatusBanner('');
 
             this.renderBoard(normalizedFen, playerColorText.toLowerCase());
             this.renderMovesList();
@@ -500,16 +538,37 @@
                     onSnapEnd: () => self.onSnapEnd()
                 });
 
+                self.handleResponsiveResize();
+
                 if (window.ResizeObserver) {
                     this.resizeObserver = new ResizeObserver(() => {
-                        if (self.board) self.board.resize();
+                        self.handleResponsiveResize();
                     });
                     this.resizeObserver.observe(boardEl);
                 }
+
+                $(window).on(`resize.trainer_${this.boardId} orientationchange.trainer_${this.boardId}`, () => {
+                    setTimeout(() => {
+                        self.handleResponsiveResize();
+                    }, 50);
+                });
             } else {
                 this.board.orientation(orientation || 'white');
                 this.board.position(fen, true);
+                this.handleResponsiveResize();
             }
+        }
+
+        handleResponsiveResize() {
+            if (!this.board) return;
+            const isMobile = (window.innerWidth || document.documentElement.clientWidth) <= 860;
+            if (isMobile) {
+                const $wrapper = $('#' + this.boardId).closest('.board-wrapper');
+                if ($wrapper.length) {
+                    $wrapper.css({ 'width': '100%', 'max-width': '100%' });
+                }
+            }
+            this.board.resize();
         }
 
         startClock() {
@@ -1121,7 +1180,15 @@
         }
 
         updateStatusBanner(html) {
-            this.$container.find('#trainerStatusText').html(html);
+            const $banner = this.$container.find('#trainerStatusBanner');
+            const $text = this.$container.find('#trainerStatusText');
+            if (!html || !html.trim()) {
+                $banner.stop(true, true).hide();
+                $text.html('');
+            } else {
+                $text.html(html);
+                $banner.stop(true, true).css('display', 'inline-flex').hide().fadeIn(150);
+            }
         }
 
         openZenMode() {

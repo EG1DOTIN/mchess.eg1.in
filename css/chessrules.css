@@ -1,0 +1,983 @@
+/**
+ * @file chessrules.css
+ * @description Modern, responsive, theme-aware stylesheet for Marwadi Chess Rules & Academy Guide.
+ * Supports light & dark theme modes via [data-theme="dark"], card elevation, glassmorphism, and fluid responsiveness.
+ * @project MCHESS Interactive Chess Portal
+ */
+
+:root {
+    --rules-gold-light: #fbbf24;
+    --rules-gold-main: #d4af37;
+    --rules-gold-dark: #b45309;
+    --rules-gold-glow: rgba(212, 175, 55, 0.2);
+
+    --rules-bg-surface: #ffffff;
+    --rules-bg-subtle: #f8fafc;
+    --rules-bg-elevated: #ffffff;
+    --rules-border: #e2e8f0;
+    --rules-border-highlight: rgba(212, 175, 55, 0.4);
+
+    --rules-text-heading: #0f172a;
+    --rules-text-body: #334155;
+    --rules-text-muted: #64748b;
+
+    --rules-card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.03);
+    --rules-card-hover: 0 10px 25px -3px rgba(0, 0, 0, 0.08);
+
+    --rules-primary: #2563eb;
+    --rules-primary-hover: #1d4ed8;
+    --rules-accent: #0284c7;
+    --rules-success: #16a34a;
+    --rules-danger: #dc2626;
+    --rules-warning: #d97706;
+}
+
+[data-theme="dark"] {
+    --rules-bg-surface: #151c2c;
+    --rules-bg-subtle: #0b0f19;
+    --rules-bg-elevated: #1e293b;
+    --rules-border: rgba(255, 255, 255, 0.1);
+    --rules-border-highlight: rgba(251, 191, 36, 0.45);
+
+    --rules-text-heading: #f8fafc;
+    --rules-text-body: #cbd5e1;
+    --rules-text-muted: #94a3b8;
+
+    --rules-card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4);
+    --rules-card-hover: 0 10px 25px -3px rgba(0, 0, 0, 0.6);
+
+    --rules-primary: #3b82f6;
+    --rules-primary-hover: #60a5fa;
+    --rules-accent: #38bdf8;
+    --rules-success: #22c55e;
+    --rules-danger: #ef4444;
+    --rules-warning: #f59e0b;
+}
+
+/* Base Container */
+.rules-container {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 15px 15px 60px;
+    color: var(--rules-text-body);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    text-align: left;
+}
+
+/* Two-Column Responsive Layout */
+.rules-layout {
+    display: flex;
+    gap: 28px;
+    align-items: flex-start;
+}
+
+.rules-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.rules-sidebar {
+    width: 290px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 75px;
+}
+
+/* ──────────────────────────────────────────────────────────
+   1. HERO SECTION
+   ────────────────────────────────────────────────────────── */
+.rules-hero {
+    position: relative;
+    padding: 36px 28px 30px;
+    text-align: center;
+    background: radial-gradient(circle at 50% 0%, var(--rules-gold-glow) 0%, transparent 70%), var(--rules-bg-surface);
+    border: 1px solid var(--rules-border);
+    border-radius: 16px;
+    box-shadow: var(--rules-card-shadow);
+    margin-bottom: 24px;
+    overflow: hidden;
+}
+
+.rules-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    border-radius: 9999px;
+    background: rgba(212, 175, 55, 0.12);
+    border: 1px solid var(--rules-border-highlight);
+    color: var(--rules-gold-dark);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+}
+
+[data-theme="dark"] .rules-hero-badge {
+    color: var(--rules-gold-light);
+    background: rgba(251, 191, 36, 0.15);
+}
+
+.rules-hero-title {
+    font-size: clamp(24px, 4vw, 36px);
+    font-weight: 800;
+    color: var(--rules-text-heading);
+    line-height: 1.25;
+    margin: 0 0 12px 0;
+    letter-spacing: -0.5px;
+}
+
+.rules-hero-title-highlight {
+    background: linear-gradient(135deg, #d4af37, #f59e0b 80%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+}
+
+.rules-hero-subtitle {
+    font-size: 15.5px;
+    line-height: 1.6;
+    color: var(--rules-text-muted);
+    max-width: 760px;
+    margin: 0 auto 20px;
+}
+
+/* Hero Quick Stats */
+.rules-stats-row {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.rules-stat-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: var(--rules-bg-subtle);
+    border: 1px solid var(--rules-border);
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--rules-text-heading);
+}
+
+.rules-stat-pill i {
+    color: var(--rules-gold-main);
+}
+
+/* ──────────────────────────────────────────────────────────
+   2. CONTENT CARDS
+   ────────────────────────────────────────────────────────── */
+.rules-card {
+    background: var(--rules-bg-surface);
+    border: 1px solid var(--rules-border);
+    border-radius: 14px;
+    box-shadow: var(--rules-card-shadow);
+    padding: 28px 24px;
+    margin-bottom: 24px;
+    transition: box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.rules-card:hover {
+    box-shadow: var(--rules-card-hover);
+}
+
+.rules-section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--rules-border);
+}
+
+.rules-section-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: rgba(37, 99, 235, 0.1);
+    color: var(--rules-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+[data-theme="dark"] .rules-section-icon {
+    background: rgba(59, 130, 246, 0.15);
+}
+
+.rules-section-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--rules-text-heading);
+    margin: 0;
+    line-height: 1.3;
+}
+
+.rules-text {
+    font-size: 14.5px;
+    line-height: 1.65;
+    color: var(--rules-text-body);
+    margin-bottom: 14px;
+}
+
+/* ──────────────────────────────────────────────────────────
+   3. BOARD ANATOMY CALLOUTS
+   ────────────────────────────────────────────────────────── */
+.rules-setup-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 20px 0;
+}
+
+.rules-golden-rule-box {
+    background: var(--rules-bg-subtle);
+    border: 1px solid var(--rules-border);
+    border-left: 4px solid var(--rules-gold-main);
+    border-radius: 10px;
+    padding: 16px;
+}
+
+.rules-golden-rule-title {
+    font-size: 14.5px;
+    font-weight: 700;
+    color: var(--rules-text-heading);
+    margin: 0 0 6px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.rules-golden-rule-title i {
+    color: var(--rules-gold-main);
+}
+
+.rules-golden-rule-desc {
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--rules-text-muted);
+    margin: 0;
+}
+
+/* ──────────────────────────────────────────────────────────
+   4. INTERACTIVE PIECE MOVEMENT EXPLORER
+   ────────────────────────────────────────────────────────── */
+.rules-explorer-container {
+    background: var(--rules-bg-subtle);
+    border: 1px solid var(--rules-border);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.rules-piece-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 18px;
+    justify-content: center;
+}
+
+.rules-piece-tab {
+    background: var(--rules-bg-surface);
+    border: 1px solid var(--rules-border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--rules-text-body);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    transition: all 0.2s ease;
+}
+
+.rules-piece-tab:hover {
+    border-color: var(--rules-primary);
+    color: var(--rules-primary);
+}
+
+.rules-piece-tab.active {
+    background: var(--rules-primary);
+    color: #ffffff !important;
+    border-color: var(--rules-primary);
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
+}
+
+.rules-explorer-flex {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.rules-explorer-board-box {
+    width: 320px;
+    max-width: 100%;
+}
+
+.rules-explorer-board-box .board-container,
+.rules-demo-board {
+    width: 320px;
+    height: 320px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    border: 2px solid var(--rules-border);
+}
+
+.rules-explorer-info {
+    flex: 1;
+    min-width: 250px;
+    max-width: 420px;
+}
+
+.rules-explorer-piece-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.rules-explorer-piece-name {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--rules-text-heading);
+    margin: 0;
+}
+
+.rules-explorer-piece-points {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    background: rgba(212, 175, 55, 0.15);
+    color: var(--rules-gold-dark);
+    border: 1px solid var(--rules-border-highlight);
+}
+
+[data-theme="dark"] .rules-explorer-piece-points {
+    color: var(--rules-gold-light);
+}
+
+.rules-explorer-summary {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--rules-text-body);
+    margin-bottom: 14px;
+}
+
+.rules-explorer-tips-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.rules-explorer-tips-list li {
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--rules-text-muted);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.rules-explorer-tips-list li i {
+    color: var(--rules-success);
+    margin-top: 3px;
+}
+
+/* Green dot marker for legal moves */
+.rules-legal-dot {
+    position: absolute;
+    width: 28%;
+    height: 28%;
+    top: 36%;
+    left: 36%;
+    background: rgba(34, 197, 94, 0.7);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 10;
+    box-shadow: 0 0 6px rgba(34, 197, 94, 0.8);
+}
+
+.rules-capture-ring {
+    position: absolute;
+    width: 80%;
+    height: 80%;
+    top: 10%;
+    left: 10%;
+    border: 4px solid rgba(239, 68, 68, 0.7);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* ──────────────────────────────────────────────────────────
+   5. PIECE CARDS GRID
+   ────────────────────────────────────────────────────────── */
+.rules-piece-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.rules-piece-card {
+    background: var(--rules-bg-subtle);
+    border: 1px solid var(--rules-border);
+    border-radius: 12px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.rules-piece-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--rules-card-shadow);
+}
+
+.rules-piece-card-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.rules-piece-symbol-badge {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: var(--rules-bg-surface);
+    border: 1px solid var(--rules-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: var(--rules-text-heading);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.rules-piece-card-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--rules-text-heading);
+    margin: 0 0 2px 0;
+}
+
+.rules-piece-card-pts {
+    font-size: 12px;
+    color: var(--rules-gold-dark);
+    font-weight: 600;
+}
+
+[data-theme="dark"] .rules-piece-card-pts {
+    color: var(--rules-gold-light);
+}
+
+.rules-piece-card-desc {
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--rules-text-body);
+    margin: 0 0 12px 0;
+    flex-grow: 1;
+}
+
+.rules-piece-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.rules-tag {
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    background: var(--rules-bg-surface);
+    border: 1px solid var(--rules-border);
+    color: var(--rules-text-muted);
+}
+
+/* ──────────────────────────────────────────────────────────
+   6. SPECIAL MOVES DEMONSTRATION CARDS
+   ────────────────────────────────────────────────────────── */
+.rules-special-card {
+    background: var(--rules-bg-subtle);
+    border: 1px solid var(--rules-border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 20px;
+}
+
+.rules-special-card-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--rules-text-heading);
+    margin: 0 0 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.rules-special-card-title i {
+    color: var(--rules-gold-main);
+}
+
+.rules-special-flex {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 14px;
+}
+
+.rules-special-board-wrap {
+    width: 260px;
+    max-width: 100%;
+}
+
+.rules-special-board-wrap .board-container {
+    width: 260px;
+    height: 260px;
+    border-radius: 8px;
+    border: 1px solid var(--rules-border);
+}
+
+.rules-special-controls {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.rules-btn-action {
+    background: var(--rules-primary);
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.rules-btn-action:hover {
+    background: var(--rules-primary-hover);
+}
+
+.rules-btn-secondary {
+    background: var(--rules-bg-surface);
+    color: var(--rules-text-body);
+    border: 1px solid var(--rules-border);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.rules-btn-secondary:hover {
+    border-color: var(--rules-text-muted);
+}
+
+.rules-checklist {
+    list-style: none;
+    padding: 0;
+    margin: 12px 0 0;
+}
+
+.rules-checklist li {
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--rules-text-body);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.rules-checklist li i {
+    color: var(--rules-primary);
+    margin-top: 3px;
+}
+
+/* ──────────────────────────────────────────────────────────
+   7. CHECKMATE VS STALEMATE MATRIX TABLE
+   ────────────────────────────────────────────────────────── */
+.rules-matrix-wrap {
+    overflow-x: auto;
+    margin: 20px 0;
+    border-radius: 10px;
+    border: 1px solid var(--rules-border);
+}
+
+.rules-matrix-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--rules-bg-surface);
+    font-size: 14px;
+}
+
+.rules-matrix-table th {
+    background: var(--rules-bg-subtle);
+    padding: 12px 16px;
+    font-weight: 700;
+    color: var(--rules-text-heading);
+    border-bottom: 2px solid var(--rules-border);
+    text-align: left;
+}
+
+.rules-matrix-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--rules-border);
+    color: var(--rules-text-body);
+}
+
+.rules-matrix-table tr:last-child td {
+    border-bottom: none;
+}
+
+.rules-badge-pill {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.rules-badge-check {
+    background: rgba(37, 99, 235, 0.12);
+    color: var(--rules-primary);
+    border: 1px solid rgba(37, 99, 235, 0.3);
+}
+
+.rules-badge-mate {
+    background: rgba(220, 38, 38, 0.12);
+    color: var(--rules-danger);
+    border: 1px solid rgba(220, 38, 38, 0.3);
+}
+
+.rules-badge-draw {
+    background: rgba(217, 119, 6, 0.12);
+    color: var(--rules-warning);
+    border: 1px solid rgba(217, 119, 6, 0.3);
+}
+
+/* ──────────────────────────────────────────────────────────
+   8. INTERACTIVE QUIZ
+   ────────────────────────────────────────────────────────── */
+.rules-quiz-box {
+    background: var(--rules-bg-subtle);
+    border: 1px solid var(--rules-border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-top: 16px;
+}
+
+.rules-quiz-question {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--rules-text-heading);
+    margin: 0 0 12px 0;
+}
+
+.rules-quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.rules-quiz-opt {
+    background: var(--rules-bg-surface);
+    border: 1px solid var(--rules-border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13.5px;
+    color: var(--rules-text-body);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.rules-quiz-opt:hover {
+    border-color: var(--rules-primary);
+    background: rgba(37, 99, 235, 0.04);
+}
+
+.rules-quiz-opt.correct {
+    background: rgba(34, 197, 94, 0.15) !important;
+    border-color: var(--rules-success) !important;
+    color: var(--rules-success) !important;
+    font-weight: 700;
+}
+
+.rules-quiz-opt.incorrect {
+    background: rgba(239, 68, 68, 0.15) !important;
+    border-color: var(--rules-danger) !important;
+    color: var(--rules-danger) !important;
+}
+
+.rules-quiz-feedback {
+    display: none;
+    margin-top: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.rules-quiz-feedback.show {
+    display: block;
+}
+
+.rules-quiz-feedback.success {
+    background: rgba(34, 197, 94, 0.12);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    color: var(--rules-success);
+}
+
+.rules-quiz-feedback.error {
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: var(--rules-danger);
+}
+
+/* ──────────────────────────────────────────────────────────
+   9. PRACTICE PATHWAYS CTA CARDS
+   ────────────────────────────────────────────────────────── */
+.rules-cta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.rules-cta-card {
+    background: var(--rules-bg-subtle);
+    border: 1px solid var(--rules-border);
+    border-radius: 12px;
+    padding: 22px;
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.rules-cta-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--rules-card-shadow);
+}
+
+.rules-cta-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    margin: 0 auto 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+}
+
+.rules-cta-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--rules-text-heading);
+    margin: 0 0 6px 0;
+}
+
+.rules-cta-desc {
+    font-size: 13px;
+    color: var(--rules-text-muted);
+    line-height: 1.5;
+    margin: 0 0 16px 0;
+}
+
+.rules-cta-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 9px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none !important;
+    transition: opacity 0.2s ease;
+}
+
+.rules-cta-btn:hover {
+    opacity: 0.9;
+}
+
+/* ──────────────────────────────────────────────────────────
+   10. STICKY TABLE OF CONTENTS SIDEBAR
+   ────────────────────────────────────────────────────────── */
+.rules-toc-card {
+    background: var(--rules-bg-surface);
+    border: 1px solid var(--rules-border);
+    border-radius: 14px;
+    box-shadow: var(--rules-card-shadow);
+    padding: 20px;
+}
+
+.rules-toc-header {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--rules-text-heading);
+    margin: 0 0 14px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--rules-border);
+}
+
+.rules-toc-header i {
+    color: var(--rules-gold-main);
+}
+
+.rules-toc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.rules-toc-item {
+    margin-bottom: 4px;
+}
+
+.rules-toc-link {
+    display: block;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--rules-text-muted);
+    text-decoration: none !important;
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+}
+
+.rules-toc-link:hover {
+    color: var(--rules-primary);
+    background: var(--rules-bg-subtle);
+}
+
+.rules-toc-link.active {
+    color: var(--rules-primary) !important;
+    font-weight: 700;
+    background: rgba(37, 99, 235, 0.08);
+    border-left-color: var(--rules-primary);
+}
+
+[data-theme="dark"] .rules-toc-link.active {
+    background: rgba(59, 130, 246, 0.12);
+}
+
+/* ──────────────────────────────────────────────────────────
+   11. RESPONSIVE DESIGN (TABLET & MOBILE)
+   ────────────────────────────────────────────────────────── */
+@media (max-width: 991px) {
+    .rules-layout {
+        flex-direction: column;
+    }
+
+    .rules-sidebar {
+        width: 100%;
+        position: static;
+        margin-bottom: 24px;
+    }
+
+    .rules-setup-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .rules-explorer-flex {
+        flex-direction: column;
+    }
+
+    .rules-explorer-board-box,
+    .rules-special-board-wrap {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .rules-container {
+        padding: 12px 10px 40px;
+    }
+
+    .rules-hero {
+        padding: 24px 16px 20px;
+        border-radius: 12px;
+    }
+
+    .rules-card {
+        padding: 20px 16px;
+        border-radius: 12px;
+        margin-bottom: 18px;
+    }
+
+    .rules-section-title {
+        font-size: 1.2rem;
+    }
+
+    .rules-piece-cards-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .rules-special-flex {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .rules-explorer-board-box .board-container,
+    .rules-demo-board {
+        width: 280px !important;
+        height: 280px !important;
+    }
+
+    .rules-special-board-wrap {
+        width: 100% !important;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .rules-special-board-wrap .board-container,
+    #initialSetupBoard {
+        width: 260px !important;
+        height: 260px !important;
+    }
+
+    .rules-matrix-table th,
+    .rules-matrix-table td {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+}

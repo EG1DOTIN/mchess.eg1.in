@@ -46,13 +46,29 @@
 }
 
 [data-theme="dark"] #welcome .item_list p {
-    color: #94a3b8 !important;
+    color: #cbd5e1 !important;
 }
 
-[data-theme="dark"] .mainContentHeader {
+/* Dark theme for compact internal page headers */
+[data-theme="dark"] .mainContentHeader:not(.home-hero-header),
+body.dark-theme .mainContentHeader:not(.home-hero-header) {
+    background-image: none !important;
+    background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%) !important;
+    border-bottom: 1px solid #334155;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Dark theme for homepage hero banner */
+[data-theme="dark"] .mainContentHeader.home-hero-header,
+body.dark-theme .mainContentHeader.home-hero-header {
     background-image: url('../img/mchesshome.webp') !important;
+    background-position: center center !important;
+    background-repeat: repeat-x;
+    background-size: auto 485px;
     background-color: transparent !important;
     background-blend-mode: normal !important;
+    border-bottom: none !important;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.4) !important;
 }
 
 [data-theme="dark"] .mainContentHeader .box-90,
@@ -60,6 +76,13 @@
 [data-theme="dark"] #Content3Header {
     background-color: transparent !important;
     background: transparent !important;
+}
+
+[data-theme="dark"] .mainContentHeader h1,
+[data-theme="dark"] .mainContentHeader .page-compact-title,
+body.dark-theme .mainContentHeader h1,
+body.dark-theme .mainContentHeader .page-compact-title {
+    color: #f8fafc !important;
 }
 
 /* Sticky Navigation Bar */
@@ -589,26 +612,95 @@ p {
     margin-top: 1px;
 }
 
-.mainContentHeader {
-    padding-top: 28px;
-    background-position: center;
-    box-shadow: 0px 5px 10px #777;
-    z-index: 100;
-    background-image: url('../img/mchesshome.webp');
-    width: 100%;
-    height: 320px;
-    background-repeat: repeat-x;
-    background-color: #B4B4B4;
+.main-master .content {
+    padding-top: 20px;
 }
 
-.mainContentHeader .overflow {
-    overflow-y: no-display;
-    overflow-x: hidden;
-    height: 270px;
+#appSoft,
+#blog-page-heading {
+    color: #1e293b;
+    font-weight: 700;
+}
+
+[data-theme="dark"] #appSoft,
+body.dark-theme #appSoft,
+[data-theme="dark"] #blog-page-heading,
+body.dark-theme #blog-page-heading {
+    color: #f8fafc !important;
+}
+
+/* Compact Page Title Header for Internal Pages (Non-homepage) */
+.mainContentHeader:not(.home-hero-header) {
+    width: 100%;
+    min-height: 52px;
+    height: auto;
+    padding: 12px 0 10px;
+    background-image: none !important;
+    background: linear-gradient(180deg, #f8fafc 0%, #edf2f7 100%);
+    border-bottom: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    z-index: 10;
+}
+
+.mainContentHeader:not(.home-hero-header) .overflow {
+    height: auto;
+    overflow: visible;
+}
+
+.mainContentHeader:not(.home-hero-header) #Content3Header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    min-height: 28px;
+}
+
+.mainContentHeader:not(.home-hero-header) h1,
+.mainContentHeader:not(.home-hero-header) .page-compact-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+    padding: 0;
+    line-height: 1.3;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mainContentHeader:not(.home-hero-header) p {
+    margin: 0;
+    padding: 0;
+}
+
+/* Homepage Hero Banner Showcase (Only on index.html) */
+.mainContentHeader.home-hero-header {
+    width: 100%;
+    height: 300px;
+    padding: 0 !important;
+    margin: 0 !important;
+    background-image: url('../img/mchesshome.webp') !important;
+    background-position: center center !important;
+    background-repeat: repeat-x !important;
+    background-size: auto 485px !important;
+    background-color: #B4B4B4;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+    border-bottom: none !important;
+    z-index: 100;
+}
+
+.mainContentHeader.home-hero-header .overflow {
+    height: 100% !important;
+    overflow: hidden !important;
 }
 
 .main-master .body {
     padding: 25px 0;
+}
+
+/* Eliminate empty gap between hero banner and homepage body */
+.mainContentHeader.home-hero-header + .body {
+    padding: 0 !important;
 }
 
 .home-product {
@@ -689,7 +781,7 @@ p {
 #welcome {
     min-height: 350px;
     background: #f8fafc;
-    padding: 30px 0 45px 0;
+    padding: 16px 0 20px 0;
 }
 
 .wel_header {
@@ -711,9 +803,20 @@ p {
     text-align: center;
 }
 
+/* Optimized card spacing on desktop */
+#welcome .container > .row {
+    margin-left: -10px;
+    margin-right: -10px;
+}
+
+#welcome .col-md-3 {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
 #welcome .single_item {
-    padding-top: 15px;
-    padding-bottom: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
     text-align: center;
     height: 100%;
 }
@@ -767,12 +870,15 @@ p {
 
 #welcome .item_list p {
     text-align: center;
-    line-height: 1.45;
-    min-height: 5.8em;
-    max-height: 5.8em;
+    line-height: 1.5;
+    min-height: 6em;
+    max-height: 6em;
     overflow: hidden;
     margin: 8px 0 0 0;
-    font-size: 13.5px;
+    font-size: 15px;
+    color: #475569;
+    font-weight: 400;
+    letter-spacing: 0.1px;
     display: -webkit-box;
     -webkit-line-clamp: 4;
     -webkit-box-orient: vertical;
@@ -997,6 +1103,60 @@ p {
 #blogs-container>*:not(.col-md-4) {
     flex: 0 0 100%;
     max-width: 100%;
+}
+
+/*==================== Blog List View Stockfish-Sized Thumbnail =======================*/
+
+.blog-list-thumb-col {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 15px;
+    width: 100%;
+}
+
+.blog-item-container .our-product img.blog-list-thumb,
+.blog-list-thumb {
+    width: 100% !important;
+    max-width: 420px !important;
+    height: auto !important;
+    aspect-ratio: 1 / 1;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16);
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.blog-list-thumb:hover {
+    transform: scale(1.02);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.24);
+}
+
+.blog-list-title {
+    margin-top: 4px;
+    margin-bottom: 8px;
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.blog-list-meta {
+    margin-bottom: 0;
+    color: #555;
+    font-size: 0.95rem;
+}
+
+[data-theme="dark"] .blog-list-meta,
+body.dark-theme .blog-list-meta {
+    color: #aaa;
+}
+
+@media (max-width: 768px) {
+    .blog-item-container .our-product img.blog-list-thumb,
+    .blog-list-thumb {
+        max-width: 100% !important;
+    }
 }
 
 /*====================end=======================*/
@@ -1876,6 +2036,81 @@ p {
     display: inline-block;
 }
 
+/* Detail Pagination & Right-Aligned Share Button (blog.html) */
+.detail-pagination-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    width: 100%;
+}
+
+.pagination-center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.pagination-share-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-share-puzzle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #2563eb;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 34px;
+}
+
+.btn-share-puzzle:hover,
+.btn-share-puzzle:focus {
+    color: #ffffff;
+    background: #2563eb;
+    border-color: #1d4ed8;
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+    text-decoration: none;
+}
+
+.btn-share-puzzle.copied {
+    color: #ffffff;
+    background: #10b981;
+    border-color: #059669;
+}
+
+[data-theme="dark"] .btn-share-puzzle,
+body.dark-theme .btn-share-puzzle {
+    color: #93c5fd;
+    background: #1e293b;
+    border-color: #3b82f6;
+}
+
+[data-theme="dark"] .btn-share-puzzle:hover,
+body.dark-theme .btn-share-puzzle:hover {
+    color: #ffffff;
+    background: #3b82f6;
+    border-color: #60a5fa;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.35);
+}
+
+[data-theme="dark"] .btn-share-puzzle.copied,
+body.dark-theme .btn-share-puzzle.copied {
+    color: #ffffff;
+    background: #10b981;
+    border-color: #34d399;
+}
+
 /* Mobile Responsiveness Adjustments */
 @media (max-width: 768px) {
 
@@ -1917,29 +2152,67 @@ p {
         display: none !important;
     }
 
-    /* Mobile Hero Banner: Full-width edge-to-edge with intact piece crowns and undimmed brightness */
-    .mainContentHeader {
+    /* Mobile Header: Compact for internal pages */
+    .mainContentHeader:not(.home-hero-header) {
         width: 100% !important;
-        height: clamp(190px, 52vw, 230px) !important;
-        padding-top: 0 !important;
+        height: auto !important;
+        min-height: 44px !important;
+        padding: 8px 0 !important;
+        background-image: none !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+        filter: none !important;
+    }
+
+    .mainContentHeader:not(.home-hero-header) .overflow {
+        height: auto !important;
+    }
+
+    /* Mobile Hero Banner: Full-width edge-to-edge with centered, intact piece crowns & bases */
+    .mainContentHeader.home-hero-header,
+    [data-theme="dark"] .mainContentHeader.home-hero-header,
+    body.dark-theme .mainContentHeader.home-hero-header {
+        height: clamp(180px, 54vw, 240px) !important;
+        padding: 0 !important;
+        margin: 0 !important;
         background-size: 100% auto !important;
         background-repeat: no-repeat !important;
-        background-position: center 38% !important;
+        background-position: center center !important;
         background-color: transparent !important;
+        background-image: url('../img/mchesshome.webp') !important;
         background-blend-mode: normal !important;
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08) !important;
         filter: brightness(1.35) contrast(1.05) !important;
+        border-bottom: none !important;
     }
 
-    .mainContentHeader .overflow {
+    .mainContentHeader.home-hero-header .overflow {
         height: 100% !important;
+        overflow: hidden !important;
     }
 
-    [data-theme="dark"] .mainContentHeader,
-    body.dark-theme .mainContentHeader {
-        background-color: transparent !important;
-        background-blend-mode: normal !important;
+    [data-theme="dark"] .mainContentHeader.home-hero-header,
+    body.dark-theme .mainContentHeader.home-hero-header {
         filter: brightness(1.45) contrast(1.05) !important;
+    }
+
+    /* Mobile Pagination & Share Button Alignment */
+    .detail-pagination-wrapper {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .pagination-share-container {
+        width: 100%;
+        justify-content: center;
+        margin-top: 6px;
+    }
+    
+    .btn-share-puzzle {
+        width: 100%;
+        max-width: 280px;
+        justify-content: center;
+        min-height: 40px;
     }
 
     /* Mobile Floating Smart Scroll Button */
@@ -1980,8 +2253,31 @@ p {
         height: 34px;
     }
 
+    .mainContentHeader.home-hero-header + .body {
+        padding: 0 !important;
+    }
+
+    #welcome {
+        padding: 12px 0 16px 0 !important;
+    }
+
     #welcome .single_item {
-        margin-bottom: 20px;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        margin-bottom: 12px !important;
+    }
+
+    #welcome .row:last-child .col-md-3:last-child .single_item {
+        margin-bottom: 0 !important;
+    }
+
+    #welcome .item_list p {
+        font-size: 15px !important;
+        line-height: 1.55 !important;
+        min-height: auto !important;
+        max-height: none !important;
+        -webkit-line-clamp: unset !important;
+        margin-top: 10px !important;
     }
 
     /* Mobile Arena & Tab Buttons Equal Width Alignment */
@@ -2092,6 +2388,7 @@ p {
         box-sizing: border-box !important;
     }
 
+    #mchessBoardContainer,
     #mchessEngineBoardContainer,
     #mchessPuzzleContainer,
     #mchessLiveContainer,
@@ -2101,9 +2398,9 @@ p {
     #boardViewerContainer {
         padding-left: 0 !important;
         padding-right: 0 !important;
-        margin-left: -5px !important;
-        margin-right: -5px !important;
-        width: calc(100% + 10px) !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        width: 100% !important;
         box-sizing: border-box !important;
     }
 
@@ -2259,9 +2556,9 @@ p {
     }
 
     #mchessBlogEngineBoard {
-        margin-left: -6px !important;
-        margin-right: -6px !important;
-        width: calc(100% + 12px) !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        width: 100% !important;
         box-sizing: border-box !important;
     }
 

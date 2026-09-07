@@ -95,6 +95,101 @@ $(document).ready(function() {
         }
     });
 
+    $(document).on('click', '#btnShareBlogItem', async function(e) {
+        e.preventDefault();
+        var $btn = $(this);
+        var title = $btn.attr('data-title') || (currentLoadedBlog && currentLoadedBlog.title) || 'Marwadi Chess';
+        var category = $btn.attr('data-cat') || (currentLoadedBlog && currentLoadedBlog.category) || '';
+        var rawImg = $btn.attr('data-img') || (currentLoadedBlog && currentLoadedBlog.output_image) || '';
+        var isQuote = category === 'Chess Quotes';
+        var isPuzzle = category && (category.indexOf('Mate') !== -1 || category.indexOf('Puzzle') !== -1);
+
+        var shareUrl = 'https://mchess.eg1.in/blog/' + encodeURIComponent(title) + '.htm';
+        var shareTitle = title + ' | Marwadi Chess';
+        var shareText = isQuote 
+            ? 'Inspiring chess quote: ' + title + ' on Marwadi Chess!' 
+            : (isPuzzle ? 'Can you solve this ' + (category || 'Chess') + ' puzzle: ' + title + '?' : 'Check out ' + title + ' on Marwadi Chess!');
+
+        var imgUrl = rawImg ? getBlogImageUrl(rawImg) : '';
+
+        // Try Web Share API Level 2 with image file attachment
+        if (imgUrl && navigator.canShare && navigator.share && window.fetch) {
+            try {
+                var response = await fetch(imgUrl);
+                if (response.ok) {
+                    var blob = await response.blob();
+                    var ext = imgUrl.split('.').pop() || 'webp';
+                    var filename = title.replace(/[^a-zA-Z0-9_-]/g, '_') + '.' + ext;
+                    var file = new File([blob], filename, { type: blob.type || 'image/webp' });
+                    if (navigator.canShare({ files: [file] })) {
+                        await navigator.share({
+                            files: [file],
+                            title: shareTitle,
+                            text: shareText + '\n' + shareUrl
+                        });
+                        return;
+                    }
+                }
+            } catch (shareErr) {
+                if (shareErr.name === 'AbortError') return;
+                console.log('Puzzle/quote file share fallback:', shareErr);
+            }
+        }
+
+        // Fallback 1: Web Share API (URL only - social platforms crawl og:image)
+        if (navigator.share) {
+            navigator.share({
+                title: shareTitle,
+                text: shareText,
+                url: shareUrl
+            }).catch(function(err) {
+                if (err.name !== 'AbortError') {
+                    fallbackCopyShareLink($btn, shareUrl);
+                }
+            });
+        } else {
+            // Fallback 2: Copy link to clipboard with feedback
+            fallbackCopyShareLink($btn, shareUrl);
+        }
+    });
+
+    function fallbackCopyShareLink($btn, url) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(url).then(function() {
+                showShareCopied($btn);
+            }).catch(function() {
+                manualCopyText(url, function() { showShareCopied($btn); });
+            });
+        } else {
+            manualCopyText(url, function() { showShareCopied($btn); });
+        }
+    }
+
+    function showShareCopied($btn) {
+        if (!$btn || !$btn.length) return;
+        var originalHtml = $btn.html();
+        $btn.addClass('copied').html('<i class="fas fa-check"></i> <span>Link Copied!</span>');
+        setTimeout(function() {
+            $btn.removeClass('copied').html(originalHtml);
+        }, 2200);
+    }
+
+    function manualCopyText(text, callback) {
+        var textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-9999px";
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+            document.execCommand("copy");
+            if (callback) callback();
+        } catch (err) {
+            console.warn("Manual copy failed:", err);
+        }
+        document.body.removeChild(textArea);
+    }
+
     window.addEventListener('popstate', function(e) {
         var params = new URLSearchParams(window.location.search);
         var id = params.get('id');
@@ -112,6 +207,7 @@ $(document).ready(function() {
     }
 
     function showLoading() {
+        $('body').removeClass('puzzle-board-active');
         $('#loading-indicator').show();
         $('.blog-item-container').remove();
         $('#pagination-controls').remove();
@@ -131,6 +227,7 @@ $(document).ready(function() {
     }
 
     function loadBlogList() {
+        $('#blog-heading-container').show();
         showLoading();
 
         fetchAllBlogsFlat(category)
@@ -233,6 +330,7 @@ $(document).ready(function() {
     function renderSingleBlog(blog, allBlogs) {
         currentLoadedBlog = blog;
         setHeading(blog.title || 'Blog');
+        $('#blog-heading-container').hide();
         document.title = blog.title || document.title;
         $('meta[name="title"]').attr('content', blog.title || '');
         $('meta[name="description"]').attr('content', blog.metaDescription || '');
@@ -245,6 +343,15 @@ $(document).ready(function() {
         $('#blogs-container').html(renderBlogView(blog, allBlogs));
 
         var isPuzzleBlog = blog.category && (blog.category.indexOf('Mate') !== -1 || blog.category.indexOf('Puzzle') !== -1 || (blog.title && blog.title.toLowerCase().indexOf('mate in') !== -1));
+        var rawDescription = blog.full_description || '';
+        var parsedFen = typeof MChessFenParser !== 'undefined' ? (MChessFenParser.parseDescription(rawDescription) || {}).fen : null;
+        var hasBoard = !!(blog.fen || parsedFen);
+
+        if (hasBoard || isPuzzleBlog) {
+            $('body').addClass('puzzle-board-active');
+        } else {
+            $('body').removeClass('puzzle-board-active');
+        }
 
         if (typeof MChessEngineBoard !== 'undefined') {
             $('#mchessBlogEngineBoard').each(function() {
@@ -414,7 +521,7 @@ $(document).ready(function() {
     }
 
     function getBlogImageUrl(imageUrl) {
-        if (!imageUrl) return 'img/mchesshome.webp';
+        if (!imageUrl) return 'img/mchesslogo.png';
         try {
             var parsed = new URL(imageUrl, window.location.href);
             var pathname = parsed.pathname;
@@ -428,40 +535,38 @@ $(document).ready(function() {
             return imageUrl;
         } catch (e) {
             console.error('Error processing blog image URL:', e);
-            return imageUrl || 'img/mchesshome.webp';
+            return imageUrl || 'img/mchesslogo.png';
         }
     }
 
     function renderListBlog(blog) {
         var image_path = getBlogImageUrl(blog.output_image);
         var isQuote = blog.category === 'Chess Quotes';
+        var blogUrl = 'blog.html?id=' + encodeURIComponent(blog.id);
+
         return '' +
-            '<div class="row blog-item-container' + (isQuote ? ' quote-item' : '') + '">' +
+            '<div class="row blog-item-container blog-list-card' + (isQuote ? ' quote-item' : '') + '">' +
                 '<div class="col-md-12 margin-bottom">' +
                     '<div class="our-product' + (isQuote ? ' quote-card' : '') + '">' +
                         '<div class="row">' +
-                            '<div class="col-md-12">' +
-                                '<div class="row">' +
-                                    '<div class="col-lg-10 col-md-10 col-sm-12 col-xs-12">' +
-                                        '<a href="blog.html?id=' + encodeURIComponent(blog.id) + '">' +
-                                            '<img src="' + escapeAttr(image_path) + '" loading="lazy" style="width: 100%;" />' +
-                                        '</a>' +
-                                    '</div>' +
-                                    '<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 left">' +
-                                        '<a href="blog.html?id=' + encodeURIComponent(blog.id) + '">' +
-                                            '<h3 class="text-black">' + escapeHtml(blog.title || '') + '</h3>' +
-                                        '</a>' +
-                                        '<p><i class="icon icon-list-alt"></i>&nbsp;' + escapeHtml(blog.category || '') + ' | <i class="icon icon-user"></i>&nbsp;Admin</p>' +
-                                    '</div>' +
-                                '</div>' +
-                                '<div class="row mrgin-top20">' +
-                                    '<div class="col-md-12 left' + (isQuote ? ' no-copy-quote' : '') + '"' + (isQuote ? ' unselectable="on"' : '') + '>' +
-                                        (typeof MChessFenParser !== 'undefined' ? MChessFenParser.replaceChessbaseIframe(blog.full_description || '', blog.fen) : (blog.full_description || '')) +
-                                        '<br/>' +
-                                        '<a href="blog.html?id=' + encodeURIComponent(blog.id) + '" class="btn btn-primary btn-sm mt-2">Read More</a>' +
-                                    '</div>' +
-                                '</div>' +
-                                '</div>' +
+                            '<div class="col-md-12 text-center blog-list-thumb-col">' +
+                                '<a href="' + escapeAttr(blogUrl) + '" title="' + escapeAttr(blog.title || 'Chess Puzzle') + '">' +
+                                    '<img src="' + escapeAttr(image_path) + '" class="blog-list-thumb" loading="lazy" alt="' + escapeAttr(blog.title || 'Chess Puzzle') + '" />' +
+                                '</a>' +
+                            '</div>' +
+                            '<div class="col-md-12 left blog-list-info-col" style="margin-top: 14px;">' +
+                                '<a href="' + escapeAttr(blogUrl) + '" style="text-decoration: none;">' +
+                                    '<h3 class="text-black blog-list-title">' + escapeHtml(blog.title || '') + '</h3>' +
+                                '</a>' +
+                                '<p class="blog-list-meta"><i class="icon icon-list-alt"></i>&nbsp;' + escapeHtml(blog.category || '') + ' | <i class="icon icon-user"></i>&nbsp;Admin</p>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="row mrgin-top20">' +
+                            '<div class="col-md-12 left' + (isQuote ? ' no-copy-quote' : '') + '"' + (isQuote ? ' unselectable="on"' : '') + '>' +
+                                (typeof MChessFenParser !== 'undefined' ? MChessFenParser.replaceChessbaseIframe(blog.full_description || '', blog.fen) : (blog.full_description || '')) +
+                                '<br/>' +
+                                '<a href="' + escapeAttr(blogUrl) + '" class="btn btn-primary btn-sm mt-2">Read More</a>' +
+                            '</div>' +
                         '</div>' +
                     '</div>' +
                 '</div>' +
@@ -498,6 +603,7 @@ $(document).ready(function() {
     }
     function renderBlogView(blog, allBlogs) {
         var isQuote = blog.category === 'Chess Quotes';
+        var isPuzzle = blog.category && (blog.category.indexOf('Mate') !== -1 || blog.category.indexOf('Puzzle') !== -1 || (blog.title && blog.title.toLowerCase().indexOf('mate in') !== -1));
         var image_label = getBlogImageUrl(blog.output_image);
         var rawDescription = blog.full_description || '';
         
@@ -509,31 +615,71 @@ $(document).ready(function() {
         if (typeof MChessFenParser !== 'undefined') {
             processedDescription = MChessFenParser.replaceChessbaseIframe(rawDescription, fen);
         } else if (hasBoard && processedDescription.indexOf('mchessBlogEngineBoard') === -1) {
-            processedDescription += '<br/><div id="mchessBlogEngineBoard" data-fen="' + escapeAttr(fen) + '"></div>';
+            processedDescription += '<div id="mchessBlogEngineBoard" data-fen="' + escapeAttr(fen) + '"></div>';
+        }
+
+        // Strip any stray br tag immediately preceding the engine board
+        processedDescription = processedDescription.replace(/<br\s*\/?>\s*(<div id="mchessBlogEngineBoard")/gi, '$1');
+
+        // Replace redundant "White/Black to move" heading with "<category> | <title>"
+        if (hasBoard) {
+            var headingCategory = (blog.category || '').trim();
+            var headingTitle = (blog.title || '').trim();
+            var categoryTitleHeading = '';
+            if (headingCategory && headingTitle) {
+                categoryTitleHeading = escapeHtml(headingCategory) + ' | ' + escapeHtml(headingTitle);
+            } else {
+                categoryTitleHeading = escapeHtml(headingCategory || headingTitle || 'Chess Puzzle');
+            }
+            var newHeadingHtml = '<h2 class="puzzle-blog-heading">' + categoryTitleHeading + '</h2>';
+
+            var moveHeadingRegex = /<h[1-6][^>]*>\s*(?:\(?\s*(?:white|black)\s+to\s+move[^\/<]*\)?)\s*<\/h[1-6]>/i;
+            if (moveHeadingRegex.test(processedDescription)) {
+                processedDescription = processedDescription.replace(moveHeadingRegex, newHeadingHtml);
+            } else {
+                var parenMoveRegex = /<h3>\s*\(?(?:white|black)\s+to\s+move[^\)<]*\)?\s*(?:<br\s*\/?>)?/i;
+                if (parenMoveRegex.test(processedDescription)) {
+                    processedDescription = processedDescription.replace(parenMoveRegex, newHeadingHtml + '<h3>');
+                } else if (processedDescription.indexOf('puzzle-blog-heading') === -1) {
+                    processedDescription = newHeadingHtml + processedDescription;
+                }
+            }
         }
 
         // If the blog contains an interactive chessboard, omit the static thumbnail image to keep board prominently in view
         var imageHtml = '';
         if (!hasBoard && image_label) {
-            imageHtml = '<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">' +
-                            '<img src="' + escapeAttr(image_label) + '" loading="lazy" style="width: 100%; max-width: 640px; display: block; margin: 0 auto;" />' +
+            var imgStyle = isQuote
+                ? 'width: 90%; max-width: 540px; display: block; margin: 0 auto; border-radius: 8px;'
+                : 'width: 100%; max-width: 640px; display: block; margin: 0 auto;';
+            imageHtml = '<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">' +
+                            '<img src="' + escapeAttr(image_label) + '" class="' + (isQuote ? 'quote-detail-image' : '') + '" loading="lazy" style="' + imgStyle + '" />' +
                         '</div>';
+        }
+
+        var metaLineHtml = '';
+        if (!hasBoard) {
+            metaLineHtml = '<div class="blog-meta-bar">' +
+                '<span class="blog-meta-cat"><i class="fas fa-list-alt"></i>&nbsp;' + escapeHtml(blog.category || '') + (blog.title ? ' &bull; <strong>' + escapeHtml(blog.title) + '</strong>' : '') + '</span>' +
+                '<span class="blog-meta-sep">|</span>' +
+                '<span class="blog-meta-author"><i class="fas fa-user"></i>&nbsp;Admin</span>' +
+            '</div>';
         }
 
         var paginationHtml = renderDetailPagination(blog, allBlogs);
 
         return '' +
-            '<div class="row blog-item-container' + (isQuote ? ' quote-item quote-detail' : '') + '">' +
-                '<div class="col-md-12 margin-bottom">' +
-                    '<div class="our-product' + (isQuote ? ' quote-detail' : '') + '">' +
-                        '<div class="row">' +
+            '<div class="row blog-item-container' + (isQuote ? ' quote-item quote-detail' : '') + (hasBoard ? ' has-puzzle-board' : '') + '">' +
+                '<div class="col-md-12 margin-bottom' + (hasBoard ? ' puzzle-board-col' : '') + '">' +
+                    '<div class="our-product' + (isQuote ? ' quote-detail' : '') + (hasBoard ? ' puzzle-board-product' : '') + '">' +
+                        (metaLineHtml || imageHtml ? ('<div class="row">' +
                             imageHtml +
-                            '<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 left">' +
-                                '<p class="mt-3"><i class="icon icon-list-alt"></i>&nbsp;' + escapeHtml(blog.category || '') + ' | <i class="icon icon-user"></i>&nbsp;Admin</p>' +
-                            '</div>' +
-                        '</div>' +
-                        '<div class="row mrgin-top20">' +
-                            '<div class="col-md-12 left' + (isQuote ? ' no-copy-quote' : '') + '" style="font-size: 16px; line-height: 1.6;"' + (isQuote ? ' unselectable="on"' : '') + '>' +
+                            (metaLineHtml ? ('<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 left">' +
+                                metaLineHtml +
+                            '</div>') : '') +
+                        '</div>') : '') +
+                        '<div class="row' + (hasBoard ? ' puzzle-desc-row' : '') + '" style="margin-top: 4px;">' +
+                            '<div class="col-md-12 left' + (isQuote ? ' no-copy-quote' : '') + (hasBoard ? ' puzzle-desc-col' : '') + '" style="font-size: 16px; line-height: 1.5;"' + (isQuote ? ' unselectable="on"' : '') + '>' +
                                 processedDescription +
                             '</div>' +
                         '</div>' +
@@ -595,15 +741,29 @@ $(document).ready(function() {
             }
         }
 
+        var isQuote = blog.category === 'Chess Quotes';
+        var isPuzzle = blog.category && (blog.category.indexOf('Mate') !== -1 || blog.category.indexOf('Puzzle') !== -1 || (blog.title && blog.title.toLowerCase().indexOf('mate in') !== -1));
+        var shareLabel = isQuote ? 'Share Quote' : (isPuzzle ? 'Share Puzzle' : 'Share');
+
+        var shareBtnHtml = '' +
+            '<div class="pagination-share-container">' +
+                '<button type="button" class="btn btn-share-puzzle" id="btnShareBlogItem" title="' + escapeAttr(shareLabel) + '" data-title="' + escapeAttr(blog.title || '') + '" data-cat="' + escapeAttr(blog.category || '') + '" data-img="' + escapeAttr(blog.output_image || '') + '">' +
+                    '<i class="fas fa-share-alt"></i> <span>' + escapeHtml(shareLabel) + '</span>' +
+                '</button>' +
+            '</div>';
+
         return '' +
             '<div id="pagination-controls" class="row blog-item-container" style="margin-top: 25px; margin-bottom: 15px;">' +
                 '<div class="col-md-12">' +
-                    '<div class="text-center">' +
-                        '<div class="btn-group">' +
-                            prevBtn +
-                            pageButtons +
-                            nextBtn +
+                    '<div class="detail-pagination-wrapper">' +
+                        '<div class="pagination-center">' +
+                            '<div class="btn-group">' +
+                                prevBtn +
+                                pageButtons +
+                                nextBtn +
+                            '</div>' +
                         '</div>' +
+                        shareBtnHtml +
                     '</div>' +
                 '</div>' +
             '</div>';
