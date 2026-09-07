@@ -158,6 +158,37 @@ function initializeResponsiveMenu() {
                 e.preventDefault();
                 $(this).parent("li").toggleClass("hover");
             });
+
+            // Close mobile menu & flag auto-centering when navigating to a page from menu
+            $(".nav a").off('click.mchessMobileNav').on('click.mchessMobileNav', function (e) {
+                var href = $(this).attr('href');
+                if (!href || href === '#' || $(this).hasClass('parent')) return;
+
+                var cleanHref = (href || '').split('?')[0].split('#')[0].toLowerCase();
+                // Never auto-center on chessrules.html (it is a reading academy guide)
+                if (cleanHref.indexOf('chessrules') === -1) {
+                    try {
+                        sessionStorage.setItem('mchess_scroll_to_board', '1');
+                    } catch (err) {}
+                } else {
+                    try {
+                        sessionStorage.removeItem('mchess_scroll_to_board');
+                    } catch (err) {}
+                }
+
+                $(".toggleMenu").removeClass("active");
+                $(".navbar .menu").hide();
+                $(".nav").hide();
+
+                // If link points to current page, center board immediately (if not chessrules)
+                var targetPage = cleanHref.split('/').pop() || 'index.html';
+                var currentPage = (window.location.pathname.split('/').pop() || 'index.html').toLowerCase();
+                if (targetPage === currentPage && currentPage !== 'chessrules.html') {
+                    setTimeout(function () {
+                        initializeMobileBoardAutoCentering();
+                    }, 100);
+                }
+            });
         }
         else if (ww >= 920) {
             $(".toggleMenu").css("display", "none");
@@ -425,7 +456,147 @@ function initializeHeaderRefresh() {
     });
 }
 
+/**
+ * Automatically scrolls the primary chessboard into the vertical center of the viewport
+ * on mobile view when arriving from the menu, ensuring immediate board visibility without manual scrolling.
+ */
+function initializeMobileBoardAutoCentering() {
+    // Only execute on mobile / tablet screens (< 992px)
+    if (window.innerWidth >= 992) return;
+
+    var page = (window.location.pathname.split('/').pop() || 'index.html').toLowerCase();
+    var href = (window.location.href || '').toLowerCase();
+    // NEVER auto-center on chessrules.html (it is an educational guide meant to be read from top)
+    if (page.indexOf('chessrules') !== -1 || href.indexOf('chessrules') !== -1) {
+        try { sessionStorage.removeItem('mchess_scroll_to_board'); } catch (e) {}
+        return;
+    }
+
+    var shouldCenter = false;
+    try {
+        shouldCenter = sessionStorage.getItem('mchess_scroll_to_board') === '1';
+    } catch (e) {}
+
+    // Check if referrer is internal menu navigation or arriving at a known board page on mobile
+    if (!shouldCenter && document.referrer && document.referrer.indexOf(window.location.host) !== -1) {
+        var isBoardPage = ['dailypuzzles.html', 'playcomp.html', 'playonline.html', 'train.html', 'watchlive.html', 'chesstraps.html', 'pgngames.html', 'mygames.html'].indexOf(page) !== -1 ||
+                          (page === 'blog.html' && window.location.search.indexOf('Mate') !== -1);
+        if (isBoardPage) {
+            shouldCenter = true;
+        }
+    }
+
+    if (!shouldCenter) return;
+
+    var centered = false;
+
+    function findPrimaryBoardElement() {
+        var selectors = [
+            '#mchessPuzzleContainer .board-container',
+            '#mchessPuzzleContainer',
+            '#mchessEngineBoardContainer .board-container',
+            '#mchessEngineBoardContainer',
+            '#mchessBlogEngineBoard .board-container',
+            '#mchessBlogEngineBoard',
+            '#mchessOnlineBoardContainer .board-container',
+            '#mchessOnlineBoardContainer',
+            '#mchessP2pBoard',
+            '#trainBoardContainer .board-container',
+            '#trainBoardContainer',
+            '#mchessTrainer',
+            '#boardViewerContainer',
+            '[data-mchess-engine]',
+            '.chessboard-63f37',
+            '.board-container',
+            '#myBoard',
+            '#board',
+            '#mchessBoard',
+            '#playBoard'
+        ];
+
+        for (var i = 0; i < selectors.length; i++) {
+            var el = document.querySelector(selectors[i]);
+            if (el) {
+                var h = el.offsetHeight;
+                if (h < 60) {
+                    var inner = el.querySelector('.chessboard-63f37') || el.querySelector('.board-container');
+                    if (inner && inner.offsetHeight >= 60) return inner;
+                } else {
+                    return el;
+                }
+            }
+        }
+        return null;
+    }
+
+    function doCenterBoard(boardEl) {
+        if (centered || !boardEl) return;
+        var h = boardEl.offsetHeight;
+        if (h < 60) return;
+
+        centered = true;
+        try {
+            sessionStorage.removeItem('mchess_scroll_to_board');
+        } catch (e) {}
+
+        var rect = boardEl.getBoundingClientRect();
+        var boardTop = rect.top + (window.pageYOffset || document.documentElement.scrollTop);
+        var viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+
+        // Exact vertical center formula: align board center with screen center
+        var targetScrollTop = boardTop + (h / 2) - (viewportHeight / 2);
+
+        // If board is taller than viewport minus safe margin, show from board top
+        if (h >= viewportHeight - 40) {
+            targetScrollTop = boardTop - 15;
+        }
+
+        targetScrollTop = Math.max(0, Math.round(targetScrollTop));
+
+        window.scrollTo({
+            top: targetScrollTop,
+            behavior: 'smooth'
+        });
+    }
+
+    // 1. Immediate check if board is already rendered in DOM
+    var immediateBoard = findPrimaryBoardElement();
+    if (immediateBoard && immediateBoard.offsetHeight >= 60) {
+        setTimeout(function () { doCenterBoard(immediateBoard); }, 200);
+        return;
+    }
+
+    // 2. Listen for custom boardReady event from any engine/board controller
+    var onBoardReady = function (e, el) {
+        var target = (e && e.detail && e.detail.boardElement) || el || findPrimaryBoardElement();
+        if (target) {
+            setTimeout(function () { doCenterBoard(target); }, 150);
+        }
+    };
+    $(document).one('mchess:boardReady', onBoardReady);
+    window.addEventListener('mchess:boardReady', onBoardReady, { once: true });
+
+    // 3. Polling interval (up to 35 attempts = 3.5 seconds) for async engines/puzzles
+    var attempts = 0;
+    var maxAttempts = 35;
+    var timer = setInterval(function () {
+        if (centered) {
+            clearInterval(timer);
+            return;
+        }
+        var board = findPrimaryBoardElement();
+        if (board && board.offsetHeight >= 60) {
+            clearInterval(timer);
+            setTimeout(function () { doCenterBoard(board); }, 100);
+        } else if (++attempts >= maxAttempts) {
+            clearInterval(timer);
+            try { sessionStorage.removeItem('mchess_scroll_to_board'); } catch (e) {}
+        }
+    }, 100);
+}
+
 // Trigger component initialization on DOM ready
 $(document).ready(function () {
     initializeComponents();
+    initializeMobileBoardAutoCentering();
 });

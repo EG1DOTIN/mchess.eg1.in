@@ -944,6 +944,15 @@
 
             self.handleResponsiveResize();
 
+            // Dispatch boardReady event for mobile center scrolling
+            const domContainer = document.getElementById(this.options.boardContainerId);
+            if (domContainer) {
+                $(document).trigger('mchess:boardReady', [domContainer]);
+                if (window.dispatchEvent) {
+                    window.dispatchEvent(new CustomEvent('mchess:boardReady', { detail: { boardElement: domContainer } }));
+                }
+            }
+
             // Clean up previous observers
             if (this.resizeObserver) {
                 this.resizeObserver.disconnect();

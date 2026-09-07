@@ -93,12 +93,26 @@
                                 The definitive beginner-to-intermediate guide on board setup, piece movements, special moves (Castling & En Passant), checkmate mechanics, and competitive rules.
                             </p>
                             <div class="rules-stats-row">
-                                <div class="rules-stat-pill"><i class="fas fa-chess-board"></i> 64 Squares (32 White, 32 Black)</div>
+                                <div class="rules-stat-pill"><i class="fas fa-chess-board"></i> 64 Squares</div>
                                 <div class="rules-stat-pill"><i class="fas fa-chess"></i> 6 Unique Pieces</div>
                                 <div class="rules-stat-pill"><i class="fas fa-bolt"></i> 3 Special Rules</div>
                                 <div class="rules-stat-pill"><i class="fas fa-crown"></i> 1 Goal: Checkmate</div>
                             </div>
                         </section>
+
+                        <!-- MOBILE QUICK-NAV BAR (Sticky / easy jump on mobile) -->
+                        <nav class="rules-mobile-nav" aria-label="Quick Table of Contents">
+                            <div class="rules-mobile-nav-title"><i class="fas fa-compass"></i> Jump to section:</div>
+                            <div class="rules-mobile-nav-pills">
+                                <a href="#board-setup" class="rules-mobile-nav-pill active"><i class="fas fa-chess-board"></i> 1. Setup</a>
+                                <a href="#piece-moves" class="rules-mobile-nav-pill"><i class="fas fa-chess"></i> 2. Pieces</a>
+                                <a href="#special-moves" class="rules-mobile-nav-pill"><i class="fas fa-bolt"></i> 3. Specials</a>
+                                <a href="#check-checkmate" class="rules-mobile-nav-pill"><i class="fas fa-skull"></i> 4. Checkmate</a>
+                                <a href="#draws" class="rules-mobile-nav-pill"><i class="fas fa-balance-scale"></i> 5. Draws</a>
+                                <a href="#quiz" class="rules-mobile-nav-pill"><i class="fas fa-question-circle"></i> 6. Quiz</a>
+                                <a href="#practice-ctas" class="rules-mobile-nav-pill"><i class="fas fa-rocket"></i> 7. Practice</a>
+                            </div>
+                        </nav>
 
                         <!-- TWO-COLUMN LAYOUT (Content + Sticky Table of Contents) -->
                         <div class="rules-layout">
@@ -151,13 +165,13 @@
                                         </p>
 
                                         <div class="rules-special-flex">
-                                            <div class="rules-special-board-wrap" style="width: 290px;">
-                                                <div id="initialSetupBoard" class="board-container" style="width: 290px; height: 290px;"></div>
+                                            <div class="rules-special-board-wrap">
+                                                <div id="initialSetupBoard" class="board-container"></div>
                                                 <div style="text-align:center; font-size:12px; color:var(--rules-text-muted); margin-top:8px;">
                                                     <i class="fas fa-flag"></i> White starts on ranks 1 & 2 &bull; Black starts on ranks 7 & 8
                                                 </div>
                                             </div>
-                                            <div style="flex:1; min-width:240px;">
+                                            <div class="rules-special-info">
                                                 <strong style="font-size:13.5px; color:var(--rules-text-heading);">Starting Roster Breakdown:</strong>
                                                 <ul class="rules-checklist">
                                                     <li><i class="fas fa-shield-alt"></i> <strong>Back Ranks (Ranks 1 & 8):</strong> Rooks on the corners (a & h), Knights on b & g, Bishops on c & f, Queen on d (her color), and King on e.</li>
@@ -377,7 +391,7 @@
                                                     <button id="btnResetCastle" class="rules-btn-secondary"><i class="fas fa-undo"></i> Reset</button>
                                                 </div>
                                             </div>
-                                            <div style="flex:1; min-width:240px;">
+                                            <div class="rules-special-info">
                                                 <div id="castleStatusText" style="font-size:13px; font-weight:600; color:var(--rules-primary); margin-bottom:10px;">
                                                     Click a button on the left to see the King & Rook move simultaneously!
                                                 </div>
@@ -410,7 +424,7 @@
                                                     <button id="btnResetEp" class="rules-btn-secondary"><i class="fas fa-undo"></i> Reset</button>
                                                 </div>
                                             </div>
-                                            <div style="flex:1; min-width:240px;">
+                                            <div class="rules-special-info">
                                                 <div id="epStatusText" style="font-size:13px; font-weight:600; color:var(--rules-primary); margin-bottom:10px;">
                                                     Click "Step 1" to start the En Passant demonstration.
                                                 </div>
@@ -494,6 +508,69 @@
                                                 </tr>
                                             </tbody>
                                         </table>
+
+                                        <!-- Mobile-Optimized Comparison Cards (No horizontal scrollbar required) -->
+                                        <div class="rules-matrix-mobile-cards">
+                                            <div class="rules-matrix-card">
+                                                <div class="rules-matrix-card-header">
+                                                    <span class="rules-matrix-card-title">Check</span>
+                                                    <span class="rules-badge-pill rules-badge-check">Active Game</span>
+                                                </div>
+                                                <div class="rules-matrix-card-grid">
+                                                    <div class="rules-matrix-field">
+                                                        <span class="rules-matrix-label">King in Check?</span>
+                                                        <span class="rules-badge-pill rules-badge-check">YES</span>
+                                                    </div>
+                                                    <div class="rules-matrix-field">
+                                                        <span class="rules-matrix-label">Legal Moves Left?</span>
+                                                        <span class="rules-badge-pill rules-badge-check">YES</span>
+                                                    </div>
+                                                </div>
+                                                <div class="rules-matrix-outcome">
+                                                    <strong>Outcome:</strong> Game continues. King must immediately escape check via CPR.
+                                                </div>
+                                            </div>
+
+                                            <div class="rules-matrix-card">
+                                                <div class="rules-matrix-card-header">
+                                                    <span class="rules-matrix-card-title">Checkmate</span>
+                                                    <span class="rules-badge-pill rules-badge-mate">Decisive Win</span>
+                                                </div>
+                                                <div class="rules-matrix-card-grid">
+                                                    <div class="rules-matrix-field">
+                                                        <span class="rules-matrix-label">King in Check?</span>
+                                                        <span class="rules-badge-pill rules-badge-mate">YES</span>
+                                                    </div>
+                                                    <div class="rules-matrix-field">
+                                                        <span class="rules-matrix-label">Legal Moves Left?</span>
+                                                        <span class="rules-badge-pill rules-badge-mate">NO</span>
+                                                    </div>
+                                                </div>
+                                                <div class="rules-matrix-outcome">
+                                                    <strong>Outcome:</strong> <strong>Game Over!</strong> Attacking player wins (1 - 0).
+                                                </div>
+                                            </div>
+
+                                            <div class="rules-matrix-card">
+                                                <div class="rules-matrix-card-header">
+                                                    <span class="rules-matrix-card-title">Stalemate</span>
+                                                    <span class="rules-badge-pill rules-badge-draw">Draw</span>
+                                                </div>
+                                                <div class="rules-matrix-card-grid">
+                                                    <div class="rules-matrix-field">
+                                                        <span class="rules-matrix-label">King in Check?</span>
+                                                        <span class="rules-badge-pill rules-badge-draw">NO</span>
+                                                    </div>
+                                                    <div class="rules-matrix-field">
+                                                        <span class="rules-matrix-label">Legal Moves Left?</span>
+                                                        <span class="rules-badge-pill rules-badge-draw">NO</span>
+                                                    </div>
+                                                </div>
+                                                <div class="rules-matrix-outcome">
+                                                    <strong>Outcome:</strong> <strong>Game Over — DRAW!</strong> Split points equally (&frac12; - &frac12;).
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </section>
 

@@ -975,8 +975,9 @@ img.dragged-piece-4d2e8[src*="/b"],
 .piece-417db,
 body>img.piece-417db,
 body>img[class*="piece-"],
+img[class*="piece-"],
+.chessboard-63f37 [class*="piece-"],
 .dragged-piece-4d2e8,
-[class*="piece-"],
 [class*="dragged-piece"] {
     -webkit-user-drag: none !important;
     -khtml-user-drag: none !important;

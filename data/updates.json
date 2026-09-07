@@ -1,5 +1,17 @@
 [
   {
+    "id": "v3-9-1-chessrules-mobile-scroll-sharing-seo-fixes",
+    "version": "3.9.1",
+    "title": "Chess Rules Mobile Scroll & Center Alignment Fix, Puzzle Sharing Card SEO",
+    "message": "Resolved mobile touch scroll freezing on Basic Chess Rules piece cards caused by broad piece selectors, centered demonstration chessboards on mobile screens, and excluded rules pages from unwanted auto-scroll centering. Fixed social link preview cropping across Facebook, WhatsApp, and X.com by generating 1,221 uncropped 1200x630 Open Graph preview cards (WebP) with official logo branding, centered White/Black to move objective badges, and green CTA buttons. Updated all 1,223 static blog landing wrappers with dynamic turn and mate titles and updated the in-app Share Puzzle button.",
+    "icon": "fa-tools",
+    "badge": "Bug Fixes",
+    "badgeColor": "#10b981",
+    "link": "updates.html",
+    "date": "Sep 07, 2026",
+    "pinned": true
+  },
+  {
     "id": "v3-9-0-academies-theater-mode-performance",
     "version": "3.9.0",
     "title": "Interactive Learning Academies, Live Theater Mode & Platform Performance",
