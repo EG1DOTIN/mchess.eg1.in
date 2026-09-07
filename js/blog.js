@@ -95,80 +95,102 @@ $(document).ready(function() {
         }
     });
 
+    function getBlogTurnAndMate(blog) {
+        if (!blog) return '';
+        var turn = '';
+        var desc = blog.full_description || '';
+        if (/white to move/i.test(desc)) {
+            turn = 'White to move';
+        } else if (/black to move/i.test(desc)) {
+            turn = 'Black to move';
+        } else if (blog.fen) {
+            var parts = blog.fen.trim().split(/\s+/);
+            if (parts.length > 1) {
+                turn = parts[1] === 'w' ? 'White to move' : (parts[1] === 'b' ? 'Black to move' : '');
+            }
+        }
+
+        var mate = '';
+        var cat = blog.category || '';
+        var title = blog.title || '';
+        if (/mate in\s*(\d+)/i.test(cat)) {
+            var m1 = cat.match(/mate in\s*(\d+)/i);
+            mate = 'Mate in ' + m1[1];
+        } else if (/^MI(\d+)-/i.test(title)) {
+            var m2 = title.match(/^MI(\d+)-/i);
+            mate = 'Mate in ' + m2[1];
+        } else if (/mate in\s*(\d+)/i.test(title)) {
+            var m3 = title.match(/mate in\s*(\d+)/i);
+            mate = 'Mate in ' + m3[1];
+        }
+
+        if (turn && mate) {
+            return turn + ' and ' + mate;
+        } else if (turn) {
+            return turn;
+        } else if (mate) {
+            return mate;
+        }
+        return '';
+    }
+
     $(document).on('click', '#btnShareBlogItem', async function(e) {
         e.preventDefault();
         var $btn = $(this);
         var title = $btn.attr('data-title') || (currentLoadedBlog && currentLoadedBlog.title) || 'Marwadi Chess';
         var category = $btn.attr('data-cat') || (currentLoadedBlog && currentLoadedBlog.category) || '';
-        var rawImg = $btn.attr('data-img') || (currentLoadedBlog && currentLoadedBlog.output_image) || '';
         var isQuote = category === 'Chess Quotes';
-        var isPuzzle = category && (category.indexOf('Mate') !== -1 || category.indexOf('Puzzle') !== -1);
+        var isPuzzle = category && (category.indexOf('Mate') !== -1 || category.indexOf('Puzzle') !== -1 || (title && title.toLowerCase().indexOf('mate in') !== -1));
 
+        var turnAndMate = getBlogTurnAndMate(currentLoadedBlog);
+
+        // Public static SEO URL (blog/<title>.htm) containing dedicated Open Graph metadata (og:image, og:title, og:url)
         var shareUrl = 'https://mchess.eg1.in/blog/' + encodeURIComponent(title) + '.htm';
-        var shareTitle = title + ' | Marwadi Chess';
-        var shareText = isQuote 
+        var shareTitle = turnAndMate ? (title + ': ' + turnAndMate + ' | Marwadi Chess') : (isPuzzle ? ((category ? category + ' - ' : '') + title + ' | Marwadi Chess') : (title + ' | Marwadi Chess'));
+        var shareMessage = isQuote 
             ? 'Inspiring chess quote: ' + title + ' on Marwadi Chess!' 
-            : (isPuzzle ? 'Can you solve this ' + (category || 'Chess') + ' puzzle: ' + title + '?' : 'Check out ' + title + ' on Marwadi Chess!');
+            : (turnAndMate 
+                ? 'Can you solve ' + title + ' (' + turnAndMate + ')? Solve it interactively:' 
+                : (isPuzzle ? 'Can you solve this ' + (category || 'Chess') + ' puzzle (' + title + ')? Solve it interactively:' : 'Check out ' + title + ' on Marwadi Chess:'));
+        var fullShareText = shareMessage + ' ' + shareUrl;
 
-        var imgUrl = rawImg ? getBlogImageUrl(rawImg) : '';
-
-        // Try Web Share API Level 2 with image file attachment
-        if (imgUrl && navigator.canShare && navigator.share && window.fetch) {
+        // Native Web Share API: Shares the static URL so WhatsApp, Telegram, X, Facebook crawl og:image & render clickable rich cards
+        if (navigator.share) {
             try {
-                var response = await fetch(imgUrl);
-                if (response.ok) {
-                    var blob = await response.blob();
-                    var ext = imgUrl.split('.').pop() || 'webp';
-                    var filename = title.replace(/[^a-zA-Z0-9_-]/g, '_') + '.' + ext;
-                    var file = new File([blob], filename, { type: blob.type || 'image/webp' });
-                    if (navigator.canShare({ files: [file] })) {
-                        await navigator.share({
-                            files: [file],
-                            title: shareTitle,
-                            text: shareText + '\n' + shareUrl
-                        });
-                        return;
-                    }
-                }
+                await navigator.share({
+                    title: shareTitle,
+                    text: shareMessage,
+                    url: shareUrl
+                });
+                showShareCopied($btn, 'Shared!');
+                return;
             } catch (shareErr) {
                 if (shareErr.name === 'AbortError') return;
-                console.log('Puzzle/quote file share fallback:', shareErr);
             }
         }
 
-        // Fallback 1: Web Share API (URL only - social platforms crawl og:image)
-        if (navigator.share) {
-            navigator.share({
-                title: shareTitle,
-                text: shareText,
-                url: shareUrl
-            }).catch(function(err) {
-                if (err.name !== 'AbortError') {
-                    fallbackCopyShareLink($btn, shareUrl);
-                }
-            });
-        } else {
-            // Fallback 2: Copy link to clipboard with feedback
-            fallbackCopyShareLink($btn, shareUrl);
-        }
+        // Fallback for desktop browsers without Web Share API: Copy full share text with link to clipboard
+        fallbackCopyShareLink($btn, fullShareText);
     });
 
-    function fallbackCopyShareLink($btn, url) {
+    function fallbackCopyShareLink($btn, textToCopy) {
         if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(url).then(function() {
+            navigator.clipboard.writeText(textToCopy).then(function() {
                 showShareCopied($btn);
             }).catch(function() {
-                manualCopyText(url, function() { showShareCopied($btn); });
+                manualCopyText(textToCopy, function() { showShareCopied($btn); });
             });
         } else {
-            manualCopyText(url, function() { showShareCopied($btn); });
+            manualCopyText(textToCopy, function() { showShareCopied($btn); });
         }
     }
 
-    function showShareCopied($btn) {
+
+    function showShareCopied($btn, customMsg) {
         if (!$btn || !$btn.length) return;
         var originalHtml = $btn.html();
-        $btn.addClass('copied').html('<i class="fas fa-check"></i> <span>Link Copied!</span>');
+        var msg = customMsg || 'Link Copied!';
+        $btn.addClass('copied').html('<i class="fas fa-check"></i> <span>' + escapeHtml(msg) + '</span>');
         setTimeout(function() {
             $btn.removeClass('copied').html(originalHtml);
         }, 2200);
@@ -331,9 +353,15 @@ $(document).ready(function() {
         currentLoadedBlog = blog;
         setHeading(blog.title || 'Blog');
         $('#blog-heading-container').hide();
-        document.title = blog.title || document.title;
-        $('meta[name="title"]').attr('content', blog.title || '');
-        $('meta[name="description"]').attr('content', blog.metaDescription || '');
+
+        var turnAndMate = getBlogTurnAndMate(blog);
+        var pageTitle = turnAndMate ? (blog.title + ': ' + turnAndMate + ' | Marwadi Chess') : ((blog.title || 'Blog') + ' | Marwadi Chess');
+        document.title = pageTitle;
+        $('meta[name="title"]').attr('content', pageTitle);
+
+        var gameDesc = (blog.metaDescription || '').trim();
+        var metaDesc = turnAndMate ? (turnAndMate + (gameDesc ? '. ' + gameDesc : '')) : gameDesc;
+        $('meta[name="description"]').attr('content', metaDesc);
 
         var prevHeight = $('#blogs-container').outerHeight();
         if (prevHeight > 0) {
@@ -621,17 +649,20 @@ $(document).ready(function() {
         // Strip any stray br tag immediately preceding the engine board
         processedDescription = processedDescription.replace(/<br\s*\/?>\s*(<div id="mchessBlogEngineBoard")/gi, '$1');
 
-        // Replace redundant "White/Black to move" heading with "<category> | <title>"
+        // Format heading with puzzle objective (e.g. "MI2-218: Black to move and Mate in 2")
         if (hasBoard) {
             var headingCategory = (blog.category || '').trim();
             var headingTitle = (blog.title || '').trim();
+            var turnAndMate = getBlogTurnAndMate(blog);
             var categoryTitleHeading = '';
-            if (headingCategory && headingTitle) {
-                categoryTitleHeading = escapeHtml(headingCategory) + ' | ' + escapeHtml(headingTitle);
+            if (turnAndMate) {
+                categoryTitleHeading = (headingTitle ? headingTitle + ': ' : '') + turnAndMate;
+            } else if (headingCategory && headingTitle) {
+                categoryTitleHeading = headingCategory + ' | ' + headingTitle;
             } else {
-                categoryTitleHeading = escapeHtml(headingCategory || headingTitle || 'Chess Puzzle');
+                categoryTitleHeading = headingCategory || headingTitle || 'Chess Puzzle';
             }
-            var newHeadingHtml = '<h2 class="puzzle-blog-heading">' + categoryTitleHeading + '</h2>';
+            var newHeadingHtml = '<h2 class="puzzle-blog-heading">' + escapeHtml(categoryTitleHeading) + '</h2>';
 
             var moveHeadingRegex = /<h[1-6][^>]*>\s*(?:\(?\s*(?:white|black)\s+to\s+move[^\/<]*\)?)\s*<\/h[1-6]>/i;
             if (moveHeadingRegex.test(processedDescription)) {

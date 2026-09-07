@@ -194,6 +194,9 @@
                             <button id="btnSolve" class="btn-reset-analysis" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
                                 <i class="fas fa-eye"></i> Solution
                             </button>
+                            <button id="btnShareDailyPuzzle" class="btn-reset-analysis" style="background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: #fff;">
+                                <i class="fas fa-share-alt"></i> Share Puzzle
+                            </button>
                             <a href="train.html" class="btn-reset-analysis" style="background: linear-gradient(135deg, #d97706 0%, #b45309 100%); text-decoration: none; color: #fff;">
                                 <i class="fas fa-bolt"></i> Train More Puzzles ⚡
                             </a>
@@ -476,6 +479,12 @@
                 });
 
                 self.handleResponsiveResize();
+
+                // Dispatch boardReady event for mobile center scrolling
+                $(document).trigger('mchess:boardReady', [boardEl]);
+                if (window.dispatchEvent) {
+                    window.dispatchEvent(new CustomEvent('mchess:boardReady', { detail: { boardElement: boardEl } }));
+                }
 
                 // Clean up previous observer if any
                 if (this.resizeObserver) {
@@ -1537,6 +1546,40 @@
 
             this.$container.find('#btnNextPuzzle').on('click', () => {
                 self.fetchDailyPuzzle();
+            });
+
+            // Share Daily Puzzle Button
+            this.$container.find('#btnShareDailyPuzzle').on('click', async function () {
+                const $btn = $(this);
+                const shareUrl = 'https://mchess.eg1.in/dailypuzzles.html';
+                const shareTitle = 'Daily Chess Puzzle | Marwadi Chess';
+                const shareText = 'Can you solve today\'s Daily Chess Puzzle on Marwadi Chess?\nPlay & solve interactively: ' + shareUrl;
+
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(shareText).catch(function () {});
+                }
+
+                if (navigator.share) {
+                    try {
+                        await navigator.share({
+                            title: shareTitle,
+                            text: shareText,
+                            url: shareUrl
+                        });
+                        return;
+                    } catch (err) {
+                        if (err.name === 'AbortError') return;
+                    }
+                }
+
+                // Fallback copy
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(shareUrl).then(() => {
+                        const orig = $btn.html();
+                        $btn.html('<i class="fas fa-check"></i> Link Copied!');
+                        setTimeout(() => $btn.html(orig), 2200);
+                    });
+                }
             });
         }
     }

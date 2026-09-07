@@ -408,6 +408,15 @@
 
             self.handleResponsiveResize();
 
+            // Dispatch boardReady event for mobile center scrolling
+            const domEl = document.getElementById(this.boardId);
+            if (domEl) {
+                $(document).trigger('mchess:boardReady', [domEl]);
+                if (window.dispatchEvent) {
+                    window.dispatchEvent(new CustomEvent('mchess:boardReady', { detail: { boardElement: domEl } }));
+                }
+            }
+
             // Dynamic ResizeObserver for responsive resizing
             if (window.ResizeObserver) {
                 const domEl = document.getElementById(this.boardId);

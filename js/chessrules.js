@@ -143,12 +143,19 @@
                 this.selectPiece(pieceKey);
             });
 
-            $(window).on('resize', () => {
+            const onResize = () => {
                 if (this.board) {
                     this.board.resize();
                     this.renderHighlights(this.currentPiece);
                 }
-            });
+            };
+
+            $(window).on('resize orientationchange', onResize);
+
+            if (typeof ResizeObserver !== 'undefined' && this.$container[0]) {
+                const ro = new ResizeObserver(onResize);
+                ro.observe(this.$container[0]);
+            }
         }
 
         selectPiece(pieceKey) {
@@ -289,12 +296,22 @@
                 });
             }
 
-            // Window resize handler for all boards in this section
-            $(window).on('resize', () => {
+            // Window resize and ResizeObserver handler for all demonstration boards
+            const resizeDemoBoards = () => {
                 if (this.initialBoard) this.initialBoard.resize();
                 if (this.castleBoard) this.castleBoard.resize();
                 if (this.enPassantBoard) this.enPassantBoard.resize();
-            });
+            };
+
+            $(window).on('resize orientationchange', resizeDemoBoards);
+
+            if (typeof ResizeObserver !== 'undefined') {
+                const ro = new ResizeObserver(resizeDemoBoards);
+                ['#initialSetupBoard', '#castleDemoBoard', '#enPassantDemoBoard'].forEach(sel => {
+                    const el = document.querySelector(sel);
+                    if (el) ro.observe(el);
+                });
+            }
         }
     }
 
@@ -336,37 +353,49 @@
     // 5. TABLE OF CONTENTS SCROLL-SPY & SMOOTH SCROLL
     // ──────────────────────────────────────────────────────────
     function initScrollSpy() {
-        // Smooth scrolling for TOC links
-        $('.rules-toc-link').on('click', function (e) {
+        // Smooth scrolling for TOC links & mobile quick-nav pills
+        $(document).on('click', '.rules-toc-link, .rules-mobile-nav-pill', function (e) {
             e.preventDefault();
             const targetId = $(this).attr('href');
             const $target = $(targetId);
             if ($target.length) {
-                $('html, body').animate({
-                    scrollTop: $target.offset().top - 90
+                const offset = window.innerWidth <= 768 ? 60 : 90;
+                $('html, body').stop().animate({
+                    scrollTop: $target.offset().top - offset
                 }, 300);
             }
         });
 
-        // Scroll spy highlight active link
+        // Scroll spy highlight active link & mobile pill
         const $sections = $('.rules-section-anchor');
         const $tocLinks = $('.rules-toc-link');
+        const $mobilePills = $('.rules-mobile-nav-pill');
 
+        let isScrollTicking = false;
         $(window).on('scroll', function () {
-            const scrollPos = $(window).scrollTop() + 120;
-            let currentId = '';
+            if (isScrollTicking) return;
+            isScrollTicking = true;
 
-            $sections.each(function () {
-                const top = $(this).offset().top;
-                if (scrollPos >= top) {
-                    currentId = '#' + $(this).attr('id');
+            requestAnimationFrame(() => {
+                isScrollTicking = false;
+                const scrollPos = $(window).scrollTop() + 120;
+                let currentId = '';
+
+                $sections.each(function () {
+                    const top = $(this).offset().top;
+                    if (scrollPos >= top) {
+                        currentId = '#' + $(this).attr('id');
+                    }
+                });
+
+                if (currentId) {
+                    $tocLinks.removeClass('active');
+                    $tocLinks.filter(`[href="${currentId}"]`).addClass('active');
+
+                    $mobilePills.removeClass('active');
+                    $mobilePills.filter(`[href="${currentId}"]`).addClass('active');
                 }
             });
-
-            if (currentId) {
-                $tocLinks.removeClass('active');
-                $tocLinks.filter(`[href="${currentId}"]`).addClass('active');
-            }
         });
     }
 
@@ -374,6 +403,15 @@
     // 6. INITIALIZATION
     // ──────────────────────────────────────────────────────────
     $(document).ready(function () {
+        // Guarantee chessrules always starts at the top and never auto-scrolls to boards
+        try {
+            sessionStorage.removeItem('mchess_scroll_to_board');
+        } catch (e) {}
+
+        if (!window.location.hash) {
+            window.scrollTo(0, 0);
+        }
+
         new PieceExplorer();
         new SpecialMovesDemo();
         new RulesQuiz();
@@ -381,3 +419,4 @@
     });
 
 })(jQuery);
+
