@@ -122,7 +122,7 @@ All pages share a consistent, responsive layout structure:
 │                           Marwadi Chess Welcome Hub                           │
 ├───────────────────┬───────────────────┬───────────────────┬───────────────────┤
 │ 🌐 Play Online    │ 🤖 Play Computer  │ 🧩 Daily Puzzles  │ 🎯 Train Yourself │
-│ Live timed games  │ Stockfish engine  │ Daily tactics &   │ 500+ curated mate │
+│ Live timed games  │ Stockfish engine  │ Daily tactics &   │ 1500+ curated mate │
 │ & player lobby    │ 20 levels & hints │ solving trainer   │ puzzles in 2 to 5 │
 ├───────────────────┼───────────────────┼───────────────────┼───────────────────┤
 │ ♟️ Basic Rules    │ 🪤 Chess Traps    │ 📊 PGN Database   │ 📺 Watch Live     │
@@ -406,7 +406,7 @@ All pages share a consistent, responsive layout structure:
 ### 5. 🎯 Train Yourself ([train.html](train.html))
 - **Purpose**: Dedicated tactical training center for mastering forced checkmates.
 - **Key Features**:
-  - **500+ Curated Puzzles**: Categorized by Mate in 2, Mate in 3, Mate in 4, Mate in 5, and Mixed Sprint.
+  - **1500+ Curated Puzzles**: Categorized by Mate in 2, Mate in 3, Mate in 4, Mate in 5, and Mixed Sprint.
   - **Dynamic Status Feedback**: Smooth animated banner displaying solving instructions and move accuracy feedback.
   - **3-Strikes Survival Rule**: Start with 3 hearts; mistakes shake the board and deduct 1 heart.
   - **Unified Action Controls**: Skip, Hint, Flip Board, and focused Zen Mode practice.
