@@ -33,8 +33,8 @@ The following diagram illustrates how visitors navigate across the Marwadi Chess
 flowchart TD
     Start(["Visitor Enters mchess.eg1.in"]) --> Home["🏠 Homepage / Portal Hub"]
 
-    Home --> HeaderBar["Global Header: [🔔 Updates] [♟️ Play] [🌙 Theme] [🔄 Refresh]"]
-    Home --> NavMenu["Global Navigation Menu: [HOME] [LEARN] [PUZZLES] [PLAY] [EXPLORE] [ABOUT]"]
+    Home --> HeaderBar["Global Header: Marwadi Chess v3.9.3 [🔔 Updates] [♟️ Play] [🌙 Theme] [🔄 Refresh]"]
+    Home --> NavMenu["Global Navigation Menu: [🏠 HOME] [🎓 LEARN] [🧩 PUZZLES] [🎮 PLAY] [🧭 EXPLORE] [ℹ️ ABOUT]"]
     Home --> FeatureCards["12 Feature Portal Cards"]
 
     subgraph Learn_And_Train ["📚 Learn & Train"]
@@ -84,9 +84,9 @@ All pages share a consistent, responsive layout structure:
 
 ```
 ┌───────────────────────────────────────────────────────────────────────────────┐
-│ [LOGO] Marwadi Chess       [🔔 News]  [♟️ Play Online]  [🌙 Theme]  [🔄 Refresh]│ Header
+│ [LOGO] Marwadi Chess v3.9.3  [🔔 Updates] [♟️ Play] [🌙 Theme] [🔄 Refresh] [🐙 GitHub]│ Header
 ├───────────────────────────────────────────────────────────────────────────────┤
-│ HOME  |  LEARN ▾  |  PUZZLES ▾  |  PLAY ▾  |  EXPLORE ▾  |  ABOUT             │ Sticky Nav
+│ 🏠 HOME | 🎓 LEARN ▾ | 🧩 PUZZLES ▾ | 🎮 PLAY ▾ | 🧭 EXPLORE ▾ | ℹ️ ABOUT      │ Sticky Nav
 ├───────────────────────────────────────────────────────────────────────────────┤
 │                                                                               │
 │  Page Heading / Breadcrumb Title                                              │
@@ -106,12 +106,12 @@ All pages share a consistent, responsive layout structure:
 ```
 
 > **Navigation Menu Dropdown Hierarchy**:
-> - **HOME**: Gateway to all 12 feature portals and quick-start links.
-> - **LEARN ▾**: Basic Chess Rules, Learn Chess Traps, Watch Top Live Games, PGN Games Database, Train Yourself.
-> - **PUZZLES ▾**: Train Yourself, Daily Chess Puzzle, Mate in 2, Mate in 3, Mate in 4, Mate in N.
-> - **PLAY ▾**: Play Online, Play vs Computer, My Played Games.
-> - **EXPLORE ▾**: Website Updates, Latest Blog, Chess Quotes, Chess History.
-> - **ABOUT**: Platform background and learning mission.
+> - **🏠 HOME**: Gateway to all 12 feature portals and quick-start links.
+> - **🎓 LEARN ▾**: ♟️ Basic Chess Rules, 🪤 Learn Chess Traps, 📺 Watch Top Live Games, 📊 PGN Games Database, 🧠 Train Yourself.
+> - **🧩 PUZZLES ▾**: 🧠 Train Yourself, 📅 Daily Chess Puzzle, 🎯 Mate in 2, 🎯 Mate in 3, 🏆 Mate in 4, 👑 Mate in N.
+> - **🎮 PLAY ▾**: 🌐 Play Online, 🤖 Play vs Computer, 📜 My Played Games.
+> - **🧭 EXPLORE ▾**: 📢 Website Updates, 📰 Latest Blog, 💬 Chess Quotes, 🏛️ Chess History.
+> - **ℹ️ ABOUT**: Platform background, educational mission, and open-source vision.
 
 ---
 
@@ -464,6 +464,7 @@ All pages share a consistent, responsive layout structure:
 ### 11. 🔔 Website Updates ([updates.html](updates.html))
 - **Purpose**: Platform announcements, release notes, and feature changelogs.
 - **Key Features**:
+  - **Single Source of Truth (SSOT)**: The top entry of `data/updates.json` acts as the canonical version authority for the entire application, dynamically populating the latest release stats, header branding, and mobile navigation via `js/include-components.js` with instant 0ms `sessionStorage` caching.
   - Chronological updates feed detailing engine improvements, new puzzles, UI updates, and bug fixes.
   - Linked directly to the header Notification Bell `[🔔]` for instant announcements.
 

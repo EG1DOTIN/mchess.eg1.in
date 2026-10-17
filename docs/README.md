@@ -35,8 +35,8 @@ flowchart TD
     Client["Client Browser (Desktop / Tablet / Mobile)"]
 
     subgraph Presentation_Layer ["🎨 Presentation & Components Layer"]
-        HeaderComp["components/header.html (Theme, Bell, Quick Actions)"]
-        MenuComp["components/menu.html (Responsive Dropdown Navigation)"]
+        HeaderComp["components/header.html (Logo with v3.9.3, Theme, Bell, Quick Actions)"]
+        MenuComp["components/menu.html (Responsive Dropdown Navigation with Icons)"]
         FooterComp["components/footer.html (Links, Back to Top)"]
         CSSCommon["css/common.css (CSS Custom Properties & Design Tokens)"]
     end

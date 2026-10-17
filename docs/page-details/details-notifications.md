@@ -118,7 +118,8 @@ Whenever you publish a new article, puzzle, or feature:
      "pinned": false
    }
    ```
-3. Commit and deploy. All visitors will immediately see the glowing unread dot (`🔴`) on their next visit!
+3. *(Optional)* If the update represents a new platform release version (e.g. `"version": "3.9.4"`), the top entry acts as the **Single Source of Truth (SSOT)**. The dynamic version engine in [`js/include-components.js`](../../js/include-components.js) and [`js/notifications.js`](../../js/notifications.js) will automatically synchronize this version across the header branding, mobile navbar, homepage cards, and updates stats with zero HTML edits.
+4. Commit and deploy. All visitors will immediately see the glowing unread dot (`🔴`) and the updated platform version on their next visit!
 
 ---
 

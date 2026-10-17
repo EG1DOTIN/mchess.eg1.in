@@ -10,10 +10,10 @@
 ```
 +-----------------------------------------------------------------------------------+
 |  TOP BAR / HEADER PLACEHOLDER (#header-placeholder)                               |
-|  [Logo: Marwadi] [Notifications 🔔] [Play Online] [Theme 🌙] [Refresh 🔄]          |
+|  [Logo: Marwadi Chess v3.9.3] [🔔 Updates] [♟️ Play] [🌙 Theme] [🔄 Refresh]     |
 +-----------------------------------------------------------------------------------+
 |  NAVIGATION MENU PLACEHOLDER (#menu-placeholder)                                  |
-|  [HOME]  [LEARN v]  [PUZZLES v]  [PLAY v]  [EXPLORE v]  [ABOUT]                   |
+|  [🏠 HOME]  [🎓 LEARN v]  [🧩 PUZZLES v]  [🎮 PLAY v]  [🧭 EXPLORE v]  [ℹ️ ABOUT] |
 +-----------------------------------------------------------------------------------+
 |  FEATURE CARDS GRID (.mainContentHeader / #welcome)                               |
 |                                                                                   |
@@ -35,6 +35,7 @@
 |  +------------------+  +------------------+  +------------------+  +--------------+
 |  |  Chess Blog      |  |  Chess Quotes    |  |  Website         |  | About        |
 |  |  Directory       |  |  Category        |  |  Updates Feed    |  | Marwadi Chess|
+|  |                  |  |                  |  |                  |  | v3.9.3         |
 |  |  (blog.html)     |  |  (blog.html?cat) |  |  (updates.html)  |  | (about.html) |
 |  +------------------+  +------------------+  +------------------+  +--------------+
 +-----------------------------------------------------------------------------------+
@@ -95,6 +96,8 @@ graph TD
 > [!TIP]
 > - **1-Click App Refresh & Cache Purge (`#appRefreshBtn`)**: Allows users and developers to purge stale browser asset caches (`caches.delete()`) and force a cache-bypassing reload in 1 click. Features smart mid-game detection with safety warnings so active matches and saved games are never lost.
 > - **Standardized 4-Line Feature Cards**: All 12 feature cards utilize CSS line-clamping (`-webkit-line-clamp: 4`) with balanced copy (~118–128 characters) so every description completes within 4 lines ending in a visible full stop (`.`) on all viewport sizes.
+> - **Integrated Menu Icons & Micro-Animations**: Navigation menus feature high-contrast FontAwesome icons across all parent categories and child links with smooth chevron dropdown rotation for improved visual ergonomics.
+> - **Dynamic Brand Version Display (`.brand-version`, `data-mchess-version`)**: The platform version (`v3.9.3`) is derived dynamically from `data/updates.json` (top entry) as the Single Source of Truth (SSOT) and rendered in a subtle, high-legibility small gray font superscript next to Marwadi Chess branding across the header logo and Card 12 without hardcoding.
 > - **All links on the homepage** point to relative internal pages or secure `https://` external URLs.
 > - **Theme preference** (`dark` or `light`) is saved in `localStorage` and applied instantly on DOM load to prevent layout flicker.
 > - **Web Site Schema JSON-LD** structured data is included in `<head>` for search engine indexing.

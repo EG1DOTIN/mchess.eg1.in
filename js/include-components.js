@@ -42,15 +42,85 @@ function loadComponentWithCache(key, url, placeholderSelector, onReady) {
 }
 
 /**
+ * Synchronizes the application version from data/updates.json (Single Source of Truth)
+ * across the header logo, mobile menu toggle, homepage cards, and updates stats.
+ */
+function syncAppVersion(forceFetch) {
+    // 1. Immediately apply from cache if available to prevent layout shift
+    try {
+        var cachedVersion = sessionStorage.getItem('mchess_version_ssot');
+        if (cachedVersion) {
+            applyVersionToDOM(cachedVersion);
+        }
+    } catch (e) {}
+
+    // Avoid duplicate network requests on the same page
+    if (window._mchessVersionSyncing && !forceFetch) {
+        if (window.MCHESS_APP_VERSION) {
+            applyVersionToDOM(window.MCHESS_APP_VERSION);
+        }
+        return;
+    }
+    window._mchessVersionSyncing = true;
+
+    // 2. Fetch top entry from data/updates.json
+    fetch('data/updates.json?_t=' + Date.now())
+        .then(function (res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.json();
+        })
+        .then(function (data) {
+            if (Array.isArray(data) && data.length > 0) {
+                var topItem = data.find(function (item) { return item && item.version; }) || data[0];
+                if (topItem && topItem.version) {
+                    var verStr = topItem.version.toString().trim();
+                    if (!verStr.startsWith('v')) verStr = 'v' + verStr;
+                    try {
+                        sessionStorage.setItem('mchess_version_ssot', verStr);
+                    } catch (e) {}
+                    applyVersionToDOM(verStr);
+                }
+            }
+        })
+        .catch(function (err) {
+            console.warn('[MChess] Could not fetch version from data/updates.json:', err);
+        });
+}
+
+function applyVersionToDOM(verStr) {
+    if (!verStr) return;
+    window.MCHESS_APP_VERSION = verStr;
+    var targets = document.querySelectorAll('[data-mchess-version], .brand-version, .brand-version-mobile, #statLatestVersion');
+    for (var i = 0; i < targets.length; i++) {
+        targets[i].textContent = verStr;
+    }
+}
+window.applyVersionToDOM = applyVersionToDOM;
+window.syncAppVersion = syncAppVersion;
+
+// Run version sync immediately on script evaluation
+syncAppVersion();
+
+// Also re-apply when DOM is fully loaded to catch any static page targets
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () {
+        syncAppVersion();
+    });
+}
+
+/**
  * Loads HTML templates (header, menu, footer) via cached AJAX and appends them into DOM placeholders.
  */
 function initializeComponents() {
+    syncAppVersion();
+
     // Load header template with cache
     loadComponentWithCache('header', 'components/header.html', '#header-placeholder', function () {
         if (typeof window.initializeNotifications === 'function') {
             window.initializeNotifications();
         }
         initializeHeaderRefresh();
+        syncAppVersion();
     });
 
     // Load menu template & initialize navigation handlers directly after insertion
@@ -58,11 +128,13 @@ function initializeComponents() {
         initializeResponsiveMenu();
         initializeNavigation();
         initializeFixedNav();
+        syncAppVersion();
     });
 
     // Load footer template
     loadComponentWithCache('footer', 'components/footer.html', '#footer-placeholder', function () {
         initializeBackToTop();
+        syncAppVersion();
     });
 
     // Initialize visitor analytics tracking

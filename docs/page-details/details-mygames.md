@@ -100,7 +100,7 @@ graph TD
 | `MChessGameHistory` | [js/mchess-game-history.js](../../js/mchess-game-history.js) | LocalStorage CRUD operations, 7-Tag PGN formatting, `buildPgnFromMoves`, and file export |
 | `MChessBoardTheme` | [js/mchess-board-theme.js](../../js/mchess-board-theme.js) | Centralized 5-theme board customizer & modal dialog |
 | `MChessBoard` | [js/mchess-board.js](../../js/mchess-board.js) | Move-by-move replay engine, SAN move highlighting, auto-play |
-| Navigation Integration | [components/menu.html](../../components/menu.html#L28) | MISC menu link entry |
+| Navigation Integration | [components/menu.html](../../components/menu.html#L44) | PLAY menu link entry |
 
 ---
 
