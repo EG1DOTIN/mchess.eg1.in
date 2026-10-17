@@ -161,6 +161,13 @@
             if (!response.ok) throw new Error('HTTP ' + response.status);
             const data = await response.json();
             activeNews = Array.isArray(data) ? data : [];
+            if (activeNews.length && activeNews[0].version) {
+                const topVer = activeNews[0].version.toString().trim();
+                const verStr = topVer.startsWith('v') ? topVer : 'v' + topVer;
+                if (typeof window.applyVersionToDOM === 'function') {
+                    window.applyVersionToDOM(verStr);
+                }
+            }
             renderNewsList(activeNews.slice(0, MAX_DROPDOWN_NOTIFICATIONS));
             updateBadgeState();
         } catch (err) {

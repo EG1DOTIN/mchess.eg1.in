@@ -1,5 +1,17 @@
 [
   {
+    "id": "v3-9-3-menu-icons-homepage-version-display-docs",
+    "version": "3.9.3",
+    "title": "Navigation Menu Icons, Homepage Brand Version Display & Documentation Updates",
+    "message": "Integrated semantic FontAwesome icons across all main navigation menu categories and dropdown items with smooth hover transitions. Added clean superscript version indicator next to Marwadi Chess branding on the homepage. Updated technical architecture documentation and bumped platform release to v3.9.3.",
+    "icon": "fa-compass",
+    "badge": "Enhancement",
+    "badgeColor": "#10b981",
+    "link": "updates.html",
+    "date": "Oct 17, 2026",
+    "pinned": true
+  },
+  {
     "id": "v3-9-2-header-quick-actions-notification-limiter-ci",
     "version": "3.9.2",
     "title": "Header Actions Modernization, 5-Item Notification Limiter, Flat Asset Structure & CI/CD Pipeline",

@@ -65,8 +65,16 @@
      */
     function updateStats() {
         $('#statTotalUpdates').text(allNews.length);
-        const latestVer = allNews.find(n => n.version)?.version || '3.5.1';
-        $('#statLatestVersion').text('v' + latestVer);
+        const topItem = allNews.find(n => n && n.version) || allNews[0];
+        if (topItem && topItem.version) {
+            let verStr = topItem.version.toString().trim();
+            if (!verStr.startsWith('v')) verStr = 'v' + verStr;
+            if (typeof window.applyVersionToDOM === 'function') {
+                window.applyVersionToDOM(verStr);
+            } else {
+                $('#statLatestVersion').text(verStr);
+            }
+        }
     }
 
     /**
