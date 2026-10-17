@@ -1,0 +1,2 @@
+# Dependencies for public repository audit and verification suite
+chess>=1.10.0

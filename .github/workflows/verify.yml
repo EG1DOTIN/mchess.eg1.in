@@ -1,0 +1,31 @@
+name: Quality & Verification CI
+
+on:
+  push:
+    branches: [ main, 'feature/**', 'dev/**' ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  verify:
+    name: Run Unified Verification Suite
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: 'pip'
+
+      - name: Install Verification Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r automation-scripts/requirements.txt
+
+      - name: Execute Master Verification Suite
+        run: |
+          python automation-scripts/verify_all.py

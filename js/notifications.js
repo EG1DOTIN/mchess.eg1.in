@@ -9,6 +9,7 @@
     'use strict';
 
     const STORAGE_KEY = 'mchess_read_notifications_v1';
+    const MAX_DROPDOWN_NOTIFICATIONS = 5;
     let activeNews = [];
     let isInitialized = false;
 
@@ -76,7 +77,8 @@
         }
 
         const readIds = getReadIds();
-        const hasUnread = activeNews.some(item => !readIds.includes(item.id));
+        const visibleNews = activeNews.slice(0, MAX_DROPDOWN_NOTIFICATIONS);
+        const hasUnread = visibleNews.some(item => !readIds.includes(item.id));
 
         if (hasUnread) {
             if ($badge) $badge.style.display = 'block';
@@ -159,7 +161,7 @@
             if (!response.ok) throw new Error('HTTP ' + response.status);
             const data = await response.json();
             activeNews = Array.isArray(data) ? data : [];
-            renderNewsList(activeNews);
+            renderNewsList(activeNews.slice(0, MAX_DROPDOWN_NOTIFICATIONS));
             updateBadgeState();
         } catch (err) {
             console.warn('[MChessNotifications] Could not fetch data/updates.json feed:', err);

@@ -43,9 +43,11 @@
             if (theme === 'dark') {
                 $icon.attr('class', 'fas fa-sun').css('color', '#f59e0b');
                 $text.text('Light Mode');
+                $btn.attr('title', 'Switch to Light Theme').attr('aria-label', 'Switch to Light Theme');
             } else {
                 $icon.attr('class', 'fas fa-moon').css('color', '#64748b');
                 $text.text('Dark Mode');
+                $btn.attr('title', 'Switch to Dark Theme').attr('aria-label', 'Switch to Dark Theme');
             }
         }
     }

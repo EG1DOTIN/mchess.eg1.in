@@ -67,15 +67,26 @@
                     </div>
                 </div>
 
-                <a href="playonline.html" class="header-cta-btn cta-play" title="Play Online Chess">
-                    <i class="fas fa-chess-knight"></i> <span>Play Online</span>
+                <!-- 2. Play Online Icon -->
+                <a href="playonline.html" class="header-cta-btn cta-play" title="Play Online Chess" aria-label="Play Online Chess">
+                    <i class="fas fa-chess-knight"></i>
+                    <span class="sr-only">Play Online</span>
                 </a>
-                <button id="themeToggleBtn" class="header-cta-btn cta-theme" title="Toggle Light / Dark Theme">
-                    <i class="fas fa-moon" id="themeToggleIcon"></i> <span id="themeToggleText">Dark Mode</span>
+                <!-- 3. Theme Mode Icon -->
+                <button id="themeToggleBtn" class="header-cta-btn cta-theme" title="Toggle Light / Dark Theme" aria-label="Toggle Theme">
+                    <i class="fas fa-moon" id="themeToggleIcon"></i>
+                    <span id="themeToggleText" class="sr-only">Dark Mode</span>
                 </button>
+                <!-- 4. Refresh App Icon -->
                 <button id="appRefreshBtn" class="header-cta-btn cta-refresh" title="Refresh Latest App & Clear Cache" aria-label="Refresh App">
                     <i class="fas fa-sync-alt" id="appRefreshIcon"></i>
+                    <span class="sr-only">Refresh App</span>
                 </button>
+                <!-- 5. GitHub Repository Icon -->
+                <a href="https://github.com/EG1DOTIN/mchess.eg1.in" target="_blank" rel="noopener noreferrer" id="headerGithubBtn" class="header-cta-btn cta-github" title="Source / GitHub Repository" aria-label="GitHub Repository">
+                    <i class="fab fa-github"></i>
+                    <span class="sr-only">GitHub Repository</span>
+                </a>
             </div>
         </div>
     </div>
