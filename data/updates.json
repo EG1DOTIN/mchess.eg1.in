@@ -1,5 +1,17 @@
 [
   {
+    "id": "v3-9-2-header-quick-actions-notification-limiter-ci",
+    "version": "3.9.2",
+    "title": "Header Actions Modernization, 5-Item Notification Limiter, Flat Asset Structure & CI/CD Pipeline",
+    "message": "Modernized header quick-action group with icon-only controls, tooltips, and official GitHub repository link. Optimized What's New notification dropdown to display the top 5 latest announcements with unread badge diffing and a direct 'See All Updates' navigation flow. Restructured client assets into a clean flat layout, established comprehensive page documentation in docs/, and integrated a public automated quality verification suite with GitHub Actions CI pipeline.",
+    "icon": "fa-rocket",
+    "badge": "Platform",
+    "badgeColor": "#3b82f6",
+    "link": "updates.html",
+    "date": "Oct 17, 2026",
+    "pinned": true
+  },
+  {
     "id": "v3-9-1-chessrules-mobile-scroll-sharing-seo-fixes",
     "version": "3.9.1",
     "title": "Chess Rules Mobile Scroll & Center Alignment Fix, Puzzle Sharing Card SEO",

@@ -497,10 +497,20 @@ Marwadi Chess is fully responsive and optimized across all screen sizes:
 - **Mobile (< 768px)**: Single-column responsive layout with toggle navigation menu, edge-to-edge board scaling, and tap-to-move piece controls.
 
 ### Header Quick Actions:
-- **`[ 🔔 ]` What's New**: Opens a dropdown panel with the latest feature announcements.
-- **`[ ♟️ Play Online ]`**: One-click shortcut to the live multiplayer lobby.
-- **`[ 🌙 Dark Mode / ☀️ Light Mode ]`**: Instant theme switching saved to your device.
-- **`[ 🔄 ]` 1-Click Refresh**: Clears stale browser caches and fetches the latest version of the website with active game protection.
+- **`[ 🔔 ]` What's New**: Interactive notification bell displaying the latest 5 platform announcements with unread badge tracking and link to full release history.
+- **`[ ♟️ ]` Play Online**: 1-click icon shortcut directly to the live multiplayer arena.
+- **`[ 🌙 / ☀️ ]` Theme Toggle**: Instant dark and light mode switching saved to local storage.
+- **`[ 🔄 ]` 1-Click Refresh**: Clears stale browser caches and fetches the latest website updates with active-game loss protection.
+- **`[ 🐙 ]` Source / GitHub Repository**: Direct link to the official GitHub repository and open-source codebase.
+
+---
+
+## 📖 Technical & Page Documentation ([`docs/`](./docs/README.md))
+
+For in-depth architectural guides, ASCII wireframes, component interaction flows, and key feature modules for all pages and core engines, explore the [Documentation Directory](./docs/README.md):
+
+- **[Page Documentation Index](./docs/README.md)**: Master index of page-by-page specifications.
+- **[Page Details Directory](./docs/page-details/)**: Comprehensive technical breakdowns for each individual page (`details-index.md`, `details-playonline.md`, `details-train.md`, `details-mchess-board.md`, etc.).
 
 ---
 

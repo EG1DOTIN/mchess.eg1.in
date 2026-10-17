@@ -1,23 +1,12 @@
-# ─── Internal Utility / Scratch Scripts /Old/unused files ──────────────────
-automation-scripts/
-unused-old-files/
-test.html
-test-blog-debug.html
-drag-diagnostic.html
-pgngames-demo.html
-support.html
+# ───── ignored files and folders ─────
+gitignore
+
+# ─── Internal Utility or local experiment/testing files ──────────────────
 blog/test1.htm
 blog/test.htm
-mchess-logo.html
 blog/html_blog_fix.py
 img/mchess-wall.png
 img/mchess-web.webp
-
-# ─── Internal Documentation ──────────────────────────────
-docs/
-
-# ─── Backend & Firestore ─────────────────────────────────
-Firestore/
 
 # ─── Firebase CLI Artifacts ──────────────────────────────
 .firebase/
@@ -52,6 +41,8 @@ __pycache__/
 *.pyo
 *.pyd
 .pytest_cache/
+.venv/
+venv/
 
 # ─── AI AGENTS ─────────────────────────
 .agents/

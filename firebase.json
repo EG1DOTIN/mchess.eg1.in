@@ -8,6 +8,7 @@
       "docs/**",
       "unused-old-files/**",
       "automation-scripts/**",
+      "gitignore/**",
       "Firestore/*.py",
       "Firestore/*.json"
     ],
