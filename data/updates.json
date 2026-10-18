@@ -7,7 +7,7 @@
     "icon": "fa-compass",
     "badge": "Enhancement",
     "badgeColor": "#10b981",
-    "link": "updates.html",
+    "link": "https://github.com/EG1DOTIN/mchess.eg1.in/releases/tag/v3.9.3",
     "date": "Oct 17, 2026",
     "pinned": true
   },
@@ -19,7 +19,7 @@
     "icon": "fa-rocket",
     "badge": "Platform",
     "badgeColor": "#3b82f6",
-    "link": "updates.html",
+    "link": "https://github.com/EG1DOTIN/mchess.eg1.in/releases/tag/v3.9.2",
     "date": "Oct 17, 2026",
     "pinned": true
   },
@@ -31,7 +31,7 @@
     "icon": "fa-tools",
     "badge": "Bug Fixes",
     "badgeColor": "#10b981",
-    "link": "updates.html",
+    "link": "https://github.com/EG1DOTIN/mchess.eg1.in/releases/tag/v3.9.1",
     "date": "Sep 07, 2026",
     "pinned": true
   },
@@ -43,7 +43,7 @@
     "icon": "fa-graduation-cap",
     "badge": "Feature",
     "badgeColor": "#3b82f6",
-    "link": "updates.html",
+    "link": "https://github.com/EG1DOTIN/mchess.eg1.in/releases/tag/v3.9.0",
     "date": "Sep 07, 2026",
     "pinned": true
   },
@@ -55,7 +55,7 @@
     "icon": "fa-sparkles",
     "badge": "Feature",
     "badgeColor": "#3b82f6",
-    "link": "about.html",
+    "link": "https://github.com/EG1DOTIN/mchess.eg1.in/releases/tag/v3.8.0",
     "date": "Sep 05, 2026",
     "pinned": true
   },
@@ -67,7 +67,7 @@
     "icon": "fa-sync-alt",
     "badge": "Bug Fixes",
     "badgeColor": "#10b981",
-    "link": "updates.html",
+    "link": "https://github.com/EG1DOTIN/mchess.eg1.in/releases/tag/v3.7.1",
     "date": "Aug 27, 2026",
     "pinned": true
   },
