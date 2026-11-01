@@ -47,4 +47,5 @@ venv
 venv/
 
 # ─── AI AGENTS ─────────────────────────
+.agents
 .agents/
