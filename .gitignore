@@ -1,5 +1,6 @@
 # ───── ignored files and folders ─────
 gitignore
+gitignore/
 
 # ─── Internal Utility or local experiment/testing files ──────────────────
 blog/test1.htm
@@ -41,8 +42,11 @@ __pycache__/
 *.pyo
 *.pyd
 .pytest_cache/
+.venv
 .venv/
+venv
 venv/
 
 # ─── AI AGENTS ─────────────────────────
+.agents
 .agents/
