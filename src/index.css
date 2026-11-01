@@ -1,0 +1,303 @@
+@import 'eg-web-core/style.css';
+
+:root {
+  --mc-accent-gold: #d4af37;
+  --mc-accent-gold-hover: #b89628;
+  --mc-accent-emerald: #10b981;
+  --mc-accent-blue: #3b82f6;
+  --mc-accent-purple: #8b5cf6;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--eg-font-sans, 'Plus Jakarta Sans', sans-serif);
+  background-color: var(--eg-bg-canvas, #0a0e17);
+  color: var(--eg-text-primary, #f8fafc);
+  min-height: 100vh;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ==========================================================================
+   Homepage Hero & Ticker
+   ========================================================================== */
+.home-hero-banner {
+  position: relative;
+  background-image: linear-gradient(180deg, rgba(10, 14, 23, 0.72) 0%, rgba(10, 14, 23, 0.94) 100%), url('/img/mchesshome.webp');
+  background-size: cover;
+  background-position: center center;
+  border-bottom: 1px solid var(--eg-border-default, rgba(255, 255, 255, 0.08));
+  padding: 48px 0 36px;
+  text-align: center;
+}
+
+[data-theme="light"] .home-hero-banner {
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.88) 0%, rgba(248, 250, 252, 0.96) 100%), url('/img/mchesshome.webp');
+}
+
+/* ==========================================================================
+   Authentic Marwadi Chess Portal Feature Cards (Exact 1:1 Parity)
+   ========================================================================== */
+.mchess-portal-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 1024px) {
+  .mchess-portal-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .mchess-portal-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mchess-portal-card {
+  background-color: #151c2c;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  border-radius: 14px;
+  padding: 24px 18px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+}
+
+[data-theme="light"] .mchess-portal-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.mchess-portal-card:hover {
+  transform: translateY(-5px);
+  border-color: #d4af37;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55), 0 0 15px rgba(212, 175, 55, 0.2);
+}
+
+[data-theme="light"] .mchess-portal-card:hover {
+  border-color: #d4af37;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* The iconic 84px square badge with rounded corners */
+.mchess-icon-wrapper {
+  width: 84px;
+  height: 84px;
+  border-radius: 18px;
+  margin: 0 auto 16px;
+  background-color: #0f172a;
+  border: 2px solid #1e293b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  color: #d4af37;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.25);
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+}
+
+[data-theme="light"] .mchess-icon-wrapper {
+  background-color: #0f172a;
+  border: 2px solid #334155;
+  color: #f59e0b;
+}
+
+.mchess-portal-card:hover .mchess-icon-wrapper {
+  background: #d4af37;
+  border-color: #d4af37;
+  color: #0f172a;
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 12px 25px rgba(212, 175, 55, 0.4);
+}
+
+.mchess-card-title {
+  font-family: 'Roboto Slab', serif;
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #f8fafc;
+  margin: 0 0 10px 0;
+  line-height: 1.3;
+  transition: color 0.3s ease;
+  letter-spacing: 0.4px;
+}
+
+[data-theme="light"] .mchess-card-title {
+  color: #1e293b;
+}
+
+.mchess-portal-card:hover .mchess-card-title {
+  color: #d4af37 !important;
+}
+
+.mchess-card-desc {
+  font-size: 14px;
+  line-height: 1.55;
+  color: #cbd5e1;
+  font-weight: 400;
+  letter-spacing: 0.1px;
+  margin: 0 0 16px 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
+[data-theme="light"] .mchess-card-desc {
+  color: #475569;
+}
+
+.mchess-card-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #d4af37;
+  letter-spacing: 0.3px;
+  transition: gap 0.2s ease;
+}
+
+.mchess-portal-card:hover .mchess-card-action {
+  gap: 10px;
+}
+
+/* Category row title */
+.mchess-row-title {
+  font-family: 'Roboto Slab', serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--eg-text-primary, #f8fafc);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ==========================================================================
+   Tab, Chip & Notation Utilities
+   ========================================================================== */
+.tab-chip {
+  padding: 8px 16px;
+  border-radius: var(--eg-radius-full, 9999px);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--eg-border-default, rgba(255, 255, 255, 0.1));
+  background: var(--eg-bg-surface, #1e293b);
+  color: var(--eg-text-secondary, #94a3b8);
+  transition: all 0.2s ease;
+}
+
+.tab-chip:hover {
+  color: var(--eg-text-primary, #ffffff);
+  border-color: var(--eg-border-hover, rgba(255, 255, 255, 0.2));
+}
+
+.tab-chip.active {
+  background: var(--mc-accent-gold, #d4af37);
+  color: #0f172a;
+  border-color: var(--mc-accent-gold, #d4af37);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+.move-pill {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: var(--eg-font-mono, 'JetBrains Mono', monospace);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.move-pill:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.move-pill.current {
+  background: rgba(212, 175, 55, 0.25);
+  color: #fbbf24;
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   Footer Social Icon Buttons & Email Chip (1:1 with live mchess.eg1.in)
+   ========================================================================== */
+.social-icon-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.social-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background-color: #1e293b;
+  color: #ffffff !important;
+  border-radius: 8px;
+  font-size: 19px;
+  text-decoration: none !important;
+  transition: all 0.25s ease-in-out;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.social-icon-btn:hover {
+  background-color: #d4af37;
+  color: #0f172a !important;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(212, 175, 55, 0.4);
+  border-color: #d4af37;
+}
+
+.footer-email-chip {
+  margin-top: 6px;
+}
+
+.email-chip-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 6px 14px;
+  border-radius: 20px;
+  color: #cbd5e1 !important;
+  font-size: 13px;
+  text-decoration: none !important;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: all 0.25s ease;
+}
+
+.email-chip-link:hover {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b !important;
+  border-color: #f59e0b;
+}

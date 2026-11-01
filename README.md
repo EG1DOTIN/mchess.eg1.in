@@ -1,530 +1,171 @@
-# ♟️ Marwadi Chess ([mchess.eg1.in](https://mchess.eg1.in)) — Website Pages & User Guide
+# Marwadi Chess Platform (`mchess.eg1.in`)
 
-Welcome to the official user guide for **Marwadi Chess** ([mchess.eg1.in](https://mchess.eg1.in)). Marwadi Chess is a free, web-based chess portal and learning platform designed to help chess enthusiasts of all skill levels—from complete beginners to tournament players—learn rules, practice tactics, study opening traps, replay grandmaster games, play vs AI engines or online opponents, review personal game archives, and watch live international broadcasts.
-
----
-
-## 🗺️ Website Overview & Page Directory
-
-| Page Name | Page URL | Category | Core Purpose & Visitor Experience |
-| :--- | :--- | :--- | :--- |
-| **Home Portal** | [`index.html`](index.html) | Navigation Hub | Main gateway featuring 12 interactive feature cards, latest updates, and community links. |
-| **Play Online Arena** | [`playonline.html`](playonline.html) | Play & Multiplayer | Real-time online lobby, 1-click challenges, digital clocks, local Pass & Play, and club rooms. |
-| **Play vs Computer** | [`playcomp.html`](playcomp.html) | Play & AI | Browser chess against Stockfish engine across 20 difficulty levels with instant side selection. |
-| **Daily Chess Puzzles** | [`dailypuzzles.html`](dailypuzzles.html) | Training | Daily tactical puzzles with dynamic hints, solution viewer, and streak counter. |
-| **Train Yourself** | [`train.html`](train.html) | Tactics & Training | Checkmate drills across Mate in 2 to Mate in 5, speed sprint challenges, and zen practice. |
-| **Basic Chess Rules** | [`chessrules.html`](chessrules.html) | Learn | Interactive Academy with playable Piece Explorer, Castling & En Passant demos, and rules quiz. |
-| **Learn Chess Traps** | [`chesstraps.html`](chesstraps.html) | Learn & Tactics | Interactive traps viewer with dynamic lesson cards (Bait, Blunder, Refutation) and stepper pills. |
-| **PGN Games Database** | [`pgngames.html`](pgngames.html) | Study & Masters | Grandmaster game database with move notation tree, autoplay, and game-by-game analysis. |
-| **Watch Top Live Games** | [`watchlive.html`](watchlive.html) | Broadcasts | 6-channel broadcast center with Theater Mode, Grid Mode, channel pills, and fullscreen modal. |
-| **Chess Blog** | [`blog.html`](blog.html) | Articles & Reading | Categorized articles, tactical studies, in-place puzzle solving, and Web Share API image sharing. |
-| **Website Updates** | [`updates.html`](updates.html) | Platform & News | Release notes, engine updates, feature announcements, and platform changelog. |
-| **My Played Games Archive** | [`mygames.html`](mygames.html) | Play & History | Personal match history dashboard with victory stats, win rate %, search, replay board, and PGN export. |
-| **About Us** | [`about.html`](about.html) | Information | Mission statement, learning philosophy, and platform background. |
-| **Privacy Policy** | [`privacypolicy.html`](privacypolicy.html) | Legal | User privacy terms, cookie information, and website usage policies. |
+Modern, interactive online chess gaming and training platform for [Marwadi Chess](https://mchess.eg1.in), built with **React 18**, **TypeScript**, **Vite**, and **chess.js**, powered by the generic [`eg-web-core`](https://github.com/EG1DOTIN/eg-web-core) library.
 
 ---
 
-## 🧭 User Navigation Flow
-
-The following diagram illustrates how visitors navigate across the Marwadi Chess web platform:
+## 🏗️ Architecture & Component Flow
 
 ```mermaid
 flowchart TD
-    Start(["Visitor Enters mchess.eg1.in"]) --> Home["🏠 Homepage / Portal Hub"]
-
-    Home --> HeaderBar["Global Header: Marwadi Chess v3.9.3 [🔔 Updates] [♟️ Play] [🌙 Theme] [🔄 Refresh]"]
-    Home --> NavMenu["Global Navigation Menu: [🏠 HOME] [🎓 LEARN] [🧩 PUZZLES] [🎮 PLAY] [🧭 EXPLORE] [ℹ️ ABOUT]"]
-    Home --> FeatureCards["12 Feature Portal Cards"]
-
-    subgraph Learn_And_Train ["📚 Learn & Train"]
-        Rules["♟️ Basic Chess Rules (chessrules.html)"]
-        Traps["🪤 Opening Traps Viewer (chesstraps.html)"]
-        DailyPuzzles["🧩 Daily Chess Puzzles (dailypuzzles.html)"]
-        TacticsTrain["🎯 Train Yourself: Mate in 2 to 5 (train.html)"]
+    subgraph Browser["Client Browser & Routing Engine"]
+        Router["App.tsx (SPA Path Normalizer)"]
+        History["PopState & pushState Listener"]
+        Router <--> History
     end
 
-    subgraph Play_And_Watch ["⚔️ Play & Broadcasts"]
-        PlayOnline["🌐 Play Online Arena (playonline.html)"]
-        PlayComp["🤖 Play vs Stockfish Computer (playcomp.html)"]
-        MyGames["📜 My Played Games Archive (mygames.html)"]
-        WatchLive["📺 6-Channel Live Broadcasts (watchlive.html)"]
+    subgraph Pages["Chess Application Pages (src/pages/)"]
+        Home["HomePage.tsx (Hero, Quotes & Daily Puzzle Spotlight)"]
+        PlayOnline["PlayOnlinePage.tsx (Realtime Multiplayer Rooms)"]
+        PlayComp["PlayCompPage.tsx (AI Engine Play)"]
+        Train["TrainPage.tsx (Tactics & Board Analysis)"]
+        DailyPuzzles["DailyPuzzlesPage.tsx (Interactive Tactical Problems)"]
+        ChessRules["ChessRulesPage.tsx (Interactive Rules Guide)"]
+        ChessTraps["ChessTrapsPage.tsx (Opening Traps Catalog)"]
+        PgnGames["PgnGamesPage.tsx (Master PGN Database Viewer)"]
+        MyGames["MyGamesPage.tsx (Played Game History & Replay)"]
+        WatchLive["WatchLivePage.tsx (Live GM Broadcasts)"]
+        Blog["BlogPage.tsx (Mate-in-N Puzzles & Articles)"]
+        Updates["UpdatesPage.tsx (Platform Changelog)"]
+        About["AboutPage.tsx (Marwadi Chess History)"]
+        Privacy["PrivacyPolicyPage.tsx (GDPR Telemetry Opt-Out)"]
+        Admin["AdminPage.tsx (2FA Chess Admin Studio)"]
     end
 
-    subgraph Explore_And_Read ["📰 Explore & Study"]
-        Blog["📰 Chess Blog & Studies (blog.html)"]
-        Quotes["💬 Inspiring Chess Quotes (blog.html?cat=Chess%20Quotes)"]
-        History["📜 Chess History (blog.html?cat=Chess%20History)"]
-        PGN["📊 Grandmaster PGN Replays (pgngames.html)"]
-        News["🔔 Platform Updates & News (updates.html)"]
+    subgraph CoreLib["Shared Library Integration (eg-web-core)"]
+        HeaderComp["Header (preset='mchess')"]
+        FooterComp["Footer (preset='mchess')"]
+        ThemeComp["ThemeProvider (Staunton Dark Canvas)"]
+        FirebaseComp["FirebaseProvider (Realtime Database & Auth)"]
+        AdminSuiteComp["AdminAuthGuard, AdminLayout, DataGrid, Views"]
+        TelemetryComp["useVisitorTracker (Batched Bucket Pattern)"]
+        Controls["SmartScrollButton & ConsentBanner"]
     end
 
-    subgraph Info_And_Community ["ℹ️ Information & Legal"]
-        About["ℹ️ About Marwadi Chess (about.html)"]
-        Privacy["📄 Privacy Policy (privacypolicy.html)"]
-    end
+    Router --> Home & PlayOnline & PlayComp & Train & DailyPuzzles
+    Router --> ChessRules & ChessTraps & PgnGames & MyGames & WatchLive
+    Router --> Blog & Updates & About & Privacy & Admin
 
-    FeatureCards --> Learn_And_Train
-    FeatureCards --> Play_And_Watch
-    FeatureCards --> Explore_And_Read
-    FeatureCards --> Info_And_Community
-
-    NavMenu --> Learn_And_Train
-    NavMenu --> Play_And_Watch
-    NavMenu --> Explore_And_Read
-    NavMenu --> Info_And_Community
+    Router --> HeaderComp & FooterComp
+    Router --> ThemeComp & FirebaseComp & TelemetryComp & Controls
+    Admin --> AdminSuiteComp
 ```
 
 ---
 
-## 📐 Page Wireframes & Layout Structures
+## 🚀 Key Architectural Highlights
 
-### 1. Global Standard Page Template
-All pages share a consistent, responsive layout structure:
-
-```
-┌───────────────────────────────────────────────────────────────────────────────┐
-│ [LOGO] Marwadi Chess v3.9.3  [🔔 Updates] [♟️ Play] [🌙 Theme] [🔄 Refresh] [🐙 GitHub]│ Header
-├───────────────────────────────────────────────────────────────────────────────┤
-│ 🏠 HOME | 🎓 LEARN ▾ | 🧩 PUZZLES ▾ | 🎮 PLAY ▾ | 🧭 EXPLORE ▾ | ℹ️ ABOUT      │ Sticky Nav
-├───────────────────────────────────────────────────────────────────────────────┤
-│                                                                               │
-│  Page Heading / Breadcrumb Title                                              │
-│  ───────────────────────────────────────────────────────────────────────────  │
-│                                                                               │
-│  ┌──────────────────────────────────────────────┐ ┌────────────────────────┐  │
-│  │                                              │ │ Side Column:           │  │ Main
-│  │          Main Interactive Content            │ │ - Community Card       │  │ Content
-│  │     (Chessboard / PGN Replay / Article)      │ │ - Social Links         │  │ Area
-│  │                                              │ │ - Quick Categories     │  │
-│  └──────────────────────────────────────────────┘ └────────────────────────┘  │
-│                                                                               │
-├───────────────────────────────────────────────────────────────────────────────┤
-│ Brand Summary  |  Chess Puzzles  |  Explore Links  |  Social Channels         │ Footer
-│ © 2026 Marwadi Chess  |  Privacy Policy  |  Back to Top Button [^]            │
-└───────────────────────────────────────────────────────────────────────────────┘
-```
-
-> **Navigation Menu Dropdown Hierarchy**:
-> - **🏠 HOME**: Gateway to all 12 feature portals and quick-start links.
-> - **🎓 LEARN ▾**: ♟️ Basic Chess Rules, 🪤 Learn Chess Traps, 📺 Watch Top Live Games, 📊 PGN Games Database, 🧠 Train Yourself.
-> - **🧩 PUZZLES ▾**: 🧠 Train Yourself, 📅 Daily Chess Puzzle, 🎯 Mate in 2, 🎯 Mate in 3, 🏆 Mate in 4, 👑 Mate in N.
-> - **🎮 PLAY ▾**: 🌐 Play Online, 🤖 Play vs Computer, 📜 My Played Games.
-> - **🧭 EXPLORE ▾**: 📢 Website Updates, 📰 Latest Blog, 💬 Chess Quotes, 🏛️ Chess History.
-> - **ℹ️ ABOUT**: Platform background, educational mission, and open-source vision.
+1. **Powered by EG-Web-Core Library**:
+   - Implements the Staunton chess design system with deep dark canvas backgrounds (`#0a0e17`) and gold accents (`#d4af37`).
+   - Reusable primitives: [`Header`](https://github.com/EG1DOTIN/eg-web-core/blob/main/docs/layout-components.md) (`preset="mchess"`), [`Footer`](https://github.com/EG1DOTIN/eg-web-core/blob/main/docs/layout-components.md) (`preset="mchess"`), and full administrative suite.
+2. **Comprehensive 15-Page Chess Suite**:
+   - Covers all aspects of chess: real-time multiplayer, AI engine play, tactical puzzles, opening trap tutorials, master PGN database, and game replay.
+3. **Hardened 3-Tier Admin Studio (`/admin`)**:
+   - Multi-tier authentication: Google OAuth whitelist (`marwadichess@gmail.com`), 16-digit salted SHA-256 PIN challenge via standard browser Web Crypto API, and automated 24-hour IP lockout defense.
+   - Tailored administration tabs: Visitor Analytics, User Inquiries, and Chess Articles & Puzzles Studio with frontmatter generator.
+4. **Real-Time Multiplayer & Engine Integration**:
+   - Validates legal chess moves, checks, checkmates, and draws via `chess.js`.
+   - Firebase Realtime Database handles online game pairing, clocks, and live move broadcasts.
+5. **GDPR-Compliant Anonymous Telemetry**:
+   - 50-record batched bucket telemetry via [`useVisitorTracker`](https://github.com/EG1DOTIN/eg-web-core/blob/main/docs/hooks-and-services.md) saving 98% of Firestore write quotas.
 
 ---
 
-### 2. Homepage Wireframe (`index.html`)
+## 🗺️ Application Pages & Routes
 
-```
-┌───────────────────────────────────────────────────────────────────────────────┐
-│                           Marwadi Chess Welcome Hub                           │
-├───────────────────┬───────────────────┬───────────────────┬───────────────────┤
-│ 🌐 Play Online    │ 🤖 Play Computer  │ 🧩 Daily Puzzles  │ 🎯 Train Yourself │
-│ Live timed games  │ Stockfish engine  │ Daily tactics &   │ 1500+ curated mate │
-│ & player lobby    │ 20 levels & hints │ solving trainer   │ puzzles in 2 to 5 │
-├───────────────────┼───────────────────┼───────────────────┼───────────────────┤
-│ ♟️ Basic Rules    │ 🪤 Chess Traps    │ 📊 PGN Database   │ 📺 Watch Live     │
-│ Visual beginner   │ Master tactical   │ Grandmaster game  │ 6 live tournament │
-│ movement guide    │ opening traps     │ archive & replay  │ broadcast channels│
-├───────────────────┼───────────────────┼───────────────────┼───────────────────┤
-│ 📰 Chess Blog     │ 💬 Chess Quotes   │ 🔔 Updates & News │ ℹ️ About Platform │
-│ Tactical studies  │ Inspiring quotes  │ Changelogs, new   │ Mission statement │
-│ & opening guides  │ & tactical vision │ features & notes  │ & learning goals  │
-└───────────────────┴───────────────────┴───────────────────┴───────────────────┘
-```
+All routes support clean URLs and static hosting via SPA rewrites:
+
+| Route / Path | Page Component | Features & Modules |
+| :--- | :--- | :--- |
+| **`/`**, **`index.html`** | [`HomePage`](./src/pages/HomePage.tsx) | Hero banner, interactive quotes carousel, daily tactical teaser, quick play CTAs |
+| **`playonline.html`** | [`PlayOnlinePage`](./src/pages/PlayOnlinePage.tsx) | Realtime room-based multiplayer, matchmaking, clocks, move synchronization |
+| **`playcomp.html`** | [`PlayCompPage`](./src/pages/PlayCompPage.tsx) | Computer AI opponent with selectable difficulty, board flipper, move undo |
+| **`train.html`** | [`TrainPage`](./src/pages/TrainPage.tsx) | Freeform board analysis, FEN loader, legal move calculation, coordinate training |
+| **`dailypuzzles.html`** | [`DailyPuzzlesPage`](./src/pages/DailyPuzzlesPage.tsx) | Daily curated chess puzzles, move evaluation, step-by-step solution hints |
+| **`chessrules.html`** | [`ChessRulesPage`](./src/pages/ChessRulesPage.tsx) | Interactive rules guide, piece movements, castling, en passant, promotion |
+| **`chesstraps.html`** | [`ChessTrapsPage`](./src/pages/ChessTrapsPage.tsx) | Famous opening traps (Fried Liver, Scholar's Mate, Blackburne Shilling, etc.) |
+| **`pgngames.html`** | [`PgnGamesPage`](./src/pages/PgnGamesPage.tsx) | Master games database, move-by-move interactive PGN viewer |
+| **`mygames.html`** | [`MyGamesPage`](./src/pages/MyGamesPage.tsx) | Locally persisted player game history, move replay, PGN export |
+| **`watchlive.html`** | [`WatchLivePage`](./src/pages/WatchLivePage.tsx) | Live broadcasts of top Grandmaster tournaments and matches |
+| **`blog.html`** | [`BlogPage`](./src/pages/BlogPage.tsx) | Categorized articles, quotes, history, and Mate-in-N tactical series |
+| **`updates.html`** | [`UpdatesPage`](./src/pages/UpdatesPage.tsx) | Platform update history, release notes, engine improvement changelog |
+| **`about.html`** | [`AboutPage`](./src/pages/AboutPage.tsx) | Marwadi Chess community mission, founder story, platform vision |
+| **`privacypolicy.html`** | [`PrivacyPolicyPage`](./src/pages/PrivacyPolicyPage.tsx) | GDPR privacy policy, telemetry transparency, cookie consent controls |
+| **`/admin`**, **`admin.html`** | [`AdminPage`](./src/pages/AdminPage.tsx) | 2FA Admin Studio: Visitor Telemetry, User Inquiries, Chess Articles Studio |
 
 ---
 
-### 3. Play Online Arena Wireframe (`playonline.html`)
+## 📦 Project Structure
 
 ```
-┌───────────────────────────────────────────────────────────────────────────────┐
-│ Player Identity: [ Gautam ] [ ✏️ Edit ]            [ 📜 My Played Games Archive ]│
-├───────────────────────────────────────────────────────────────────────────────┤
-│ VIEW 1: LOBBY & MATCHMAKING                                                   │
-│ ┌───────────────────────────────────────────────────────────────────────────┐ │
-│ │ 🟢 Online Players in Lobby                                                │ │
-│ │ Player Name          | Preferred Time | Status             | Action       │ │
-│ │ - Gautam (You)       | 5m Blitz       | Available          | (You)        │ │
-│ │ - Grandmaster_AJ     | 3m Blitz       | Available          | [⚔️Challenge]│ │
-│ └───────────────────────────────────────────────────────────────────────────┘ │
-│ ┌───────────────────────────────────────┐ ┌─────────────────────────────────┐ │
-│ │ 🔗 Direct Match Link Generator        │ │ 👥 Local Pass & Play            │ │
-│ └───────────────────────────────────────┘ └─────────────────────────────────┘ │
-│ ┌───────────────────────────────────────────────────────────────────────────┐ │
-│ │ 🏆 Affiliated Club Hubs: Marwadi on Lichess | ChessBase Playchess Room    │ │
-│ └───────────────────────────────────────────────────────────────────────────┘ │
-├───────────────────────────────────────────────────────────────────────────────┤
-│ VIEW 2: LIVE MATCH ARENA (Active Match)                                       │
-│ White: Player 1 [ 05:00 ]          [ Active Match ]         Black: Player 2 [ 05:00]│
-│ ┌──────────────────────────────────────────┐ ┌──────────────────────────────┐ │
-│ │                                          │ │ Live Move Notation History   │ │
-│ │          INTERACTIVE CHESSBOARD          │ │ 1. e4 e5                     │ │
-│ │                                          │ │ 2. Nf3 Nc6                   │ │
-│ └──────────────────────────────────────────┘ └──────────────────────────────┘ │
-│ [ 🚩 Resign ]     [ 🤝 Offer Draw ]     [ 🔄 Flip Board ]     [ 🚪 Leave Match ]│
-└───────────────────────────────────────────────────────────────────────────────┘
+mchess.eg1.in/
+├── index.html                   # Main HTML5 entry point
+├── package.json                 # Project dependencies (chess.js, eg-web-core)
+├── tsconfig.json                # TypeScript strict configuration
+├── vite.config.ts               # Vite configuration with eg-web-core linking
+├── firebase.json                # Firebase Hosting rewrites & security headers
+├── docs/                        # Comprehensive documentation portal
+│   ├── README.md                # Documentation index
+│   ├── architecture.md          # Architecture & chess engine integration
+│   └── pages-and-features.md    # Deep page-by-page feature breakdown
+├── public/                      # Static assets & data files
+│   ├── data/                    # JSON data stores & puzzles
+│   └── img/                     # Piece sets, boards, badges
+└── src/
+    ├── App.tsx                  # Master routing shell & header/footer layout
+    ├── index.css                # Staunton design system & CSS variables
+    ├── main.tsx                 # React DOM mount point
+    ├── components/              # Platform-specific branding & widgets
+    │   └── MarwadiChessLogo.tsx # Staunton knight vector SVG branding
+    └── pages/                   # Application view components (15 pages)
+        ├── HomePage.tsx
+        ├── PlayOnlinePage.tsx
+        ├── PlayCompPage.tsx
+        ├── TrainPage.tsx
+        ├── DailyPuzzlesPage.tsx
+        ├── ChessRulesPage.tsx
+        ├── ChessTrapsPage.tsx
+        ├── PgnGamesPage.tsx
+        ├── MyGamesPage.tsx
+        ├── WatchLivePage.tsx
+        ├── BlogPage.tsx
+        ├── UpdatesPage.tsx
+        ├── AboutPage.tsx
+        ├── PrivacyPolicyPage.tsx
+        └── AdminPage.tsx
 ```
 
 ---
 
-### 4. Play vs Stockfish Computer Wireframe (`playcomp.html`)
+## 🛠️ Development & Build Commands
 
-```
-┌───────────────────────────────────────────────────────────────────────────────┐
-│ Page Title: Play vs Stockfish Computer Engine                                 │
-│ Status Banner: "Your turn (White). Stockfish Skill: Level 10 (Master)"         │
-├────────────────────────────────────────────┬──────────────────────────────────┤
-│                                            │ White Clock: 05:00               │
-│                                            │ Black Clock: 05:00               │
-│          INTERACTIVE CHESSBOARD            ├──────────────────────────────────┤
-│                                            │ Side: [ Play as White / Black ♚ ]│
-│                                            │ Difficulty: [ Level 1 to 20 ]    │
-│                                            ├──────────────────────────────────┤
-│                                            │ Move Notation History:           │
-│                                            │ 1. e4 e5  2. Nf3 Nc6             │
-├────────────────────────────────────────────┴──────────────────────────────────┤
-│ Toolbar: [ New Game ]  [ Undo Move ]  [ Hint ]  [ Flip Board ]  [ Sound 🔊 ]  │
-└───────────────────────────────────────────────────────────────────────────────┘
+### 1. Install Dependencies
+```bash
+npm install
 ```
 
----
-
-### 5. My Played Games Archive Wireframe (`mygames.html`)
-
+### 2. Start Local Development Server
+```bash
+npm run dev
 ```
-┌───────────────────────────────────────────────────────────────────────────────┐
-│ Page Title: My Played Games Archive                                           │
-│ [ 🤖 Play vs Computer ]                         [ 🌐 Play Online Arena ]      │
-├────────────────────┬───────────────────┬───────────────────┬──────────────────┤
-│ Total Matches: 14  │ Victories: 9      │ Defeats: 3        │ Win Rate: 64%    │
-├────────────────────┴───────────────────┴───────────────────┴──────────────────┤
-│ MOVE REPLAY BOARD CONTAINER (Expands on "Review")                             │
-│ Match: Gautam vs Stockfish (2026.08.26)       [ 💾 Download PGN ] [ ✖ Close ] │
-│ ┌──────────────────────────────────────────┐ ┌──────────────────────────────┐ │
-│ │         INTERACTIVE REPLAY BOARD         │ │ 1. e4 e5  2. Nf3 Nc6         │ │
-│ └──────────────────────────────────────────┘ └──────────────────────────────┘ │
-│ [ |◀ First ]  [ ◀ Prev ]  [ ▶ Next ]  [ Last ▶| ]  [ 🔄 Flip ]  [ ⏯ Autoplay ]│
-├───────────────────────────────────────────────────────────────────────────────┤
-│ [ Filter: All | Wins | Losses | Draws ]   [ 🔍 Search ]   [ 📦 Export All PGN ]│
-│ ┌───────────────────────────────────────────────────────────────────────────┐ │
-│ │ Date       | Matchup           | Mode        | Result | Moves | Actions   │ │
-│ │ 26/08/2026 | You vs Stockfish  | vs Computer | 1-0    | 34    | Review/PGN│ │
-│ └───────────────────────────────────────────────────────────────────────────┘ │
-└───────────────────────────────────────────────────────────────────────────────┘
+Launches the Vite dev server with hot module replacement (HMR).
+
+### 3. Build for Production
+```bash
+npm run build
 ```
+Runs `tsc` typecheck and `vite build`, bundling all assets to `dist/`.
 
----
-
-### 6. Watch Top Live Games Wireframe (`watchlive.html`)
-
+### 4. Preview Production Build
+```bash
+npm run preview
 ```
-┌───────────────────────────────────────────────────────────────────────────────┐
-│ Page Title: Live Multi-Channel Chess Broadcasts (6 Channels)                  │
-│ View Mode: [ 🎬 Theater Mode (Active) ]               [ ⊞ 6-Board Grid ]       │
-├───────────────────────────────────────────────────────────────────────────────┤
-│ [ 🏆 TOP GM ] [ ⚡ BLITZ ] [ ⏱ RAPID ] [ 🔥 BULLET ] [ 👑 CLASSICAL ] [ 🚀 ULTRA ]│
-├───────────────────────────────────────────────────────────────────────────────┤
-│ THEATER MODE STAGE (Default View)                                             │
-│ ┌──────────────────────────────────────────────┬────────────────────────────┐ │
-│ │ 🏆 Top GM Broadcast                          │ Broadcast Details:         │ │
-│ │ ┌──────────────────────────────────────────┐ │ Channel: Top Grandmaster   │ │
-│ │ │                                          │ │ Feed: Lichess Open TV      │ │
-│ │ │          LIVE CHESSBOARD FRAME           │ │ Quality: Real-Time Stream  │ │
-│ │ │                                          │ │                            │ │
-│ │ │   (Click board mask opens isolated       │ │ [ ⛶ Isolated Fullscreen ]  │ │
-│ │ │    fullscreen modal overlay)             │ │ [ ↗ Open on Lichess ]      │ │
-│ │ └──────────────────────────────────────────┘ └────────────────────────────┘ │
-├───────────────────────────────────────────────────────────────────────────────┤
-│ GRID MODE (Available via [ ⊞ 6-Board Grid ] toggle)                           │
-│ ┌────────────────────────┐ ┌────────────────────────┐ ┌─────────────────────┐ │
-│ │ 🏆 Top GM Broadcast    │ │ ⚡ Blitz Championship  │ │ ⏱ Rapid Stream      │ │
-│ ├────────────────────────┤ ├────────────────────────┤ ├─────────────────────┤ │
-│ │ 🔥 Bullet Speed Channel│ │ 👑 Classical Tournament│ │ 🚀 UltraBullet      │ │
-│ └────────────────────────┘ └────────────────────────┘ └─────────────────────┘ │
-└───────────────────────────────────────────────────────────────────────────────┘
-```
+Runs a local web server serving the `dist/` production bundle for validation.
 
 ---
 
-### 7. Basic Chess Rules Academy Wireframe (`chessrules.html`)
+## 🔒 Security & Compliance Standards
 
-```
-┌───────────────────────────────────────────────────────────────────────────────┐
-│ Hero Banner: Learn Chess Rules - Complete Beginner to Master Guide           │
-│ Badges: [ 6 Piece Types ]       [ Special Moves ]       [ Interactive Quiz ]  │
-├──────────────────────────┬────────────────────────────────────────────────────┤
-│ STICKY TABLE OF CONTENTS │ MAIN ACADEMY CONTENT                               │
-│                          │                                                    │
-│ 1. Chessboard & Setup    │ 1. CHESSBOARD GEOMETRY & INITIAL PIECE SETUP       │
-│ 2. Piece Movements       │ - 8x8 Grid, 64 squares, Files a-h, Ranks 1-8       │
-│ 3. Special Moves         │ - Initial setup interactive board                  │
-│ 4. Check & Checkmate     │                                                    │
-│ 5. Draw Regulations      │ 2. PIECE MOVEMENT EXPLORER                         │
-│ 6. Interactive Quiz      │ [ Pawn ] [ Knight ] [ Bishop ] [ Rook ] [ Queen ]  │
-│                          │ ┌──────────────────────┐ ┌───────────────────────┐ │
-│                          │ │                      │ │ The Knight (3 Pts)    │ │
-│                          │ │ INTERACTIVE BOARD    │ │ Moves in "L-shape"    │ │
-│                          │ │ (Legal dots & capture│ │ Jumps over pieces!    │ │
-│                          │ │  rings highlighted)  │ │ Tips & tactical advice│ │
-│                          │ └──────────────────────┘ └───────────────────────┘ │
-│                          │                                                    │
-│                          │ 3. SPECIAL CHESS MOVES DEMONSTRATORS               │
-│                          │ A. Castling: [ 0-0 Kingside ] [ 0-0-0 Queenside ]  │
-│                          │ B. En Passant: [ Step 1 Advance ] [ Step 2 Capture]│
-│                          │ C. Pawn Promotion Breakdown                        │
-│                          │                                                    │
-│                          │ 4. CHECK, CHECKMATE & STALEMATE                    │
-│                          │                                                    │
-│                          │ 5. INTERACTIVE RULES QUIZ                          │
-│                          │ Q1: Can a King castle through check?               │
-│                          │ ( ) Yes   (•) No                                   │
-│                          │ [ ✅ Correct! The King cannot castle out of check ]│
-└──────────────────────────┴────────────────────────────────────────────────────┘
-```
-
----
-
-### 8. Learn Chess Traps Wireframe (`chesstraps.html`)
-
-```
-┌───────────────────────────────────────────────────────────────────────────────┐
-│ Page Title: Chess Opening Traps & Tricks (Interactive Traps Academy)          │
-├───────────────────────────────────────────────────────────────────────────────┤
-│ Active Trap: Fishing Pole Trap | ECO: C65 | ⚫ Played by Black                │
-├────────────────────────────────────────────┬──────────────────────────────────┤
-│                                            │ Filters: [All] [White] [Black]   │
-│          INTERACTIVE CHESSBOARD            │ [ Dropdown: Select Opening Trap] │
-│                                            ├──────────────────────────────────┤
-│ - Dynamic Blunder & Refutation Highlighting│ DYNAMIC LESSON CARD              │
-│ - Flip Board to Setter's Perspective       │ [#trapDynamicCard: state-bait]   │
-│                                            │ [Tag: The Bait (The Hook)]       │
-│                                            │ "Black plays 4...Ng4 & 5...h5,   │
-│                                            │  dangling the knight as bait..." │
-│                                            ├──────────────────────────────────┤
-│                                            │ STEPPER PILLS                    │
-│                                            │ [Intro] [Bait] [Blunder] [Refute]│
-│                                            ├──────────────────────────────────┤
-│                                            │ Move Notation History:           │
-│                                            │ 1. e4 e5   2. Nf3 Nc6            │
-│                                            │ 3. Bb5 Nf6 4. O-O Ng4            │
-│                                            │ 5. h3 h5   6. hxg4?? [Blunder!]  │
-│                                            │ 6... hxg4! [Refutation!]         │
-├────────────────────────────────────────────┴──────────────────────────────────┤
-│ Toolbar: [ |◀ First ]  [ ◀ Prev ]  [ Next ▶ ]  [ Last ▶| ]  [ ⏯ Auto ] [ 🔄 Flip ]│
-└───────────────────────────────────────────────────────────────────────────────┘
-```
-
----
-
-### 9. Train Yourself Tactics Arena Wireframe (`train.html`)
-
-```
-┌───────────────────────────────────────────────────────────────────────────────┐
-│ Header: 🎯 Train Yourself Tactics Arena                                       │
-│ Mode: [ ⚡ Mate in 2 ]  [ ♞ Mate in 3 ]  [ ♜ Mate in 4 ]  [ ♛ Mate in 5 ]  [ 🔥 Sprint ]│
-├───────────────────────────────────────────────────────────────────────────────┤
-│ Status Banner: "White to move — Mate in 2"             [ ❤️❤️❤️ ]  [ ⏱ 02:45 ]│
-├────────────────────────────────────────────┬──────────────────────────────────┤
-│                                            │ Target: Forced Checkmate in N    │
-│          INTERACTIVE CHESSBOARD            │ Streak: 12 Solved (PB: 28)       │
-│                                            ├──────────────────────────────────┤
-│ - Glassmorphic Pawn Promotion Modal        │ Action Controls:                 │
-│ - Board Shake on Mistake (1 Heart Lost)    │ [ ⏭ Skip ]      [ 💡 Hint ]      │
-│ - Mobile Edge-to-Edge Responsive Resize    │ [ 🔄 Flip Board ][ 🔲 Zen Mode ] │
-└────────────────────────────────────────────┴──────────────────────────────────┘
-```
-
----
-
-### 10. Chess Blog & Tactical Studies Wireframe (`blog.html`)
-
-```
-┌───────────────────────────────────────────────────────────────────────────────┐
-│ Page Heading: <category> | <title>                                            │
-├────────────────────────────────────────────┬──────────────────────────────────┤
-│ SINGLE PUZZLE & STUDY VIEW                 │ CATEGORY SIDEBAR                 │
-│ (Thumbnails omitted for live boards)       │                                  │
-│                                            │ Categories:                      │
-│          INTERACTIVE ENGINE BOARD          │ - Learn Chess                    │
-│          (MChessEngineBoard)               │ - Chess Quotes                   │
-│                                            │ - Chess Puzzles                  │
-│ Status Banner: Turn / Solved / Engine Move │ - Chess History                  │
-│                                            │ - Mate in 2 / 3 / 4 / 5          │
-│ Detail In-Category Pagination & Share Bar: │                                  │
-│ [ « Prev ]  [ 1 ]  [ 2 ]  [ 3 ]  [ Next » ]│ Related Topics:                  │
-│ [ 📤 Share Puzzle (Web Share API / Copy) ] │ - Article Link 1                 │
-│                                            │ - Article Link 2                 │
-└────────────────────────────────────────────┴──────────────────────────────────┘
-```
-
----
-
-## 📄 Detailed Page-by-Page Guide
-
-### 1. 🏠 Homepage ([index.html](index.html))
-- **Purpose**: The primary central lobby connecting users to all tools, games, puzzles, and articles.
-- **Key Features**:
-  - **Top Interactive Header**: Quick access buttons (`Notifications 🔔`, `Play Online ♟️`, `Theme Toggle 🌙/☀️`, and `Refresh 🔄`).
-  - **12 Feature Cards**: Clean uniform feature cards with direct navigation to all portals.
-  - **Social Links**: Quick access to Facebook Club, X (Twitter), YouTube, and Instagram.
-
----
-
-### 2. 🌐 Play Online Arena ([playonline.html](playonline.html))
-- **Purpose**: Real-time chess arena for playing with friends or online opponents.
-- **Key Features**:
-  - **Live Online Lobby**: View active online players and their preferred time controls (3m, 5m, 10m, 30m).
-  - **1-Click Match Challenges**: Challenge any player instantly with real-time Accept/Decline notifications.
-  - **Live Match Arena**: Play with digital clocks, move list notation, board flip, draw offers, and resign options.
-  - **Seamless Reconnection**: Accidental browser refreshes or momentary disconnections seamlessly restore your active game and move progress within a 30-second grace window.
-  - **Same-Screen Pass & Play**: Play over-the-board games with friends on a shared device.
-  - **Club Hubs**: Direct links to official Marwadi Chess club rooms on Lichess and ChessBase Playchess.
-
----
-
-### 3. 🤖 Play vs Computer ([playcomp.html](playcomp.html))
-- **Purpose**: Single-player practice arena against the world-class Stockfish chess engine.
-- **Key Features**:
-  - **20 Difficulty Levels**: Practice from beginner level (Level 1) all the way to grandmaster level (Level 20).
-  - **Instant Play as Black**: Switching to "Play as Black ♚" automatically starts the game and instructs Stockfish to make the opening White move immediately.
-  - **Tactical Aids**: Request engine move hints, navigate move history forward/backward, and undo moves.
-  - **Match Archiving**: Automatically saves finished games into your personal match history.
-
----
-
-### 4. 🧩 Daily Chess Puzzles ([dailypuzzles.html](dailypuzzles.html))
-- **Purpose**: Daily calculation and tactical pattern trainer.
-- **Key Features**:
-  - Solves daily tactics powered by official Lichess API and Stockfish engine move solver.
-  - Interactive board with move hints, solution viewer, and consecutive daily streak counter.
-
----
-
-### 5. 🎯 Train Yourself ([train.html](train.html))
-- **Purpose**: Dedicated tactical training center for mastering forced checkmates.
-- **Key Features**:
-  - **1500+ Curated Puzzles**: Categorized by Mate in 2, Mate in 3, Mate in 4, Mate in 5, and Mixed Sprint.
-  - **Dynamic Status Feedback**: Smooth animated banner displaying solving instructions and move accuracy feedback.
-  - **3-Strikes Survival Rule**: Start with 3 hearts; mistakes shake the board and deduct 1 heart.
-  - **Unified Action Controls**: Skip, Hint, Flip Board, and focused Zen Mode practice.
-
----
-
-### 6. ♟️ Basic Chess Rules ([chessrules.html](chessrules.html))
-- **Purpose**: Interactive academy guide for beginners and intermediate players mastering chess rules.
-- **Key Features**:
-  - **Sticky Table of Contents**: Smooth scroll-spy navigation tracking reading progress.
-  - **Piece Movement Explorer**: Playable chessboard with legal destination dots and capture rings for Pawn, Knight, Bishop, Rook, Queen, and King.
-  - **Special Moves Demonstrators**: Step-by-step playable boards illustrating Kingside Castling (`0-0`), Queenside Castling (`0-0-0`), and En Passant captures.
-  - **Interactive Rules Quiz**: Instant feedback testing understanding of castling conditions, en passant timing, and stalemate.
-
----
-
-### 7. 🪤 Learn Chess Traps ([chesstraps.html](chesstraps.html))
-- **Purpose**: Tactical study tool focusing on famous opening pitfalls and counter-strategies.
-- **Key Features**:
-  - **Traps Mode Engine**: Move-by-move synchronization between PGN games and educational lessons.
-  - **Dynamic Lesson Cards**: Cycles through Opening Setup, The Bait (The Hook), Fatal Blunder, Decisive Refutation, and Proper Defense.
-  - **Move Highlighting**: Distinct visual markers for blunder moves and tactical refutations.
-  - **Interactive Stepper Pills**: Jump directly to pivotal trap moments with 1 click.
-
----
-
-### 8. 📊 PGN Games Database ([pgngames.html](pgngames.html))
-- **Purpose**: Grandmaster game library and historical tournament collection.
-- **Key Features**:
-  - Complete PGN game record replay with move-by-move notation tree.
-  - Autoplay mode, board flipping, and interactive move jumping.
-
----
-
-### 9. 📺 Watch Top Live Games ([watchlive.html](watchlive.html))
-- **Purpose**: Live spectator portal for following international grandmaster tournaments.
-- **Key Features**:
-  - **Dual View Modes**: Switch between focused single-board **Theater Mode** and multi-board **6-Board Grid Mode**.
-  - **6 Dedicated Channels**: Top GM, Blitz Championship, Rapid Stream, Bullet Speed, Classical Tournament, and UltraBullet.
-  - **Channel Selection Pills**: Switch active livestreams instantly with responsive pills.
-  - **Click-to-Fullscreen Isolation**: Clicking any board opens an edge-to-edge modal overlay, preventing external redirects.
-
----
-
-### 10. 📰 Chess Blog & Quotes ([blog.html](blog.html))
-- **Purpose**: Multi-category publication hub with articles, game breakdowns, and motivational quotes.
-- **Key Features**:
-  - **Structured Breadcrumbs**: Clean `<category> | <title>` headers replacing outdated subtitle tags.
-  - **Embedded Puzzle Boards**: Live `MChessEngineBoard` with auto-turn perspective flip and Stockfish defense.
-  - **Web Share API Level 2**: Direct WebP image file sharing on mobile devices, with canonical link copying on desktop.
-  - **In-Category Detail Pagination**: Browse consecutive puzzles and articles in-place without page reloads.
-
----
-
-### 11. 🔔 Website Updates ([updates.html](updates.html))
-- **Purpose**: Platform announcements, release notes, and feature changelogs.
-- **Key Features**:
-  - **Single Source of Truth (SSOT)**: The top entry of `data/updates.json` acts as the canonical version authority for the entire application, dynamically populating the latest release stats, header branding, and mobile navigation via `js/include-components.js` with instant 0ms `sessionStorage` caching.
-  - Chronological updates feed detailing engine improvements, new puzzles, UI updates, and bug fixes.
-  - Linked directly to the header Notification Bell `[🔔]` for instant announcements.
-
----
-
-### 12. 📜 My Played Games Archive ([mygames.html](mygames.html))
-- **Purpose**: Personal match history dashboard and performance tracker.
-- **Key Features**:
-  - **Performance Stats**: Total matches, victories, defeats, draws, and win rate %.
-  - **Interactive Replay Board**: Step through any played game with forward, backward, autoplay, and flip controls.
-  - **Filter & Search**: Filter by outcome (Wins, Losses, Draws) or search by player name, date, or game mode.
-  - **PGN Downloads**: Download individual game PGN files or export your entire archive in one file.
-
----
-
-### 13. ℹ️ About Us ([about.html](about.html))
-- **Purpose**: Learn about the mission of Marwadi Chess, our learning philosophy, and our dedication to providing accessible chess tools for everyone.
-
----
-
-### 14. 📄 Privacy Policy ([privacypolicy.html](privacypolicy.html))
-- **Purpose**: Clear, transparent explanation of website terms, user privacy, cookies, and community guidelines.
-
----
-
-## 📱 Mobile Responsiveness & Top Bar Actions
-
-Marwadi Chess is fully responsive and optimized across all screen sizes:
-- **Desktop (920px+)**: Full multi-column view with sidebar widgets, sticky navigation, and wide tournament chessboards.
-- **Tablet (768px – 919px)**: Adaptive layout with touch-friendly navigation and balanced board scaling.
-- **Mobile (< 768px)**: Single-column responsive layout with toggle navigation menu, edge-to-edge board scaling, and tap-to-move piece controls.
-
-### Header Quick Actions:
-- **`[ 🔔 ]` What's New**: Interactive notification bell displaying the latest 5 platform announcements with unread badge tracking and link to full release history.
-- **`[ ♟️ ]` Play Online**: 1-click icon shortcut directly to the live multiplayer arena.
-- **`[ 🌙 / ☀️ ]` Theme Toggle**: Instant dark and light mode switching saved to local storage.
-- **`[ 🔄 ]` 1-Click Refresh**: Clears stale browser caches and fetches the latest website updates with active-game loss protection.
-- **`[ 🐙 ]` Source / GitHub Repository**: Direct link to the official GitHub repository and open-source codebase.
-
----
-
-## 📖 Technical & Page Documentation ([`docs/`](./docs/README.md))
-
-For in-depth architectural guides, ASCII wireframes, component interaction flows, and key feature modules for all pages and core engines, explore the [Documentation Directory](./docs/README.md):
-
-- **[Page Documentation Index](./docs/README.md)**: Master index of page-by-page specifications.
-- **[Page Details Directory](./docs/page-details/)**: Comprehensive technical breakdowns for each individual page (`details-index.md`, `details-playonline.md`, `details-train.md`, `details-mchess-board.md`, etc.).
-
----
-
-## 📦 Open Datasets & Curated Chess Studies ([`data/`](./data/README.md))
-
-Marwadi Chess publishes its curated tactical checkmate datasets, FEN problem collections, Marwadi Chess quotes, and chess study articles as an open-access JSON dataset under the [MIT License](./data/LICENSE):
-
-- **[`mchess-data.json`](./data/mchess-data.json)**: Master dataset with 1,221 verified tactical puzzles (Mate-in-2/3/4), Grandmaster quotes, and instructional articles.
-
-Read the [Dataset Documentation & Schema Guide](./data/README.md) for full schema details, JavaScript/Python usage examples, and citation info.
-
----
-
-## 📜 License
-
-This project is open source and available under the [MIT License](LICENSE).
+- **Engine Validation**: All moves are validated client-side via `chess.js` before dispatch, preventing illegal board states.
+- **Admin Defense**: Multi-tier authentication with rate limiting and automated IP lockout defense.
+- **XSS & Link Hardening**: Dynamic Markdown is purified with `sanitizeHtml()`, external links enforce `rel="noopener noreferrer"`.
