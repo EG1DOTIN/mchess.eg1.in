@@ -1,5 +1,6 @@
 # ───── ignored files and folders ─────
 gitignore
+gitignore/
 
 # ─── Internal Utility or local experiment/testing files ──────────────────
 blog/test1.htm
