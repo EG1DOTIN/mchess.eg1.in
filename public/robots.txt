@@ -1,0 +1,8 @@
+# robots.txt for https://mchess.eg1.in/
+User-agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /admin
+
+# Sitemap
+Sitemap: https://mchess.eg1.in/sitemap.xml

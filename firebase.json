@@ -1,91 +1,62 @@
 {
+  "firestore": {
+    "rules": "firestore.rules"
+  },
   "hosting": {
-    "public": ".",
+    "public": "dist",
     "ignore": [
       "firebase.json",
       "**/.*",
-      "**/node_modules/**",
-      "docs/**",
-      "unused-old-files/**",
-      "automation-scripts/**",
-      "gitignore/**",
-      "Firestore/*.py",
-      "Firestore/*.json"
+      "**/node_modules/**"
     ],
     "cleanUrls": true,
     "trailingSlash": false,
-    "redirects": [
+    "rewrites": [
       {
-        "source": "/news.html",
-        "destination": "/updates.html",
-        "type": 301
-      },
-      {
-        "source": "/news",
-        "destination": "/updates",
-        "type": 301
-      },
-      {
-        "source": "/mi2/:path*",
-        "destination": "/img/mi2/:path*",
-        "type": 301
-      },
-      {
-        "source": "/mi3/:path*",
-        "destination": "/img/mi3/:path*",
-        "type": 301
-      },
-      {
-        "source": "/mi4/:path*",
-        "destination": "/img/mi4/:path*",
-        "type": 301
-      },
-      {
-        "source": "/cpcq/:path*",
-        "destination": "/img/cpcq/:path*",
-        "type": 301
+        "source": "**",
+        "destination": "/index.html"
       }
     ],
     "headers": [
       {
-        "source": "**/*.@(jpg|jpeg|gif|png|svg|webp|pgn|woff|woff2|ttf|eot)",
+        "source": "**/*.@(css|js)",
         "headers": [
           {
             "key": "Cache-Control",
-            "value": "max-age=31536000, public"
+            "value": "max-age=86400"
           }
         ]
       },
       {
-        "source": "**/*.json",
+        "source": "**/*.@(jpg|jpeg|gif|png|svg|ico|webp|woff2|woff|ttf)",
         "headers": [
           {
             "key": "Cache-Control",
-            "value": "no-cache, must-revalidate"
+            "value": "max-age=604800, public"
           }
         ]
       },
       {
-        "source": "**/*.@(js|css)",
+        "source": "**",
         "headers": [
           {
-            "key": "Cache-Control",
-            "value": "no-cache, must-revalidate"
-          }
-        ]
-      },
-      {
-        "source": "**/*.html",
-        "headers": [
+            "key": "X-Content-Type-Options",
+            "value": "nosniff"
+          },
           {
-            "key": "Cache-Control",
-            "value": "no-cache, must-revalidate"
+            "key": "X-Frame-Options",
+            "value": "SAMEORIGIN"
+          },
+          {
+            "key": "Referrer-Policy",
+            "value": "strict-origin-when-cross-origin"
+          },
+          {
+            "key": "Permissions-Policy",
+            "value": "camera=(), microphone=(), geolocation=()"
           }
         ]
       }
     ]
-  },
-  "firestore": {
-    "rules": "Firestore/firestore.rules"
   }
 }
