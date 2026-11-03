@@ -97,7 +97,7 @@ The router in [`App.tsx`](../src/App.tsx) detects administrative routes (`/admin
 
 ## 5. Admin Security Model
 
-- **Google OAuth Whitelist**: Restricted to `marwadichess@gmail.com`.
+- **Google OAuth Whitelist**: Restricted to authorized admin email accounts (configured via `VITE_ADMIN_ALLOWED_EMAILS`).
 - **16-Digit Salted PIN**: Salted with `MCHESS_ADMIN_SECURE_SALT_2026` and hashed via standard browser Web Crypto API.
 - **Brute-Force Lockout**: 3 failed attempts activate a 24-hour IP lockout recorded in `admin_lockout`.
 - **Audit Logging**: Successful and failed authentications appended to `admin_login_log`.
