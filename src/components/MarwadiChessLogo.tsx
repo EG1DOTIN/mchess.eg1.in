@@ -43,7 +43,7 @@ export const MarwadiChessLogo: React.FC<MarwadiChessLogoProps> = ({
   showTagline = true,
   showVersion = true,
   version: explicitVersion,
-  href = 'index.html',
+  href = 'index',
   onNavigate,
   onClick,
   className = '',

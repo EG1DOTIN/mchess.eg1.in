@@ -34,7 +34,7 @@ import { AdminPage } from './pages/AdminPage';
 const MCHESS_NAV_LINKS: NavLinkItem[] = [
   {
     label: 'HOME',
-    href: 'index.html',
+    href: 'index',
     icon: <Icon name="home" size={14} />,
   },
   {
@@ -44,27 +44,27 @@ const MCHESS_NAV_LINKS: NavLinkItem[] = [
     children: [
       {
         label: 'BASIC CHESS RULES',
-        href: 'chessrules.html',
+        href: 'chessrules',
         icon: <Icon name="chess-pawn" size={14} color="#3b82f6" />,
       },
       {
         label: 'LEARN CHESS TRAPS',
-        href: 'chesstraps.html',
+        href: 'chesstraps',
         icon: <Icon name="chess-queen" size={14} color="#ec4899" />,
       },
       {
         label: 'WATCH TOP LIVE GAMES',
-        href: 'watchlive.html',
+        href: 'watchlive',
         icon: <Icon name="tv" size={14} color="#ef4444" />,
       },
       {
         label: 'PGN GAMES DATABASE',
-        href: 'pgngames.html',
+        href: 'pgngames',
         icon: <Icon name="database" size={14} color="#8b5cf6" />,
       },
       {
         label: 'TRAIN YOURSELF',
-        href: 'train.html',
+        href: 'train',
         icon: <Icon name="brain" size={14} color="#10b981" />,
       },
     ],
@@ -76,32 +76,32 @@ const MCHESS_NAV_LINKS: NavLinkItem[] = [
     children: [
       {
         label: 'TRAIN YOURSELF',
-        href: 'train.html',
+        href: 'train',
         icon: <Icon name="brain" size={14} color="#10b981" />,
       },
       {
         label: 'DAILY CHESS PUZZLE',
-        href: 'dailypuzzles.html',
+        href: 'dailypuzzles',
         icon: <Icon name="calendar" size={14} color="#f59e0b" />,
       },
       {
         label: 'MATE IN 2',
-        href: 'blog.html?cat=Mate%20in%202',
+        href: 'blog?cat=Mate%20in%202',
         icon: <Icon name="target" size={14} color="#f59e0b" />,
       },
       {
         label: 'MATE IN 3',
-        href: 'blog.html?cat=Mate%20in%203',
+        href: 'blog?cat=Mate%20in%203',
         icon: <Icon name="target" size={14} color="#f97316" />,
       },
       {
         label: 'MATE IN 4',
-        href: 'blog.html?cat=Mate%20in%204',
+        href: 'blog?cat=Mate%20in%204',
         icon: <Icon name="trophy" size={14} color="#eab308" />,
       },
       {
         label: 'MATE IN N',
-        href: 'blog.html?cat=Chess%20Puzzles',
+        href: 'blog?cat=Chess%20Puzzles',
         icon: <Icon name="chess-king" size={14} color="#6366f1" />,
       },
     ],
@@ -113,17 +113,17 @@ const MCHESS_NAV_LINKS: NavLinkItem[] = [
     children: [
       {
         label: 'PLAY ONLINE',
-        href: 'playonline.html',
+        href: 'playonline',
         icon: <Icon name="globe" size={14} color="#06b6d4" />,
       },
       {
         label: 'PLAY VS COMPUTER',
-        href: 'playcomp.html',
+        href: 'playcomp',
         icon: <Icon name="robot" size={14} color="#8b5cf6" />,
       },
       {
         label: 'MY PLAYED GAMES',
-        href: 'mygames.html',
+        href: 'mygames',
         icon: <Icon name="scroll" size={14} color="#eab308" />,
       },
     ],
@@ -135,29 +135,29 @@ const MCHESS_NAV_LINKS: NavLinkItem[] = [
     children: [
       {
         label: 'WEBSITE UPDATES',
-        href: 'updates.html',
+        href: 'updates',
         icon: <Icon name="bullhorn" size={14} color="#3b82f6" />,
       },
       {
         label: 'LATEST BLOG',
-        href: 'blog.html',
+        href: 'blog',
         icon: <Icon name="newspaper" size={14} color="#10b981" />,
       },
       {
         label: 'CHESS QUOTES',
-        href: 'blog.html?cat=Chess%20Quotes',
+        href: 'blog?cat=Chess%20Quotes',
         icon: <Icon name="quote" size={14} color="#38bdf8" />,
       },
       {
         label: 'CHESS HISTORY',
-        href: 'blog.html?cat=Chess%20History',
+        href: 'blog?cat=Chess%20History',
         icon: <Icon name="landmark" size={14} color="#a855f7" />,
       },
     ],
   },
   {
     label: 'ABOUT',
-    href: 'about.html',
+    href: 'about',
     icon: <Icon name="info" size={14} />,
   },
 ];
@@ -166,19 +166,19 @@ const MCHESS_FOOTER_SECTIONS: FooterSection[] = [
   {
     title: 'Chess Puzzles',
     links: [
-      { label: 'Mate in 2 Puzzles', href: 'blog.html?cat=Mate%20in%202', icon: <Icon name="target" size={13} color="#f59e0b" /> },
-      { label: 'Mate in 3 Puzzles', href: 'blog.html?cat=Mate%20in%203', icon: <Icon name="target" size={13} color="#f97316" /> },
-      { label: 'Mate in 4 Puzzles', href: 'blog.html?cat=Mate%20in%204', icon: <Icon name="trophy" size={13} color="#eab308" /> },
-      { label: 'Mate in N Puzzles', href: 'blog.html?cat=Chess%20Puzzles', icon: <Icon name="puzzle" size={13} color="#10b981" /> },
+      { label: 'Mate in 2 Puzzles', href: 'blog?cat=Mate%20in%202', icon: <Icon name="target" size={13} color="#f59e0b" /> },
+      { label: 'Mate in 3 Puzzles', href: 'blog?cat=Mate%20in%203', icon: <Icon name="target" size={13} color="#f97316" /> },
+      { label: 'Mate in 4 Puzzles', href: 'blog?cat=Mate%20in%204', icon: <Icon name="trophy" size={13} color="#eab308" /> },
+      { label: 'Mate in N Puzzles', href: 'blog?cat=Chess%20Puzzles', icon: <Icon name="puzzle" size={13} color="#10b981" /> },
     ],
   },
   {
     title: 'Explore & Community',
     links: [
-      { label: 'Chess Quotes', href: 'blog.html?cat=Chess%20Quotes', icon: <Icon name="quote" size={13} color="#38bdf8" /> },
-      { label: 'Play vs Computer', href: 'playcomp.html', icon: <Icon name="robot" size={13} color="#8b5cf6" /> },
-      { label: 'Play Online Chess', href: 'playonline.html', icon: <Icon name="globe" size={13} color="#06b6d4" /> },
-      { label: 'PGN Games Database', href: 'pgngames.html', icon: <Icon name="database" size={13} color="#8b5cf6" /> },
+      { label: 'Chess Quotes', href: 'blog?cat=Chess%20Quotes', icon: <Icon name="quote" size={13} color="#38bdf8" /> },
+      { label: 'Play vs Computer', href: 'playcomp', icon: <Icon name="robot" size={13} color="#8b5cf6" /> },
+      { label: 'Play Online Chess', href: 'playonline', icon: <Icon name="globe" size={13} color="#06b6d4" /> },
+      { label: 'PGN Games Database', href: 'pgngames', icon: <Icon name="database" size={13} color="#8b5cf6" /> },
     ],
   },
   {
@@ -266,9 +266,9 @@ const MCHESS_FOOTER_SECTIONS: FooterSection[] = [
 
 export const App: React.FC = () => {
   const [currentPath, setCurrentPath] = useState<string>(() => {
-    if (typeof window === 'undefined') return 'index.html';
-    const raw = window.location.pathname.replace(/^\//, '');
-    return raw || 'index.html';
+    if (typeof window === 'undefined') return 'index';
+    const raw = window.location.pathname.replace(/^\//, '').split('?')[0].split('#')[0].replace(/\.html$/, '');
+    return raw || 'index';
   });
 
   // Activate anonymous non-invasive telemetry respecting consent
@@ -282,8 +282,8 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     const handlePopState = () => {
-      const raw = window.location.pathname.replace(/^\//, '');
-      setCurrentPath(raw || 'index.html');
+      const raw = window.location.pathname.replace(/^\//, '').split('?')[0].split('#')[0].replace(/\.html$/, '');
+      setCurrentPath(raw || 'index');
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
@@ -294,10 +294,11 @@ export const App: React.FC = () => {
       window.open(path, '_blank', 'noopener,noreferrer');
       return;
     }
-    const cleanPath = path.startsWith('/') ? path : `/${path}`;
-    window.history.pushState(null, '', cleanPath);
-    const normalized = path.replace(/^\//, '');
-    setCurrentPath(normalized || 'index.html');
+    const clean = path.replace(/^\/+/, '').split('?')[0].split('#')[0].replace(/\.html$/, '');
+    const query = path.includes('?') ? `?${path.split('?')[1]}` : '';
+    const targetUrl = clean === 'index' || clean === '' ? '/' : `/${clean}`;
+    window.history.pushState(null, '', `${targetUrl}${query}`);
+    setCurrentPath(clean || 'index');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
@@ -365,7 +366,7 @@ export const App: React.FC = () => {
           <Header
           preset="mchess"
           logoComponent={<MarwadiChessLogo size={52} onNavigate={navigateTo} />}
-          brandUrl="index.html"
+          brandUrl="index"
           navLinks={MCHESS_NAV_LINKS}
           currentPath={currentPath}
           onNavigate={navigateTo}
@@ -379,10 +380,10 @@ export const App: React.FC = () => {
           showCacheBuster={true}
           quickAction={
             <a
-              href="playonline.html"
+              href="playonline"
               onClick={(e) => {
                 e.preventDefault();
-                navigateTo('playonline.html');
+                navigateTo('playonline');
               }}
               className="header-cta-btn cta-play"
               title="Play Online Chess"
@@ -412,18 +413,18 @@ export const App: React.FC = () => {
             />
           }
           aboutText="Marwadi Chess helps you boost your chess skills with interactive quotes, puzzles, trap guides, database games, and live play."
-          aboutReadMoreUrl="about.html"
+          aboutReadMoreUrl="about"
           sections={MCHESS_FOOTER_SECTIONS}
           copyrightText="© 2026 Marwadi Chess"
           developedByText="EG1"
           developedByUrl="https://eg1.in"
-          privacyPolicyUrl="privacypolicy.html"
+          privacyPolicyUrl="privacypolicy"
           showBackToTop={true}
           onNavigate={navigateTo}
         />
 
         {/* GDPR Telemetry Opt-Out & Consent Banner */}
-        <ConsentBanner privacyPolicyUrl="privacypolicy.html" />
+        <ConsentBanner privacyPolicyUrl="privacypolicy" />
       </div>
     </FirebaseProvider>
   </ThemeProvider>
