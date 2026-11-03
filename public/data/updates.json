@@ -1,5 +1,17 @@
 [
   {
+    "id": "v4-0-1-clean-urls-routing-and-developer-documentation",
+    "version": "4.0.1",
+    "title": "Clean URL Routing Hardening & Hierarchical Developer Documentation Suite",
+    "message": "Enforced clean extension-agnostic URL navigation across all platform routes and contact links, ensuring seamless routing without .html dependencies. Published exhaustive modular developer documentation and sub-directory guides across all components, pages, and data models.",
+    "icon": "fa-shield-halved",
+    "badge": "Patch Release",
+    "badgeColor": "#10b981",
+    "link": "https://github.com/EG1DOTIN/mchess.eg1.in",
+    "date": "Nov 03, 2026",
+    "pinned": true
+  },
+  {
     "id": "v4-0-0-modernization-react-vite-eg-web-core",
     "version": "4.0.0",
     "title": "React 18 + Vite SPA Modernization & Unified eg-web-core Architecture",

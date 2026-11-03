@@ -166,3 +166,81 @@ npm run preview
 firebase deploy --only hosting
 ```
 
+---
+
+## 🏷️ 6. How to Bump & Release a New Platform Version
+
+`mchess.eg1.in` follows [Semantic Versioning (SemVer)](https://semver.org/): `MAJOR.MINOR.PATCH` (e.g. `4.0.0` → `4.0.1`).
+
+> [!IMPORTANT]
+> **Single Source of Truth (SSOT)**: Marwadi Chess dynamically reads the current platform version displayed in the logo badge, navigation bar, and homepage from the first item in [`public/data/updates.json`](../public/data/updates.json). Both `package.json` and `updates.json` must be updated together.
+
+```mermaid
+flowchart TD
+    ChangeType{"Type of Platform Change"}
+    ChangeType -- "Bug fix, chess rule tweak, URL routing patch" --> Patch["Increment PATCH: 4.0.0 → 4.0.1"]
+    ChangeType -- "New game mode, AI engine feature, new puzzles" --> Minor["Increment MINOR: 4.0.1 → 4.1.0"]
+    ChangeType -- "Platform re-architecture or UI redesign" --> Major["Increment MAJOR: 4.0.1 → 5.0.0"]
+
+    Patch --> Step1["1. Update package.json 'version'"]
+    Minor --> Step1
+    Major --> Step1
+
+    Step1 --> Step2["2. Prepend New Item to public/data/updates.json"]
+    Step2 --> Step3["3. Rebuild Application: npm run build"]
+    Step3 --> Step4["4. Run Master CI Checks:<br/>python3 ../../HELP-DOCS/run_all_workspace_checks.py"]
+    Step4 --> Step5["5. Commit, Push Branch & Create PR"]
+```
+
+### Step-by-Step Procedure:
+
+1. **Update `package.json`**:
+   Open [`package.json`](../package.json) and bump the `"version"` field:
+   ```json
+   {
+     "name": "mchess-eg1-in",
+     "version": "4.0.1",
+     ...
+   }
+   ```
+
+2. **Add Changelog Entry to `public/data/updates.json`**:
+   Open [`public/data/updates.json`](../public/data/updates.json) and prepend a new entry at the very top:
+   ```json
+   [
+     {
+       "id": "v4-0-1-clean-urls-routing-and-developer-documentation",
+       "version": "4.0.1",
+       "title": "Clean URL Routing Hardening & Hierarchical Developer Documentation Suite",
+       "message": "Enforced clean extension-agnostic URL navigation across all platform routes and contact links. Published exhaustive modular developer documentation.",
+       "icon": "fa-shield-halved",
+       "badge": "Patch Release",
+       "badgeColor": "#10b981",
+       "link": "https://github.com/EG1DOTIN/mchess.eg1.in",
+       "date": "Nov 03, 2026",
+       "pinned": true
+     },
+     ...
+   ]
+   ```
+   *Note: Set `"pinned": true` on the latest release to highlight it in the notifications tray.*
+
+3. **Verify Build & Type Safety**:
+   ```bash
+   npm run build
+   ```
+
+4. **Run Master Workspace Verification**:
+   ```bash
+   python3 ../../HELP-DOCS/run_all_workspace_checks.py
+   ```
+
+5. **Commit & Deploy**:
+   ```bash
+   git add package.json public/data/updates.json
+   git commit -m "chore(release): bump mchess.eg1.in to 4.0.1"
+   # To deploy to production:
+   firebase deploy --only hosting
+   ```
+
+
