@@ -137,7 +137,7 @@ Data transparency and consent:
 ## 15. Admin Console (`AdminPage.tsx`)
 
 Dedicated management console isolated from public layout:
-- **2FA Protection**: Google OAuth (`marwadichess@gmail.com`) + 16-digit salted SHA-256 PIN.
+- **2FA Protection**: Google OAuth whitelist (configured via `VITE_ADMIN_ALLOWED_EMAILS`) + 16-digit salted SHA-256 PIN.
 - **Layout Shell**: Responsive [`AdminLayout`](https://github.com/EG1DOTIN/eg-web-core/blob/main/docs/admin-suite.md) with MChess branding.
 - **Core Modules**:
   - **Visitor Analytics**: Multi-domain telemetry grid consuming 50-record bucket documents.

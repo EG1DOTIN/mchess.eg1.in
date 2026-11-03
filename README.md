@@ -61,7 +61,7 @@ flowchart TD
 2. **Comprehensive 15-Page Chess Suite**:
    - Covers all aspects of chess: real-time multiplayer, AI engine play, tactical puzzles, opening trap tutorials, master PGN database, and game replay.
 3. **Hardened 3-Tier Admin Studio (`/admin`)**:
-   - Multi-tier authentication: Google OAuth whitelist (`marwadichess@gmail.com`), 16-digit salted SHA-256 PIN challenge via standard browser Web Crypto API, and automated 24-hour IP lockout defense.
+   - Multi-tier authentication: Google OAuth whitelist (configured via `VITE_ADMIN_ALLOWED_EMAILS`), 16-digit salted SHA-256 PIN challenge via standard browser Web Crypto API, and automated 24-hour IP lockout defense.
    - Tailored administration tabs: Visitor Analytics, User Inquiries, and Chess Articles & Puzzles Studio with frontmatter generator.
 4. **Real-Time Multiplayer & Engine Integration**:
    - Validates legal chess moves, checks, checkmates, and draws via `chess.js`.
