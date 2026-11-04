@@ -404,10 +404,10 @@ export const AboutPage: React.FC = () => {
                       <a href="https://github.com/EG1DOTIN/mchess.eg1.in" target="_blank" rel="noopener noreferrer" className="demo-btn demo-btn-primary">
                         <i className="fab fa-github"></i> View GitHub Repository
                       </a>
-                      <a href="https://eg1.in/contact.html" target="_blank" rel="noopener noreferrer" className="demo-btn demo-btn-secondary">
+                      <a href="https://eg1.in/contact" target="_blank" rel="noopener noreferrer" className="demo-btn demo-btn-secondary">
                         <i className="fas fa-envelope"></i> Contact Us
                       </a>
-                      <a href="privacypolicy.html" className="demo-btn demo-btn-secondary">
+                      <a href="privacypolicy" className="demo-btn demo-btn-secondary">
                         <i className="fas fa-lock"></i> Privacy Policy
                       </a>
                     </div>
