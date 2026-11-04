@@ -3,6 +3,13 @@ function initBlog() {
     var docId = params.get('id');
     var titleParam = params.get('title') || params.get('id?title');
     var category = params.get('cat');
+
+    if (!docId && !titleParam) {
+        var pathParts = window.location.pathname.replace(/^\/+/, '').split('/');
+        if (pathParts[0].toLowerCase() === 'blog' && pathParts[1]) {
+            titleParam = decodeURIComponent(pathParts[1].replace(/\.(htm|html)$/i, ''));
+        }
+    }
     var PAGE_SIZE = 18;
     var blogsPage = 1;
     var blogsHasMore = false;

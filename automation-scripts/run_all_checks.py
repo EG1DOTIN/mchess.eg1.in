@@ -129,7 +129,12 @@ def main():
             description="Verifies all relative links and anchors in docs/ and README.md resolve"
         ),
         CheckTask(
-            name="4. TypeScript & Vite Production Bundle",
+            name="4. Chess Puzzles SEO & Open Graph Audit",
+            command=["{PYTHON}", "automation-scripts/audits/audit_seo_puzzles.py"],
+            description="Verifies 1,220+ static puzzle landing wrappers, OG cards, and sitemap"
+        ),
+        CheckTask(
+            name="5. TypeScript & Vite Production Bundle",
             command=["npm", "run", "build"],
             description="Validates clean compilation (tsc && vite build) with zero errors"
         ),

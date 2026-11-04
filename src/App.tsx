@@ -304,6 +304,9 @@ export const App: React.FC = () => {
 
   const renderCurrentPage = () => {
     const p = currentPath.split('?')[0].toLowerCase().replace(/\.html$/, '');
+    if (p === 'blog' || p.startsWith('blog/')) {
+      return <BlogPage />;
+    }
     switch (p) {
       case 'playonline':
         return <PlayOnlinePage />;
