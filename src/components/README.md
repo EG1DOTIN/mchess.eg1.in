@@ -8,7 +8,7 @@ This directory houses the site-specific brand identity, logo, and chessboard wra
 
 | Component File | Role & Customization |
 |---|---|
-| [`MarwadiChessLogo.tsx`](file:///home/gautam/AntigravityProjects/EG1-LIVE-WEBSITES/MCHESS-WEBSITE/mchess.eg1.in/src/components/MarwadiChessLogo.tsx) | Procedural vector logo featuring the signature Knight/Horse silhouette, emerald gradients, responsive scaling (`size={52}`), and theme adaptability (light, dark, auto). |
+| [`MarwadiChessLogo.tsx`](./MarwadiChessLogo.tsx) | Procedural vector logo featuring the signature Knight/Horse silhouette, emerald gradients, responsive scaling (`size={52}`), and theme adaptability (light, dark, auto). |
 
 ---
 
