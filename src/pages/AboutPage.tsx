@@ -1,5 +1,16 @@
 import React, { useEffect } from 'react';
+import './AboutPage.css';
 
+/**
+ * About Marwadi Chess platform heritage, engine capabilities, and roadmap.
+ *
+ * @returns AboutPage view component
+ *
+ * @example
+ * ```tsx
+ * <Route path="/about" element={<AboutPage />} />
+ * ```
+ */
 export const AboutPage: React.FC = () => {
   useEffect(() => {
     document.title = 'About Marwadi Chess | Open-Source Heritage, AI Engine & Tactics';
@@ -14,9 +25,9 @@ export const AboutPage: React.FC = () => {
   }, []);
 
   return (
-    <div className="box-100 bg-E3 main-master snug-top" style={{ marginTop: 0, paddingTop: 0 }}>
-      <div className="row body snug-top" style={{ paddingTop: 0, marginTop: 0 }}>
-        <div className="box-90 content snug-top" style={{ paddingTop: 0, marginTop: 0, maxWidth: '1200px', margin: '0 auto' }}>
+    <div className="box-100 bg-E3 main-master snug-top mchess-about-wrapper">
+      <div className="row body snug-top">
+        <div className="box-90 content snug-top mchess-about-content">
           <div className="row">
             <div className="col-md-12">
               <main className="demo-about-container">

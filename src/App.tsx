@@ -8,6 +8,7 @@ import {
   NavLinkItem,
   FooterSection,
   useVisitorTracker,
+  VisitorLogEntry,
   SocialIcon,
   Icon,
   ChessKnightIcon,
@@ -16,20 +17,20 @@ import { MCHESS_FIREBASE_CONFIG } from './config/firebase';
 import { MarwadiChessLogo } from './components/MarwadiChessLogo';
 
 import { HomePage } from './pages/HomePage';
-import { PlayOnlinePage } from './pages/PlayOnlinePage';
-import { PlayCompPage } from './pages/PlayCompPage';
-import { TrainPage } from './pages/TrainPage';
-import { DailyPuzzlesPage } from './pages/DailyPuzzlesPage';
-import { ChessRulesPage } from './pages/ChessRulesPage';
-import { ChessTrapsPage } from './pages/ChessTrapsPage';
-import { PgnGamesPage } from './pages/PgnGamesPage';
-import { MyGamesPage } from './pages/MyGamesPage';
-import { WatchLivePage } from './pages/WatchLivePage';
-import { BlogPage } from './pages/BlogPage';
-import { UpdatesPage } from './pages/UpdatesPage';
-import { AboutPage } from './pages/AboutPage';
-import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage';
-import { AdminPage } from './pages/AdminPage';
+const PlayOnlinePage = React.lazy(() => import('./pages/PlayOnlinePage').then((m) => ({ default: m.PlayOnlinePage })));
+const PlayCompPage = React.lazy(() => import('./pages/PlayCompPage').then((m) => ({ default: m.PlayCompPage })));
+const TrainPage = React.lazy(() => import('./pages/TrainPage').then((m) => ({ default: m.TrainPage })));
+const DailyPuzzlesPage = React.lazy(() => import('./pages/DailyPuzzlesPage').then((m) => ({ default: m.DailyPuzzlesPage })));
+const ChessRulesPage = React.lazy(() => import('./pages/ChessRulesPage').then((m) => ({ default: m.ChessRulesPage })));
+const ChessTrapsPage = React.lazy(() => import('./pages/ChessTrapsPage').then((m) => ({ default: m.ChessTrapsPage })));
+const PgnGamesPage = React.lazy(() => import('./pages/PgnGamesPage').then((m) => ({ default: m.PgnGamesPage })));
+const MyGamesPage = React.lazy(() => import('./pages/MyGamesPage').then((m) => ({ default: m.MyGamesPage })));
+const WatchLivePage = React.lazy(() => import('./pages/WatchLivePage').then((m) => ({ default: m.WatchLivePage })));
+const BlogPage = React.lazy(() => import('./pages/BlogPage').then((m) => ({ default: m.BlogPage })));
+const UpdatesPage = React.lazy(() => import('./pages/UpdatesPage').then((m) => ({ default: m.UpdatesPage })));
+const AboutPage = React.lazy(() => import('./pages/AboutPage').then((m) => ({ default: m.AboutPage })));
+const PrivacyPolicyPage = React.lazy(() => import('./pages/PrivacyPolicyPage').then((m) => ({ default: m.PrivacyPolicyPage })));
+const AdminPage = React.lazy(() => import('./pages/AdminPage').then((m) => ({ default: m.AdminPage })));
 
 const MCHESS_NAV_LINKS: NavLinkItem[] = [
   {
@@ -275,7 +276,7 @@ export const App: React.FC = () => {
   useVisitorTracker({
     appName: 'mchess.eg1.in',
     firebaseConfig: MCHESS_FIREBASE_CONFIG,
-    onLogReady: (log: any) => {
+    onLogReady: (log: VisitorLogEntry) => {
       console.log('[MChess Telemetry Session]', log.id, log.city, log.country, log.os);
     },
   });
@@ -355,7 +356,9 @@ export const App: React.FC = () => {
     return (
       <ThemeProvider defaultTheme="dark" allowedThemes={['dark', 'light']} storageKey="mchess_theme">
         <FirebaseProvider config={MCHESS_FIREBASE_CONFIG} appName="mchess">
-          <AdminPage onNavigate={navigateTo} />
+          <React.Suspense fallback={<div style={{ minHeight: '60vh' }} />}>
+            <AdminPage onNavigate={navigateTo} />
+          </React.Suspense>
         </FirebaseProvider>
       </ThemeProvider>
     );
@@ -399,7 +402,11 @@ export const App: React.FC = () => {
         />
 
         {/* Main Application Page View */}
-        <main style={{ flex: 1 }}>{renderCurrentPage()}</main>
+        <main style={{ flex: 1 }}>
+          <React.Suspense fallback={<div style={{ minHeight: '60vh' }} />}>
+            {renderCurrentPage()}
+          </React.Suspense>
+        </main>
 
         {/* 4-Column Universal Chess Footer */}
         <Footer

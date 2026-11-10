@@ -1,0 +1,62 @@
+/**
+ * MyGamesPage.css
+ * Played Games Archive & Review page styles
+ */
+
+.mchess-mygames-wrapper {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.mchess-mygames-content {
+  padding-top: 0;
+  margin-top: 0;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.mchess-mygames-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.mchess-mygames-title {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #f8fafc;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mchess-mygames-subtitle {
+  margin: 4px 0 0 0;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.mchess-mygames-btn-online {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: #ffffff;
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  transition: all 0.2s ease;
+}
+
+.mchess-mygames-btn-online:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+}
+

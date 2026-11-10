@@ -1,5 +1,16 @@
 import React, { useEffect } from 'react';
+import './ChessRulesPage.css';
 
+/**
+ * Interactive rules tutorial and board fundamentals guide.
+ *
+ * @returns ChessRulesPage view component
+ *
+ * @example
+ * ```tsx
+ * <Route path="/chessrules" element={<ChessRulesPage />} />
+ * ```
+ */
 export const ChessRulesPage: React.FC = () => {
   useEffect(() => {
     document.title = 'Learn Basic Chess Rules & Piece Movements | Marwadi Chess';
@@ -14,9 +25,9 @@ export const ChessRulesPage: React.FC = () => {
   }, []);
 
   return (
-    <div className="box-100 bg-E3 main-master snug-top" style={{ marginTop: 0, paddingTop: 0 }}>
-      <div className="row body snug-top" style={{ paddingTop: 0, marginTop: 0 }}>
-        <div className="rules-container" style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 16px' }}>
+    <div className="box-100 bg-E3 main-master snug-top mchess-rules-wrapper">
+      <div className="row body snug-top">
+        <div className="rules-container mchess-rules-container">
           {/* 1. HERO SECTION */}
           <section className="rules-hero" id="hero">
             <div className="rules-hero-badge">

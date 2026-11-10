@@ -1,0 +1,161 @@
+/**
+ * DailyPuzzlesPage.css
+ * Daily Chess Puzzle & Tactics layout with community cards
+ */
+
+.mchess-puzzle-wrapper {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.mchess-puzzle-content {
+  padding-top: 0;
+  margin-top: 0;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.mchess-puzzle-sidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+.mchess-fb-group-card {
+  width: 100%;
+  max-width: 340px;
+  background-color: #ffffff;
+  border: 1px solid #dddfe2;
+  border-radius: 8px;
+  font-family: Helvetica, Arial, sans-serif;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.mchess-fb-group-img {
+  width: 100%;
+  object-fit: cover;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.mchess-fb-group-title {
+  font-size: 16px;
+  font-weight: bold;
+  padding: 12px 12px 4px 12px;
+  text-align: center;
+  color: #1c1e21;
+}
+
+.mchess-fb-group-subtitle {
+  color: #65676b;
+  font-size: 13px;
+  font-weight: normal;
+  text-align: center;
+  padding-bottom: 8px;
+}
+
+.mchess-fb-group-btn-box {
+  background-color: #1877f2;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.mchess-fb-group-btn {
+  color: #ffffff;
+  text-decoration: none;
+  display: block;
+  padding: 8px 0;
+  font-size: 14px;
+  font-weight: bold;
+  width: 100%;
+}
+
+.mchess-fb-group-footer {
+  border-top: 1px solid #e4e6eb;
+  font-size: 12px;
+  color: #050505;
+  padding: 12px 16px;
+  line-height: 1.4;
+  background-color: #f0f2f5;
+}
+
+.mchess-fb-embed-wrapper {
+  width: 100%;
+  max-width: 340px;
+  height: 380px;
+}
+
+.mchess-fb-embed-frame {
+  border: none;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.mchess-insta-card {
+  width: 100%;
+  max-width: 340px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  padding: 16px;
+  text-align: center;
+}
+
+.mchess-insta-title {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.mchess-insta-desc {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 13px;
+  margin: 0 0 12px 0;
+}
+
+.mchess-insta-btn {
+  display: inline-block;
+  background: #ffffff;
+  color: #bc1888;
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.mchess-twitter-card {
+  width: 100%;
+  max-width: 340px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}
+
+.mchess-twitter-title {
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.mchess-twitter-btn {
+  display: inline-block;
+  background: #ffffff;
+  color: #000000;
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 13px;
+  text-decoration: none;
+}
+

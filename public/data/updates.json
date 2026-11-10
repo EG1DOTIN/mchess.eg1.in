@@ -1,5 +1,17 @@
 [
   {
+    "id": "v4-1-0-modular-css-code-splitting-and-type-hardening",
+    "version": "4.1.0",
+    "title": "Modular Companion CSS Architecture, Route Code-Splitting & WCAG Zoom Hardening",
+    "message": "Architected clean companion CSS stylesheets across all 15 pages and components with 100% visual parity, integrated route code-splitting with isolated page bundles, added Subresource Integrity (SRI) hashes on external CDN scripts, removed restrictive mobile zoom restrictions for WCAG 2.1 AA compliance, hardened chess engine interfaces with strict TypeScript types, and published comprehensive JSDoc/TSDoc API documentation.",
+    "icon": "fa-sparkles",
+    "badge": "Minor Release",
+    "badgeColor": "#38bdf8",
+    "link": "https://github.com/EG1DOTIN/mchess.eg1.in/pulls?q=is%3Apr+state%3Aclosed",
+    "date": "Nov 10, 2026",
+    "pinned": true
+  },
+  {
     "id": "v4-0-1-clean-urls-routing-and-developer-documentation",
     "version": "4.0.1",
     "title": "Clean URL Routing Hardening & Hierarchical Developer Documentation Suite",

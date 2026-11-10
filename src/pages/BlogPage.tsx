@@ -1,5 +1,16 @@
 import React, { useEffect } from 'react';
+import './BlogPage.css';
 
+/**
+ * Chess blog, tactical puzzles, and Grandmaster quotes archive.
+ *
+ * @returns BlogPage view component
+ *
+ * @example
+ * ```tsx
+ * <Route path="/blog" element={<BlogPage />} />
+ * ```
+ */
 export const BlogPage: React.FC = () => {
   useEffect(() => {
     (window as any).__reactBlogMounted = true;
@@ -24,11 +35,11 @@ export const BlogPage: React.FC = () => {
   }, []);
 
   return (
-    <div className="box-100 bg-E3 main-master snug-top" style={{ marginTop: 0, paddingTop: 0 }}>
-      <div className="row body snug-top" style={{ paddingTop: 0, marginTop: 0 }}>
-        <div className="box-90 content snug-top" style={{ paddingTop: 0, marginTop: 0, maxWidth: '1400px', margin: '0 auto' }}>
-          <div id="blog-heading-container" style={{ marginBottom: '16px', paddingTop: '16px' }}>
-            <h1 id="blog-page-heading" style={{ margin: 0, fontSize: '1.6rem', fontWeight: 700 }}>
+    <div className="box-100 bg-E3 main-master snug-top mchess-blog-wrapper">
+      <div className="row body snug-top">
+        <div className="box-90 content snug-top mchess-blog-content">
+          <div id="blog-heading-container" className="mchess-blog-heading-box">
+            <h1 id="blog-page-heading" className="mchess-blog-title">
               Blogs
             </h1>
           </div>
