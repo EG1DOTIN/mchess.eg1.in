@@ -1,5 +1,16 @@
 import React, { useEffect } from 'react';
+import './MyGamesPage.css';
 
+/**
+ * Archive and review viewer for locally stored match records and PGN exports.
+ *
+ * @returns MyGamesPage view component
+ *
+ * @example
+ * ```tsx
+ * <Route path="/mygames" element={<MyGamesPage />} />
+ * ```
+ */
 export const MyGamesPage: React.FC = () => {
   useEffect(() => {
     document.title = 'My Played Games Archive & Review | Marwadi Chess';
@@ -14,45 +25,24 @@ export const MyGamesPage: React.FC = () => {
   }, []);
 
   return (
-    <div className="box-100 bg-E3 main-master snug-top" style={{ marginTop: 0, paddingTop: 0 }}>
-      <div className="row body snug-top" style={{ paddingTop: 0, marginTop: 0 }}>
-        <div className="box-90 content snug-top" style={{ paddingTop: 0, marginTop: 0, maxWidth: '1200px', margin: '0 auto' }}>
+    <div className="box-100 bg-E3 main-master snug-top mchess-mygames-wrapper">
+      <div className="row body snug-top">
+        <div className="box-90 content snug-top mchess-mygames-content">
           <div className="row">
             <div className="col-md-12">
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginBottom: '20px',
-                  flexWrap: 'wrap',
-                  gap: '12px',
-                }}
-              >
+              <div className="mchess-mygames-header">
                 <div>
-                  <h1 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 700, color: '#f8fafc', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <h1 className="mchess-mygames-title">
                     <i className="fas fa-history" style={{ color: '#38bdf8' }}></i> My Played Games Archive
                   </h1>
-                  <p style={{ margin: '4px 0 0 0', color: '#94a3b8', fontSize: '14px' }}>
+                  <p className="mchess-mygames-subtitle">
                     Local match records from Play vs Computer and Online Multiplayer. Review moves, analyze blunders, and export PGNs.
                   </p>
                 </div>
                 <div>
                   <a
                     href="playonline.html"
-                    style={{
-                      background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
-                      color: '#ffffff',
-                      textDecoration: 'none',
-                      padding: '8px 16px',
-                      borderRadius: '8px',
-                      fontWeight: 600,
-                      fontSize: '13px',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                      boxShadow: '0 4px 12px rgba(37,99,235,0.3)',
-                    }}
+                    className="mchess-mygames-btn-online"
                   >
                     <i className="fas fa-users"></i> Play Online Arena
                   </a>

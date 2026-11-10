@@ -1,0 +1,17 @@
+/**
+ * TrainPage.css
+ * Fast-Paced Chess Tactics & Checkmate Trainer styles
+ */
+
+.mchess-train-wrapper {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.mchess-train-content {
+  padding-top: 0;
+  margin-top: 0;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+

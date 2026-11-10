@@ -1,0 +1,17 @@
+/**
+ * AboutPage.css
+ * About Marwadi Chess platform & heritage styles
+ */
+
+.mchess-about-wrapper {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.mchess-about-content {
+  padding-top: 0;
+  margin-top: 0;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+

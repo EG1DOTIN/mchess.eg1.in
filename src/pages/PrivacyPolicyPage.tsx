@@ -1,18 +1,29 @@
 import React, { useEffect } from 'react';
 import { ConsentControl } from 'eg-web-core';
+import './PrivacyPolicyPage.css';
 
+/**
+ * Privacy policy view and interactive cookie consent controls for Marwadi Chess.
+ *
+ * @returns PrivacyPolicyPage view component
+ *
+ * @example
+ * ```tsx
+ * <Route path="/privacypolicy" element={<PrivacyPolicyPage />} />
+ * ```
+ */
 export const PrivacyPolicyPage: React.FC = () => {
   useEffect(() => {
     document.title = 'Privacy Policy | Marwadi Chess';
   }, []);
 
   return (
-    <div className="box-100 bg-E3 main-master snug-top" style={{ marginTop: 0, paddingTop: 0 }}>
-      <div className="row body snug-top" style={{ paddingTop: 0, marginTop: 0 }}>
-        <div className="box-90 content snug-top" style={{ paddingTop: '20px', marginTop: 0, maxWidth: '1000px', margin: '0 auto', color: '#f8fafc', lineHeight: 1.7 }}>
+    <div className="box-100 bg-E3 main-master snug-top mchess-privacy-wrapper">
+      <div className="row body snug-top">
+        <div className="box-90 content snug-top mchess-privacy-content">
           <div className="row">
             <div className="col-md-12">
-              <h1 style={{ marginTop: 0, marginBottom: '20px', fontSize: '2rem', fontWeight: 700, color: '#f8fafc' }}>
+              <h1 className="mchess-privacy-title">
                 Privacy Policy
               </h1>
               <p>

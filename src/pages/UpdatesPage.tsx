@@ -1,5 +1,16 @@
 import React, { useEffect } from 'react';
+import './UpdatesPage.css';
 
+/**
+ * Release updates and changelog feed for Marwadi Chess.
+ *
+ * @returns UpdatesPage view component
+ *
+ * @example
+ * ```tsx
+ * <Route path="/updates" element={<UpdatesPage />} />
+ * ```
+ */
 export const UpdatesPage: React.FC = () => {
   useEffect(() => {
     document.title = "What's New & Release Updates | Marwadi Chess";
@@ -14,9 +25,9 @@ export const UpdatesPage: React.FC = () => {
   }, []);
 
   return (
-    <div className="box-100 bg-E3 main-master snug-top" style={{ marginTop: 0, paddingTop: 0 }}>
-      <div className="row body snug-top" style={{ paddingTop: 0, marginTop: 0 }}>
-        <div className="box-90 content snug-top" style={{ paddingTop: 0, marginTop: 0, maxWidth: '1200px', margin: '0 auto' }}>
+    <div className="box-100 bg-E3 main-master snug-top mchess-updates-wrapper">
+      <div className="row body snug-top">
+        <div className="box-90 content snug-top mchess-updates-content">
           <div className="row">
             <div className="col-md-12">
               <div className="news-page-wrapper">

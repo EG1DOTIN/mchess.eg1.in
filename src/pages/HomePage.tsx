@@ -1,9 +1,21 @@
 import React, { useState, useEffect } from 'react';
+import './HomePage.css';
 
 interface HomePageProps {
   onNavigate: (path: string) => void;
 }
 
+/**
+ * Marwadi Chess home portal featuring game mode grid, rules preview, and daily puzzle highlight.
+ *
+ * @param props - HomePageProps configuration
+ * @returns HomePage view component
+ *
+ * @example
+ * ```tsx
+ * <HomePage onNavigate={navigate} />
+ * ```
+ */
 export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   const [appVersion, setAppVersion] = useState<string>('v3.9.3');
 
@@ -15,7 +27,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (!active || !data || !Array.isArray(data)) return;
-        const topItem = data.find((i: any) => i && i.version) || data[0];
+        const topItem = data.find((i: Record<string, unknown>) => i && i.version) || data[0];
         if (topItem && topItem.version) {
           let verStr = String(topItem.version).trim();
           if (!verStr.startsWith('v')) verStr = `v${verStr}`;
@@ -43,18 +55,18 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       </div>
       <div className="row body">
         <div id="welcome">
-          <div className="container" style={{ maxWidth: '1300px', margin: '0 auto', padding: '0 15px' }}>
+          <div className="container mchess-home-container">
             {/* ROW 1: Play & Tactics (Interactive Arenas & Puzzles) */}
             <div className="row">
               <div className="col-md-3">
                 <div className="single_item">
                   <div className="item_list">
-                    <a href="playonline.html" onClick={(e) => handleCardClick(e, 'playonline.html')}>
+                    <a href="/playonline" onClick={(e) => handleCardClick(e, 'playonline')}>
                       <div className="welcome_icon">
                         <i className="fas fa-globe"></i>
                       </div>
                     </a>
-                    <a href="playonline.html" onClick={(e) => handleCardClick(e, 'playonline.html')}>
+                    <a href="/playonline" onClick={(e) => handleCardClick(e, 'playonline')}>
                       <h4>
                         Play online
                         <br />
@@ -71,12 +83,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               <div className="col-md-3">
                 <div className="single_item">
                   <div className="item_list">
-                    <a href="playcomp.html" onClick={(e) => handleCardClick(e, 'playcomp.html')}>
+                    <a href="/playcomp" onClick={(e) => handleCardClick(e, 'playcomp')}>
                       <div className="welcome_icon">
                         <i className="fas fa-robot"></i>
                       </div>
                     </a>
-                    <a href="playcomp.html" onClick={(e) => handleCardClick(e, 'playcomp.html')}>
+                    <a href="/playcomp" onClick={(e) => handleCardClick(e, 'playcomp')}>
                       <h4>
                         Play vs
                         <br />
@@ -93,12 +105,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               <div className="col-md-3">
                 <div className="single_item">
                   <div className="item_list">
-                    <a href="dailypuzzles.html" onClick={(e) => handleCardClick(e, 'dailypuzzles.html')}>
+                    <a href="/dailypuzzles" onClick={(e) => handleCardClick(e, 'dailypuzzles')}>
                       <div className="welcome_icon">
                         <i className="fas fa-puzzle-piece"></i>
                       </div>
                     </a>
-                    <a href="dailypuzzles.html" onClick={(e) => handleCardClick(e, 'dailypuzzles.html')}>
+                    <a href="/dailypuzzles" onClick={(e) => handleCardClick(e, 'dailypuzzles')}>
                       <h4>
                         Daily chess
                         <br />
@@ -115,12 +127,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               <div className="col-md-3">
                 <div className="single_item">
                   <div className="item_list">
-                    <a href="train.html" onClick={(e) => handleCardClick(e, 'train.html')}>
+                    <a href="/train" onClick={(e) => handleCardClick(e, 'train')}>
                       <div className="welcome_icon">
                         <i className="fas fa-brain"></i>
                       </div>
                     </a>
-                    <a href="train.html" onClick={(e) => handleCardClick(e, 'train.html')}>
+                    <a href="/train" onClick={(e) => handleCardClick(e, 'train')}>
                       <h4>
                         Train
                         <br />
@@ -140,12 +152,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               <div className="col-md-3">
                 <div className="single_item">
                   <div className="item_list">
-                    <a href="chessrules.html" onClick={(e) => handleCardClick(e, 'chessrules.html')}>
+                    <a href="/chessrules" onClick={(e) => handleCardClick(e, 'chessrules')}>
                       <div className="welcome_icon">
                         <i className="fas fa-chess-board"></i>
                       </div>
                     </a>
-                    <a href="chessrules.html" onClick={(e) => handleCardClick(e, 'chessrules.html')}>
+                    <a href="/chessrules" onClick={(e) => handleCardClick(e, 'chessrules')}>
                       <h4>
                         Basic
                         <br />
@@ -162,12 +174,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               <div className="col-md-3">
                 <div className="single_item">
                   <div className="item_list">
-                    <a href="chesstraps.html" onClick={(e) => handleCardClick(e, 'chesstraps.html')}>
+                    <a href="/chesstraps" onClick={(e) => handleCardClick(e, 'chesstraps')}>
                       <div className="welcome_icon">
                         <i className="fas fa-chess-queen"></i>
                       </div>
                     </a>
-                    <a href="chesstraps.html" onClick={(e) => handleCardClick(e, 'chesstraps.html')}>
+                    <a href="/chesstraps" onClick={(e) => handleCardClick(e, 'chesstraps')}>
                       <h4>
                         Learn
                         <br />
@@ -184,12 +196,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               <div className="col-md-3">
                 <div className="single_item">
                   <div className="item_list">
-                    <a href="pgngames.html" onClick={(e) => handleCardClick(e, 'pgngames.html')}>
+                    <a href="/pgngames" onClick={(e) => handleCardClick(e, 'pgngames')}>
                       <div className="welcome_icon">
                         <i className="fas fa-database"></i>
                       </div>
                     </a>
-                    <a href="pgngames.html" onClick={(e) => handleCardClick(e, 'pgngames.html')}>
+                    <a href="/pgngames" onClick={(e) => handleCardClick(e, 'pgngames')}>
                       <h4>
                         PGN Games
                         <br />
@@ -206,12 +218,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               <div className="col-md-3">
                 <div className="single_item">
                   <div className="item_list">
-                    <a href="watchlive.html" onClick={(e) => handleCardClick(e, 'watchlive.html')}>
+                    <a href="/watchlive" onClick={(e) => handleCardClick(e, 'watchlive')}>
                       <div className="welcome_icon">
                         <i className="fas fa-tv"></i>
                       </div>
                     </a>
-                    <a href="watchlive.html" onClick={(e) => handleCardClick(e, 'watchlive.html')}>
+                    <a href="/watchlive" onClick={(e) => handleCardClick(e, 'watchlive')}>
                       <h4>
                         Watch top live
                         <br />
@@ -231,12 +243,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               <div className="col-md-3">
                 <div className="single_item">
                   <div className="item_list">
-                    <a href="blog.html" onClick={(e) => handleCardClick(e, 'blog.html')}>
+                    <a href="/blog" onClick={(e) => handleCardClick(e, 'blog')}>
                       <div className="welcome_icon">
                         <i className="fas fa-newspaper"></i>
                       </div>
                     </a>
-                    <a href="blog.html" onClick={(e) => handleCardClick(e, 'blog.html')}>
+                    <a href="/blog" onClick={(e) => handleCardClick(e, 'blog')}>
                       <h4>
                         Chess
                         <br />
@@ -253,12 +265,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               <div className="col-md-3">
                 <div className="single_item">
                   <div className="item_list">
-                    <a href="blog.html?cat=Chess%20Quotes" onClick={(e) => handleCardClick(e, 'blog.html?cat=Chess%20Quotes')}>
+                    <a href="/blog?cat=Chess%20Quotes" onClick={(e) => handleCardClick(e, 'blog?cat=Chess%20Quotes')}>
                       <div className="welcome_icon">
                         <i className="fas fa-quote-left"></i>
                       </div>
                     </a>
-                    <a href="blog.html?cat=Chess%20Quotes" onClick={(e) => handleCardClick(e, 'blog.html?cat=Chess%20Quotes')}>
+                    <a href="/blog?cat=Chess%20Quotes" onClick={(e) => handleCardClick(e, 'blog?cat=Chess%20Quotes')}>
                       <h4>
                         Chess
                         <br />
@@ -275,12 +287,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               <div className="col-md-3">
                 <div className="single_item">
                   <div className="item_list">
-                    <a href="updates.html" onClick={(e) => handleCardClick(e, 'updates.html')}>
+                    <a href="/updates" onClick={(e) => handleCardClick(e, 'updates')}>
                       <div className="welcome_icon">
                         <i className="fas fa-bullhorn"></i>
                       </div>
                     </a>
-                    <a href="updates.html" onClick={(e) => handleCardClick(e, 'updates.html')}>
+                    <a href="/updates" onClick={(e) => handleCardClick(e, 'updates')}>
                       <h4>
                         Website
                         <br />
@@ -297,16 +309,16 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               <div className="col-md-3">
                 <div className="single_item">
                   <div className="item_list">
-                    <a href="about.html" onClick={(e) => handleCardClick(e, 'about.html')}>
+                    <a href="/about" onClick={(e) => handleCardClick(e, 'about')}>
                       <div className="welcome_icon">
                         <i className="fas fa-info-circle"></i>
                       </div>
                     </a>
-                    <a href="about.html" onClick={(e) => handleCardClick(e, 'about.html')}>
+                    <a href="/about" onClick={(e) => handleCardClick(e, 'about')}>
                       <h4>
                         About
                         <br />
-                        Marwadi Chess <sup className="brand-version" style={{ fontSize: '11px', color: '#d4af37' }}>{appVersion}</sup>
+                        Marwadi Chess <sup className="brand-version mchess-home-version-badge">{appVersion}</sup>
                       </h4>
                     </a>
                     <p>

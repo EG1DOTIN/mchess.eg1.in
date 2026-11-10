@@ -1,0 +1,25 @@
+/**
+ * AdminPage.css
+ * MChess Admin Portal page styles
+ */
+
+.mchess-admin-exit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--eg-bg-tertiary, #1f2937);
+  border: 1px solid var(--eg-border, rgba(255, 255, 255, 0.12));
+  border-radius: var(--eg-radius-md, 8px);
+  color: var(--eg-text-primary, #f9fafb);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--eg-transition-fast, 150ms);
+}
+
+.mchess-admin-exit-btn:hover {
+  background: var(--eg-bg-secondary, #111827);
+  border-color: var(--eg-border-hover, rgba(255, 255, 255, 0.2));
+}
+

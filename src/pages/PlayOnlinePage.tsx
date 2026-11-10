@@ -1,20 +1,32 @@
 import React, { useEffect } from 'react';
+import { ChessModuleInstance } from '../types/chess';
+import './PlayOnlinePage.css';
 
+/**
+ * Peer-to-peer real-time multiplayer chess arena page powered by MChessP2P.
+ *
+ * @returns PlayOnlinePage view component
+ *
+ * @example
+ * ```tsx
+ * <Route path="/playonline" element={<PlayOnlinePage />} />
+ * ```
+ */
 export const PlayOnlinePage: React.FC = () => {
   useEffect(() => {
     document.title = 'Play Chess Online with Friends - Multiplayer Real-Time Game | Marwadi Chess';
 
-    let p2pEngine: any = null;
+    let p2pEngine: ChessModuleInstance | null = null;
     const timer = setTimeout(() => {
       // Initialize Player Name Identity
-      const $ = (window as any).$;
+      const $ = (window as unknown as { $: (sel: unknown) => any }).$;
       if (!$) return;
 
       const savedName = localStorage.getItem('mchess_player_name') || 'Guest Player';
       $('#lblPlayerNameDisplay').text(savedName);
       $('#txtNewPlayerName').val(savedName);
 
-      $('#btnEditPlayerIdentity').off('click').on('click', function (this: any) {
+      $('#btnEditPlayerIdentity').off('click').on('click', function (this: HTMLElement) {
         $(this).hide();
         $('#lblPlayerNameDisplay').hide();
         $('#pnlPlayerNameEditor').css('display', 'inline-flex');
@@ -30,7 +42,7 @@ export const PlayOnlinePage: React.FC = () => {
 
         if (p2pEngine) {
           p2pEngine.playerName = newName;
-          p2pEngine.registerLobbyPresence();
+          p2pEngine.registerLobbyPresence?.();
         }
       });
 

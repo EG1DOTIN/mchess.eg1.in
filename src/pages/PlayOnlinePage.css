@@ -1,0 +1,79 @@
+/**
+ * PlayOnlinePage.css
+ * Online Chess Arena & Real-Time Multiplayer Lobby styles
+ */
+
+.mchess-play-online-wrapper {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.mchess-play-online-content {
+  padding-top: 0;
+  margin-top: 0;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.mchess-play-online-header {
+  margin-bottom: 16px;
+}
+
+.mchess-play-online-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #f8fafc;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mchess-player-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: rgba(15, 23, 42, 0.7);
+  padding: 12px 18px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 20px;
+}
+
+.mchess-player-identity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.mchess-player-status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 8px #22c55e;
+}
+
+.mchess-player-btn-archive {
+  background: #0f172a;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  color: #38bdf8;
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.mchess-player-btn-archive:hover {
+  background: rgba(56, 189, 248, 0.15);
+  border-color: #38bdf8;
+}
+

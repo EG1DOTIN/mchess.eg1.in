@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useId } from 'react';
 import { useTheme } from 'eg-web-core';
+import './MarwadiChessLogo.css';
 
 export interface MarwadiChessLogoProps {
   /** Size in pixels for the SVG Staunton badge (default: 56) */
@@ -138,88 +139,8 @@ export const MarwadiChessLogo: React.FC<MarwadiChessLogoProps> = ({
       }}
       title="Marwadi Chess - Play, Learn & Master Chess"
     >
-      <style>{`
-        .brand-version {
-          font-size: 0.58em !important;
-          font-weight: 700 !important;
-          vertical-align: super !important;
-          line-height: 0 !important;
-          display: inline !important;
-          letter-spacing: 0.02em !important;
-          margin-left: 3px !important;
-          margin-right: 2px !important;
-        }
-        @media (max-width: 768px) {
-          .mchess-logo-link {
-            gap: 8px !important;
-            padding-right: 0 !important;
-            margin-right: 0 !important;
-          }
-          .mchess-logo-badge-wrapper svg {
-            width: 40px !important;
-            height: 40px !important;
-          }
-          .mchess-logo-title {
-            font-size: 19px !important;
-            line-height: 1.1 !important;
-            white-space: nowrap !important;
-          }
-          .brand-version {
-            font-size: 0.54em !important;
-            vertical-align: super !important;
-            line-height: 0 !important;
-            display: inline !important;
-            margin-left: 2px !important;
-            margin-right: 0 !important;
-          }
-          .mchess-logo-tagline {
-            font-size: 9.5px !important;
-            margin-top: 1px !important;
-            display: block !important;
-            letter-spacing: 0.2px !important;
-          }
-        }
-        @media (max-width: 480px) {
-          .mchess-logo-link {
-            gap: 6px !important;
-          }
-          .mchess-logo-badge-wrapper svg {
-            width: 36px !important;
-            height: 36px !important;
-          }
-          .mchess-logo-title {
-            font-size: 16.5px !important;
-          }
-          .brand-version {
-            font-size: 0.52em !important;
-          }
-          .mchess-logo-tagline {
-            display: none !important;
-          }
-        }
-        @media (max-width: 360px) {
-          .mchess-logo-badge-wrapper svg {
-            width: 32px !important;
-            height: 32px !important;
-          }
-          .mchess-logo-title {
-            font-size: 15px !important;
-          }
-          .brand-version {
-            font-size: 0.50em !important;
-          }
-        }
-      `}</style>
       {/* Staunton Knight Badge SVG */}
-      <div
-        className="mchess-logo-badge-wrapper"
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexShrink: 0,
-        }}
-      >
+      <div className="mchess-logo-badge-wrapper">
         <svg
           viewBox="0 0 100 100"
           width={size}
